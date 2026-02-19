@@ -140,10 +140,25 @@
             animation: pulseDot 1.2s infinite;
         }
         
+        /* --- РЕЗУЛЬТАТ: фиксированная высота, чтобы не прыгало --- */
         .result-display { 
-            width: 100%; padding: 12px; background: var(--secondary-bg); border: 1px solid var(--border-color); 
-            border-radius: 10px; text-align: center; font-weight: bold; display: none; margin-bottom: 10px;
-            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 100%;
+            height: 50px; /* резервируем место */
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            line-height: 50px; /* центрируем текст по вертикали */
+            margin-bottom: 10px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            box-sizing: border-box;
+        }
+        .result-display.visible {
+            opacity: 1;
+            visibility: visible;
         }
 
         #snow-layer { 
@@ -537,23 +552,24 @@
         }, 500);
     }
 
-    // --- Анализ ---
+    // --- Анализ: теперь используем класс .visible вместо display ---
     function startAnalysis(btn) {
         const res = document.getElementById('result');
         const stat = document.getElementById('status');
-        res.style.display = 'none'; 
+        res.classList.remove('visible');
         stat.style.display = 'flex';
         btn.classList.add('loading');
         
         setTimeout(() => {
             btn.classList.remove('loading');
             stat.style.display = 'none'; 
-            res.style.display = 'block';
+            res.classList.add('visible');
             const isUp = Math.random() > 0.5;
             res.style.color = isUp ? '#00ff88' : '#ff4d4d';
             res.style.borderColor = isUp ? '#00ff88' : '#ff4d4d';
             let signal = `${dict[curLang][isUp?'up':'down']} (${Math.floor(Math.random()*15+82)}%)`;
             res.innerHTML = signal;
+            // анимацию popIn можно оставить, но она не ломает размер
             res.style.animation = 'popIn 0.4s';
             setTimeout(() => res.style.animation = '', 400);
 
