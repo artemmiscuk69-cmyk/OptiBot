@@ -15,6 +15,8 @@
             --hover-color: #2a2a3f;
             --accent: #5b4dff;
             --accent-glow: rgba(91, 77, 255, 0.3);
+            --glass-bg: rgba(20, 30, 50, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.15);
         }
         body.light-theme {
             --bg-color: #f0f2f5;
@@ -25,6 +27,8 @@
             --hover-color: #e0e0e0;
             --accent: #3f51b5;
             --accent-glow: rgba(63, 81, 181, 0.3);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.1);
         }
         body {
             margin: 0; padding: 0; background: var(--bg-color); color: var(--text-color);
@@ -32,9 +36,176 @@
             display: flex; justify-content: center; align-items: center; overflow: hidden;
             transition: background 0.3s, color 0.3s;
         }
+
+        /* --- СТЕКЛЯННЫЙ ЭКРАН ПРИВЕТСТВИЯ --- */
+        .welcome-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s;
+            backdrop-filter: blur(10px);
+        }
+        .welcome-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .welcome-glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 30px 20px;
+            width: 80%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transform: scale(0.9);
+            animation: glassAppear 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            transition: transform 0.3s;
+        }
+        @keyframes glassAppear {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .welcome-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0 0 10px;
+            background: linear-gradient(135deg, #fff, #aaccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(91,77,255,0.5);
+        }
+        .welcome-subtitle {
+            font-size: 1rem;
+            color: #aaa;
+            margin-bottom: 25px;
+        }
+        .language-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        .language-item {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 14px 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        .language-item:hover {
+            background: rgba(255,255,255,0.15);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .language-item.selected {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+        .language-item .flag {
+            font-size: 1.8rem;
+        }
+        .start-btn {
+            background: var(--accent);
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 700;
+            padding: 16px 30px;
+            border-radius: 40px;
+            cursor: pointer;
+            box-shadow: 0 0 30px var(--accent-glow);
+            transition: all 0.3s;
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            width: 100%;
+        }
+        .start-btn.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 50px var(--accent-glow);
+        }
+
+        /* --- МОДАЛЬНОЕ ОКНО РЕГИСТРАЦИИ --- */
+        .register-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .register-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .register-glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 30px 20px;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transform: scale(0.9);
+            animation: glassAppear 0.4s forwards;
+        }
+        .register-glass p {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        .register-glass button {
+            background: var(--accent);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 14px 25px;
+            border-radius: 40px;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .register-glass button:hover {
+            transform: scale(1.05);
+        }
+
+        /* --- ОСНОВНОЕ ПРИЛОЖЕНИЕ (скрыто по умолчанию) --- */
         .app-container {
             width: 100%; max-width: 400px; height: 98vh; background: var(--app-bg);
-            display: flex; flex-direction: column; padding: 15px; box-sizing: border-box;
+            display: none; /* скрыто до нажатия Start */
+            flex-direction: column; padding: 15px; box-sizing: border-box;
             position: relative; border: 1px solid var(--border-color); border-radius: 12px;
             animation: fadeInScale 0.5s ease-out;
             transition: background 0.3s, border-color 0.3s;
@@ -47,6 +218,9 @@
             background: var(--secondary-bg); border: 1px solid var(--border-color); color: var(--text-color); 
             padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 14px;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         .icon-btn:hover { background: var(--hover-color); transform: scale(1.05); }
 
@@ -140,16 +314,15 @@
             animation: pulseDot 1.2s infinite;
         }
         
-        /* --- РЕЗУЛЬТАТ: фиксированная высота, чтобы не прыгало --- */
         .result-display { 
             width: 100%;
-            height: 50px; /* резервируем место */
+            height: 50px;
             background: var(--secondary-bg);
             border: 1px solid var(--border-color);
             border-radius: 10px;
             text-align: center;
             font-weight: bold;
-            line-height: 50px; /* центрируем текст по вертикали */
+            line-height: 50px;
             margin-bottom: 10px;
             opacity: 0;
             visibility: hidden;
@@ -166,15 +339,11 @@
             pointer-events: none; z-index: 1000; 
             transition: opacity 0.3s;
         }
-
-        /* Подсказка на свече */
         #tooltip {
             position: absolute; background: rgba(0,0,0,0.8); color: white; padding: 4px 8px;
             border-radius: 4px; font-size: 10px; pointer-events: none; z-index: 1001;
             display: none;
         }
-
-        /* Индикатор SMA */
         .indicator-btn {
             background: var(--secondary-bg); border: 1px solid var(--border-color); color: var(--text-color);
             padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px;
@@ -194,7 +363,6 @@
         @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 80% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
         @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-5px); } 40%,80% { transform: translateX(5px); } }
 
-        /* Фон графика */
         .chart-box::before {
             content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
             background: radial-gradient(circle at 30% 50%, rgba(91, 77, 255, 0.05), transparent 50%);
@@ -206,7 +374,32 @@
 </head>
 <body>
 
-<div class="app-container" id="main-app">
+<!-- Приветственный экран -->
+<div id="welcome-overlay" class="welcome-overlay visible">
+    <div class="welcome-glass">
+        <h1 class="welcome-title">Welcome</h1>
+        <p class="welcome-subtitle">Choose your language</p>
+        <div class="language-list">
+            <div class="language-item" data-lang="en"><span class="flag">🇬🇧</span> English</div>
+            <div class="language-item" data-lang="ru"><span class="flag">🇷🇺</span> Русский</div>
+            <div class="language-item" data-lang="pl"><span class="flag">🇵🇱</span> Polski</div>
+            <div class="language-item" data-lang="de"><span class="flag">🇩🇪</span> Deutsch</div>
+            <div class="language-item" data-lang="fr"><span class="flag">🇫🇷</span> Français</div>
+        </div>
+        <button id="start-btn" class="start-btn">Start</button>
+    </div>
+</div>
+
+<!-- Модальное окно регистрации -->
+<div id="register-overlay" class="register-overlay">
+    <div class="register-glass">
+        <p>🔒 Зарегистрируйтесь в боте @AIOptiBot</p>
+        <button id="go-to-bot-btn">Перейти в бота</button>
+    </div>
+</div>
+
+<!-- Основное приложение (изначально скрыто) -->
+<div class="app-container" id="main-app" style="display: none;">
     <canvas id="snow-layer"></canvas>
     <div id="tooltip"></div>
 
@@ -218,7 +411,7 @@
         <div class="header-buttons">
             <button id="themeBtn" class="icon-btn" onclick="toggleTheme()">🌓</button>
             <button id="snowToggle" class="icon-btn" onclick="toggleSnow()">☃️</button>
-            <button id="langBtn" class="icon-btn">RU</button>
+            <button id="langBtn" class="icon-btn">🇬🇧 EN</button>
         </div>
     </header>
 
@@ -284,7 +477,7 @@
 </div>
 
 <script>
-    // --- Глобальные переменные ---
+    // --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
     const canvas = document.getElementById('mainChart');
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
@@ -293,17 +486,153 @@
     let showSMA = false;
     let candleCount = 18;
     let snowEnabled = false;
-    let curLang = 'RU';
+    let curLang = 'en'; // язык по умолчанию
     let touchStartX = 0;
     let touchEndX = 0;
 
+    // Флаг регистрации (пока всегда false для демонстрации)
+    let registered = false;
+
+    // --- СЛОВАРЬ (расширенный) ---
     const dict = {
-        RU: { sub: "Выбери валютную пару", an: "Анализировать", wait: "Ожидание...", up: "ВВЕРХ ", down: "ВНИЗ " },
-        EN: { sub: "Select pair", an: "Analyze", wait: "Waiting...", up: "BUY ", down: "SELL " },
-        ES: { sub: "Elegir par", an: "Analizar", wait: "Espera...", up: "ALZA ", down: "BAJA " }
+        en: { 
+            sub: "Select currency pair", 
+            an: "Analyze", 
+            wait: "Waiting...", 
+            up: "BUY ", 
+            down: "SELL ",
+            welcome: "Welcome",
+            chooseLang: "Choose your language",
+            flag: "🇬🇧"
+        },
+        ru: { 
+            sub: "Выбери валютную пару", 
+            an: "Анализировать", 
+            wait: "Ожидание...", 
+            up: "ВВЕРХ ", 
+            down: "ВНИЗ ",
+            welcome: "Добро пожаловать",
+            chooseLang: "Выберите язык",
+            flag: "🇷🇺"
+        },
+        pl: {
+            sub: "Wybierz parę walutową",
+            an: "Analizuj",
+            wait: "Oczekiwanie...",
+            up: "W GÓRĘ ",
+            down: "W DÓŁ ",
+            welcome: "Witaj",
+            chooseLang: "Wybierz język",
+            flag: "🇵🇱"
+        },
+        de: {
+            sub: "Währungspaar auswählen",
+            an: "Analysieren",
+            wait: "Warten...",
+            up: "KAUFEN ",
+            down: "VERKAUFEN ",
+            welcome: "Willkommen",
+            chooseLang: "Sprache wählen",
+            flag: "🇩🇪"
+        },
+        fr: {
+            sub: "Choisir une paire de devises",
+            an: "Analyser",
+            wait: "Attente...",
+            up: "ACHAT ",
+            down: "VENTE ",
+            welcome: "Bienvenue",
+            chooseLang: "Choisissez la langue",
+            flag: "🇫🇷"
+        }
     };
 
-    // --- Снег ---
+    // --- ЭЛЕМЕНТЫ УПРАВЛЕНИЯ ПРИВЕТСТВИЕМ ---
+    const welcomeOverlay = document.getElementById('welcome-overlay');
+    const startBtn = document.getElementById('start-btn');
+    const langItems = document.querySelectorAll('.language-item');
+    const registerOverlay = document.getElementById('register-overlay');
+    const goToBotBtn = document.getElementById('go-to-bot-btn');
+
+    // --- ОБРАБОТКА ВЫБОРА ЯЗЫКА ---
+    langItems.forEach(item => {
+        item.addEventListener('click', () => {
+            langItems.forEach(i => i.classList.remove('selected'));
+            item.classList.add('selected');
+            const lang = item.dataset.lang;
+            curLang = lang;
+            startBtn.classList.add('visible');
+            // Обновляем текст приветствия на выбранном языке
+            document.querySelector('.welcome-title').innerText = dict[lang].welcome;
+            document.querySelector('.welcome-subtitle').innerText = dict[lang].chooseLang;
+        });
+    });
+
+    // --- ОБРАБОТКА КНОПКИ START ---
+    startBtn.addEventListener('click', () => {
+        welcomeOverlay.classList.remove('visible');
+        const app = document.getElementById('main-app');
+        app.style.display = 'flex'; // показываем основное приложение
+        // Инициализируем график и снег (теперь элементы видимы)
+        initChart();
+        setupSnow();
+        // Обновляем интерфейс приложения на выбранном языке
+        updateUILang();
+    });
+
+    // --- ОБРАБОТКА КНОПКИ ПЕРЕХОДА В БОТА ---
+    goToBotBtn.addEventListener('click', () => {
+        window.open('https://t.me/AIOptiBot', '_blank');
+        registerOverlay.classList.remove('visible');
+    });
+
+    // --- ФУНКЦИЯ ПРОВЕРКИ РЕГИСТРАЦИИ И ПОКАЗА ОВЕРЛЕЯ ---
+    function requireRegistration() {
+        if (!registered) {
+            registerOverlay.classList.add('visible');
+            return true;
+        }
+        return false;
+    }
+
+    // --- ПЕРЕОПРЕДЕЛЕНИЕ ОБРАБОТЧИКОВ ДЛЯ ОСНОВНЫХ КНОПОК (кроме настроек) ---
+    const originalStartAnalysis = window.startAnalysis;
+    window.startAnalysis = function(btn) {
+        if (requireRegistration()) return;
+        originalStartAnalysis(btn);
+    };
+
+    const originalSelectTf = window.selectTf;
+    window.selectTf = function(btn) {
+        if (requireRegistration()) return;
+        originalSelectTf(btn);
+    };
+
+    const originalChangePair = window.changePair;
+    window.changePair = function() {
+        if (requireRegistration()) return;
+        originalChangePair();
+    };
+
+    const originalToggleSMA = window.toggleSMA;
+    window.toggleSMA = function() {
+        if (requireRegistration()) return;
+        originalToggleSMA();
+    };
+
+    const originalZoomIn = window.zoomIn;
+    window.zoomIn = function() {
+        if (requireRegistration()) return;
+        originalZoomIn();
+    };
+
+    const originalZoomOut = window.zoomOut;
+    window.zoomOut = function() {
+        if (requireRegistration()) return;
+        originalZoomOut();
+    };
+
+    // --- ОСТАЛЬНОЙ КОД БЕЗ ИЗМЕНЕНИЙ (ГРАФИК, АНАЛИЗ, ПОДСКАЗКИ) ---
     const sCanvas = document.getElementById('snow-layer');
     const sCtx = sCanvas.getContext('2d');
     let flakes = [];
@@ -349,10 +678,13 @@
         document.body.classList.toggle('light-theme');
     }
 
-    // --- Язык ---
+    // --- Язык в приложении (с флагом) ---
     document.getElementById('langBtn').onclick = function() {
-        curLang = curLang === 'RU' ? 'EN' : (curLang === 'EN' ? 'ES' : 'RU');
-        this.innerText = curLang;
+        const langs = ['en', 'ru', 'pl', 'de', 'fr'];
+        let idx = langs.indexOf(curLang);
+        idx = (idx + 1) % langs.length;
+        curLang = langs[idx];
+        this.innerHTML = `${dict[curLang].flag} ${curLang.toUpperCase()}`;
         updateUILang();
     };
 
@@ -360,6 +692,7 @@
         document.getElementById('sub-header').innerText = dict[curLang].sub;
         document.getElementById('anBtn').innerHTML = `<span>${dict[curLang].an}</span>`;
         document.getElementById('wait-msg').innerText = dict[curLang].wait;
+        // Обновляем кнопку языка (флаг уже обновлён в обработчике)
     }
 
     // --- График ---
@@ -552,7 +885,7 @@
         }, 500);
     }
 
-    // --- Анализ: теперь используем класс .visible вместо display ---
+    // --- Анализ (оригинальная функция) ---
     function startAnalysis(btn) {
         const res = document.getElementById('result');
         const stat = document.getElementById('status');
@@ -569,7 +902,6 @@
             res.style.borderColor = isUp ? '#00ff88' : '#ff4d4d';
             let signal = `${dict[curLang][isUp?'up':'down']} (${Math.floor(Math.random()*15+82)}%)`;
             res.innerHTML = signal;
-            // анимацию popIn можно оставить, но она не ломает размер
             res.style.animation = 'popIn 0.4s';
             setTimeout(() => res.style.animation = '', 400);
 
@@ -595,9 +927,8 @@
         btn.classList.add('active');
     }
 
-    // --- Запуск приложения без пароля ---
-    initChart();
-    setupSnow();
+    // --- Инициализация не выполняется сразу, только после Start ---
+    // Приветственный экран уже виден, ждём действий пользователя
 
     if (window.Telegram?.WebApp) {
         window.Telegram.WebApp.expand();
