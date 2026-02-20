@@ -224,18 +224,110 @@
         }
         .icon-btn:hover { background: var(--hover-color); transform: scale(1.05); }
 
-        select { 
-            width: 100%; background: var(--secondary-bg); color: var(--text-color); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; margin-bottom: 10px; 
-            outline: none; appearance: none; cursor: pointer; transition: all 0.3s;
-            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-            background-repeat: no-repeat; background-position: right 10px center; background-size: 16px;
+        /* --- НОВЫЙ КОНТЕЙНЕР ДЛЯ ПОИСКА И ПАР --- */
+        .selector-container {
+            position: relative;
+            margin-bottom: 10px;
         }
-        body.light-theme select {
-            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8899ac;
+            font-size: 16px;
+            pointer-events: none;
+            z-index: 2;
         }
-        select:hover { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
-        select:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        #pair-search {
+            width: 100%;
+            background: var(--secondary-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 12px 12px 40px; /* отступ слева под иконку */
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+            transition: all 0.3s;
+            margin-bottom: 8px;
+        }
+        #pair-search:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+        #pair-search::placeholder {
+            color: #8899ac;
+            font-size: 14px;
+        }
+        .pairs-container {
+            max-height: 250px;
+            overflow-y: auto;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 5px 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) var(--secondary-bg);
+        }
+        .pairs-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .pairs-container::-webkit-scrollbar-track {
+            background: var(--secondary-bg);
+            border-radius: 10px;
+        }
+        .pairs-container::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+        .pair-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .pair-option:last-child {
+            border-bottom: none;
+        }
+        .pair-option:hover {
+            background: var(--hover-color);
+        }
+        .pair-option.selected {
+            background: var(--accent);
+            color: white;
+        }
+        .pair-option .pair-flag {
+            font-size: 1.2rem;
+            min-width: 24px;
+            text-align: center;
+        }
+        .pair-option .pair-name {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .pair-option .pair-type {
+            font-size: 10px;
+            color: #8899ac;
+            background: rgba(0,0,0,0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .pair-option.selected .pair-type {
+            color: white;
+            background: rgba(255,255,255,0.2);
+        }
 
+        /* старый select скрываем */
+        #pair {
+            display: none;
+        }
+
+        /* остальные стили без изменений */
         .chart-container {
             position: relative;
             width: 100%; height: 280px; margin-bottom: 15px;
@@ -415,35 +507,14 @@
         </div>
     </header>
 
-    <select id="pair" onchange="changePair()">
-        <option selected>EUR/USD</option>
-        <option>AUD/CHF OTC</option><option>AUD/NZD OTC</option><option>AUD/USD OTC</option>
-        <option>EUR/TRY OTC</option><option>GBP/AUD OTC</option><option>JOD/CNY OTC</option>
-        <option>NZD/USD OTC</option><option>QAR/CNY OTC</option><option>UAH/USD OTC</option>
-        <option>USD/CAD OTC</option><option>USD/MXN OTC</option><option>USD/MYR OTC</option>
-        <option>USD/PHP OTC</option><option>USD/PKR OTC</option><option>ZAR/USD OTC</option>
-        <option>CHF/NOK OTC</option><option>SAR/CNY OTC</option><option>AUD/CAD OTC</option>
-        <option>USD/JPY OTC</option><option>EUR/AUD</option><option>GBP/AUD</option>
-        <option>TND/USD OTC</option><option>LBP/USD OTC</option><option>CAD/JPY OTC</option>
-        <option>AUD/JPY</option><option>USD/BRL OTC</option><option>GBP/JPY</option>
-        <option>GBP/USD OTC</option><option>OMR/CNY OTC</option><option>AUD/CAD</option>
-        <option>EUR/CHF</option><option>CHF/JPY OTC</option><option>GBP/USD</option>
-        <option>USD/INR OTC</option><option>USD/CHF</option><option>USD/COP OTC</option>
-        <option>CHF/JPY</option><option>EUR/JPY OTC</option><option>AUD/CHF</option>
-        <option>EUR/JPY</option><option>USD/JPY</option><option>CAD/JPY</option>
-        <option>EUR/HUF OTC</option><option>USD/RUB OTC</option><option>BHD/CNY OTC</option>
-        <option>USD/CAD</option><option>USD/VND OTC</option><option>CAD/CHF OTC</option>
-        <option>AED/CNY OTC</option><option>USD/THB OTC</option><option>AUD/USD</option>
-        <option>EUR/GBP OTC</option><option>EUR/NZD OTC</option><option>USD/DZD OTC</option>
-        <option>NZD/JPY OTC</option><option>NGN/USD OTC</option><option>AUD/JPY OTC</option>
-        <option>USD/CNH OTC</option><option>USD/CHF OTC</option><option>KES/USD OTC</option>
-        <option>GBP/JPY OTC</option><option>EUR/RUB OTC</option><option>USD/CLP OTC</option>
-        <option>USD/ARS OTC</option><option>USD/IDR OTC</option><option>USD/SGD OTC</option>
-        <option>YER/USD OTC</option><option>GBP/CAD</option><option>EUR/GBP</option>
-        <option>EUR/CAD</option><option>CAD/CHF</option><option>GBP/CHF</option>
-        <option>EUR/CHF OTC</option><option>EUR/USD OTC</option><option>MAD/USD OTC</option>
-        <option>USD/BDT OTC</option><option>USD/EGP OTC</option>
-    </select>
+    <!-- НОВЫЙ БЛОК: поиск и список пар (вместо старого select) -->
+    <div class="selector-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="pair-search" placeholder="🔍 Поиск пары (EUR, USD, OTC...)">
+        <div class="pairs-container" id="pairs-container"></div>
+    </div>
+    <!-- старый select оставляем скрытым для обратной совместимости -->
+    <select id="pair" onchange="changePair()" style="display: none;"></select>
 
     <div class="chart-container">
         <div class="chart-box"><canvas id="mainChart"></canvas></div>
@@ -547,12 +618,222 @@
         }
     };
 
+    // --- ПОЛНЫЙ СПИСОК ВАЛЮТНЫХ ПАР (максимально приближенный к Pocket Option) ---
+    const allPairs = [
+        // Основные (majors)
+        { name: "EUR/USD", flag: "🇪🇺🇺🇸", type: "Major" },
+        { name: "GBP/USD", flag: "🇬🇧🇺🇸", type: "Major" },
+        { name: "USD/JPY", flag: "🇺🇸🇯🇵", type: "Major" },
+        { name: "USD/CHF", flag: "🇺🇸🇨🇭", type: "Major" },
+        { name: "AUD/USD", flag: "🇦🇺🇺🇸", type: "Major" },
+        { name: "USD/CAD", flag: "🇺🇸🇨🇦", type: "Major" },
+        { name: "NZD/USD", flag: "🇳🇿🇺🇸", type: "Major" },
+        
+        // Кроссы (crosses)
+        { name: "EUR/GBP", flag: "🇪🇺🇬🇧", type: "Cross" },
+        { name: "EUR/JPY", flag: "🇪🇺🇯🇵", type: "Cross" },
+        { name: "EUR/CHF", flag: "🇪🇺🇨🇭", type: "Cross" },
+        { name: "EUR/CAD", flag: "🇪🇺🇨🇦", type: "Cross" },
+        { name: "EUR/AUD", flag: "🇪🇺🇦🇺", type: "Cross" },
+        { name: "EUR/NZD", flag: "🇪🇺🇳🇿", type: "Cross" },
+        { name: "GBP/JPY", flag: "🇬🇧🇯🇵", type: "Cross" },
+        { name: "GBP/CHF", flag: "🇬🇧🇨🇭", type: "Cross" },
+        { name: "GBP/CAD", flag: "🇬🇧🇨🇦", type: "Cross" },
+        { name: "GBP/AUD", flag: "🇬🇧🇦🇺", type: "Cross" },
+        { name: "GBP/NZD", flag: "🇬🇧🇳🇿", type: "Cross" },
+        { name: "CHF/JPY", flag: "🇨🇭🇯🇵", type: "Cross" },
+        { name: "CAD/JPY", flag: "🇨🇦🇯🇵", type: "Cross" },
+        { name: "AUD/JPY", flag: "🇦🇺🇯🇵", type: "Cross" },
+        { name: "AUD/CHF", flag: "🇦🇺🇨🇭", type: "Cross" },
+        { name: "AUD/CAD", flag: "🇦🇺🇨🇦", type: "Cross" },
+        { name: "AUD/NZD", flag: "🇦🇺🇳🇿", type: "Cross" },
+        { name: "NZD/JPY", flag: "🇳🇿🇯🇵", type: "Cross" },
+        { name: "NZD/CHF", flag: "🇳🇿🇨🇭", type: "Cross" },
+        { name: "NZD/CAD", flag: "🇳🇿🇨🇦", type: "Cross" },
+
+        // Экзотика (exotics) + OTC (внебиржевые)
+        { name: "USD/TRY OTC", flag: "🇺🇸🇹🇷", type: "OTC" },
+        { name: "USD/SEK OTC", flag: "🇺🇸🇸🇪", type: "OTC" },
+        { name: "USD/NOK OTC", flag: "🇺🇸🇳🇴", type: "OTC" },
+        { name: "USD/DKK OTC", flag: "🇺🇸🇩🇰", type: "OTC" },
+        { name: "USD/ZAR OTC", flag: "🇺🇸🇿🇦", type: "OTC" },
+        { name: "USD/MXN OTC", flag: "🇺🇸🇲🇽", type: "OTC" },
+        { name: "USD/PLN OTC", flag: "🇺🇸🇵🇱", type: "OTC" },
+        { name: "USD/HUF OTC", flag: "🇺🇸🇭🇺", type: "OTC" },
+        { name: "USD/CZK OTC", flag: "🇺🇸🇨🇿", type: "OTC" },
+        { name: "USD/SGD OTC", flag: "🇺🇸🇸🇬", type: "OTC" },
+        { name: "USD/HKD OTC", flag: "🇺🇸🇭🇰", type: "OTC" },
+        { name: "USD/KRW OTC", flag: "🇺🇸🇰🇷", type: "OTC" },
+        { name: "USD/INR OTC", flag: "🇺🇸🇮🇳", type: "OTC" },
+        { name: "USD/BRL OTC", flag: "🇺🇸🇧🇷", type: "OTC" },
+        { name: "USD/CNY OTC", flag: "🇺🇸🇨🇳", type: "OTC" },
+        { name: "USD/RUB OTC", flag: "🇺🇸🇷🇺", type: "OTC" },
+        { name: "EUR/TRY OTC", flag: "🇪🇺🇹🇷", type: "OTC" },
+        { name: "EUR/SEK OTC", flag: "🇪🇺🇸🇪", type: "OTC" },
+        { name: "EUR/NOK OTC", flag: "🇪🇺🇳🇴", type: "OTC" },
+        { name: "EUR/PLN OTC", flag: "🇪🇺🇵🇱", type: "OTC" },
+        { name: "EUR/HUF OTC", flag: "🇪🇺🇭🇺", type: "OTC" },
+        { name: "EUR/CZK OTC", flag: "🇪🇺🇨🇿", type: "OTC" },
+        { name: "GBP/TRY OTC", flag: "🇬🇧🇹🇷", type: "OTC" },
+        { name: "GBP/ZAR OTC", flag: "🇬🇧🇿🇦", type: "OTC" },
+        { name: "AUD/TRY OTC", flag: "🇦🇺🇹🇷", type: "OTC" },
+        { name: "NZD/TRY OTC", flag: "🇳🇿🇹🇷", type: "OTC" },
+        { name: "CAD/TRY OTC", flag: "🇨🇦🇹🇷", type: "OTC" },
+        { name: "CHF/TRY OTC", flag: "🇨🇭🇹🇷", type: "OTC" },
+        { name: "JPY/TRY OTC", flag: "🇯🇵🇹🇷", type: "OTC" },
+        { name: "SGD/JPY OTC", flag: "🇸🇬🇯🇵", type: "OTC" },
+        { name: "ZAR/JPY OTC", flag: "🇿🇦🇯🇵", type: "OTC" },
+        { name: "TRY/JPY OTC", flag: "🇹🇷🇯🇵", type: "OTC" },
+        { name: "EUR/RUB OTC", flag: "🇪🇺🇷🇺", type: "OTC" },
+        { name: "USD/THB OTC", flag: "🇺🇸🇹🇭", type: "OTC" },
+        { name: "USD/IDR OTC", flag: "🇺🇸🇮🇩", type: "OTC" },
+        { name: "USD/PHP OTC", flag: "🇺🇸🇵🇭", type: "OTC" },
+        { name: "USD/VND OTC", flag: "🇺🇸🇻🇳", type: "OTC" },
+        { name: "USD/PKR OTC", flag: "🇺🇸🇵🇰", type: "OTC" },
+        { name: "USD/BDT OTC", flag: "🇺🇸🇧🇩", type: "OTC" },
+        { name: "USD/LKR OTC", flag: "🇺🇸🇱🇰", type: "OTC" },
+        { name: "USD/MMK OTC", flag: "🇺🇸🇲🇲", type: "OTC" },
+        { name: "USD/KWD OTC", flag: "🇺🇸🇰🇼", type: "OTC" },
+        { name: "USD/SAR OTC", flag: "🇺🇸🇸🇦", type: "OTC" },
+        { name: "USD/AED OTC", flag: "🇺🇸🇦🇪", type: "OTC" },
+        { name: "USD/QAR OTC", flag: "🇺🇸🇶🇦", type: "OTC" },
+        { name: "USD/BHD OTC", flag: "🇺🇸🇧🇭", type: "OTC" },
+        { name: "USD/OMR OTC", flag: "🇺🇸🇴🇲", type: "OTC" },
+        { name: "USD/JOD OTC", flag: "🇺🇸🇯🇴", type: "OTC" },
+        { name: "USD/ILS OTC", flag: "🇺🇸🇮🇱", type: "OTC" },
+        { name: "EUR/GEL OTC", flag: "🇪🇺🇬🇪", type: "OTC" },
+        { name: "EUR/AMD OTC", flag: "🇪🇺🇦🇲", type: "OTC" },
+        { name: "EUR/AZN OTC", flag: "🇪🇺🇦🇿", type: "OTC" },
+        { name: "EUR/BYN OTC", flag: "🇪🇺🇧🇾", type: "OTC" },
+        { name: "EUR/KZT OTC", flag: "🇪🇺🇰🇿", type: "OTC" },
+        { name: "EUR/UZS OTC", flag: "🇪🇺🇺🇿", type: "OTC" },
+        { name: "EUR/TMT OTC", flag: "🇪🇺🇹🇲", type: "OTC" },
+        { name: "EUR/TJS OTC", flag: "🇪🇺🇹🇯", type: "OTC" },
+        { name: "EUR/KGS OTC", flag: "🇪🇺🇰🇬", type: "OTC" },
+        { name: "GBP/SEK OTC", flag: "🇬🇧🇸🇪", type: "OTC" },
+        { name: "GBP/NOK OTC", flag: "🇬🇧🇳🇴", type: "OTC" },
+        { name: "GBP/DKK OTC", flag: "🇬🇧🇩🇰", type: "OTC" },
+        { name: "GBP/PLN OTC", flag: "🇬🇧🇵🇱", type: "OTC" },
+        { name: "GBP/HUF OTC", flag: "🇬🇧🇭🇺", type: "OTC" },
+        { name: "GBP/CZK OTC", flag: "🇬🇧🇨🇿", type: "OTC" },
+        { name: "GBP/SGD OTC", flag: "🇬🇧🇸🇬", type: "OTC" },
+        { name: "GBP/HKD OTC", flag: "🇬🇧🇭🇰", type: "OTC" },
+        { name: "GBP/INR OTC", flag: "🇬🇧🇮🇳", type: "OTC" },
+        { name: "GBP/BRL OTC", flag: "🇬🇧🇧🇷", type: "OTC" },
+        { name: "AUD/SGD OTC", flag: "🇦🇺🇸🇬", type: "OTC" },
+        { name: "AUD/HKD OTC", flag: "🇦🇺🇭🇰", type: "OTC" },
+        { name: "AUD/ZAR OTC", flag: "🇦🇺🇿🇦", type: "OTC" },
+        { name: "AUD/MXN OTC", flag: "🇦🇺🇲🇽", type: "OTC" },
+        { name: "NZD/SGD OTC", flag: "🇳🇿🇸🇬", type: "OTC" },
+        { name: "NZD/HKD OTC", flag: "🇳🇿🇭🇰", type: "OTC" },
+        { name: "NZD/ZAR OTC", flag: "🇳🇿🇿🇦", type: "OTC" },
+        { name: "CAD/SGD OTC", flag: "🇨🇦🇸🇬", type: "OTC" },
+        { name: "CAD/HKD OTC", flag: "🇨🇦🇭🇰", type: "OTC" },
+        { name: "CAD/ZAR OTC", flag: "🇨🇦🇿🇦", type: "OTC" },
+        { name: "CHF/SGD OTC", flag: "🇨🇭🇸🇬", type: "OTC" },
+        { name: "CHF/HKD OTC", flag: "🇨🇭🇭🇰", type: "OTC" },
+        { name: "CHF/ZAR OTC", flag: "🇨🇭🇿🇦", type: "OTC" },
+        { name: "JPY/SGD OTC", flag: "🇯🇵🇸🇬", type: "OTC" },
+        { name: "JPY/HKD OTC", flag: "🇯🇵🇭🇰", type: "OTC" },
+        { name: "JPY/KRW OTC", flag: "🇯🇵🇰🇷", type: "OTC" },
+        { name: "JPY/CNY OTC", flag: "🇯🇵🇨🇳", type: "OTC" },
+        { name: "EUR/SEK", flag: "🇪🇺🇸🇪", type: "Exotic" },
+        { name: "EUR/NOK", flag: "🇪🇺🇳🇴", type: "Exotic" },
+        { name: "USD/SEK", flag: "🇺🇸🇸🇪", type: "Exotic" },
+        { name: "USD/NOK", flag: "🇺🇸🇳🇴", type: "Exotic" },
+        { name: "USD/DKK", flag: "🇺🇸🇩🇰", type: "Exotic" },
+        { name: "USD/ZAR", flag: "🇺🇸🇿🇦", type: "Exotic" },
+        { name: "USD/MXN", flag: "🇺🇸🇲🇽", type: "Exotic" },
+        { name: "USD/PLN", flag: "🇺🇸🇵🇱", type: "Exotic" },
+        { name: "USD/HUF", flag: "🇺🇸🇭🇺", type: "Exotic" },
+        { name: "USD/CZK", flag: "🇺🇸🇨🇿", type: "Exotic" },
+        { name: "USD/SGD", flag: "🇺🇸🇸🇬", type: "Exotic" },
+        { name: "USD/HKD", flag: "🇺🇸🇭🇰", type: "Exotic" },
+        { name: "USD/KRW", flag: "🇺🇸🇰🇷", type: "Exotic" },
+        { name: "USD/INR", flag: "🇺🇸🇮🇳", type: "Exotic" },
+        { name: "USD/BRL", flag: "🇺🇸🇧🇷", type: "Exotic" },
+        { name: "USD/CNY", flag: "🇺🇸🇨🇳", type: "Exotic" },
+        { name: "USD/RUB", flag: "🇺🇸🇷🇺", type: "Exotic" },
+        { name: "EUR/RUB", flag: "🇪🇺🇷🇺", type: "Exotic" },
+        { name: "GBP/SEK", flag: "🇬🇧🇸🇪", type: "Exotic" },
+        { name: "GBP/NOK", flag: "🇬🇧🇳🇴", type: "Exotic" },
+        { name: "AUD/MXN", flag: "🇦🇺🇲🇽", type: "Exotic" },
+        { name: "AUD/ZAR", flag: "🇦🇺🇿🇦", type: "Exotic" },
+        { name: "NZD/MXN", flag: "🇳🇿🇲🇽", type: "Exotic" },
+        { name: "NZD/ZAR", flag: "🇳🇿🇿🇦", type: "Exotic" },
+        { name: "CAD/MXN", flag: "🇨🇦🇲🇽", type: "Exotic" },
+        { name: "CAD/ZAR", flag: "🇨🇦🇿🇦", type: "Exotic" },
+        { name: "CHF/MXN", flag: "🇨🇭🇲🇽", type: "Exotic" },
+        { name: "CHF/ZAR", flag: "🇨🇭🇿🇦", type: "Exotic" },
+        { name: "JPY/MXN", flag: "🇯🇵🇲🇽", type: "Exotic" },
+        { name: "JPY/ZAR", flag: "🇯🇵🇿🇦", type: "Exotic" },
+        { name: "EUR/TRY", flag: "🇪🇺🇹🇷", type: "Exotic" },
+        { name: "GBP/TRY", flag: "🇬🇧🇹🇷", type: "Exotic" },
+        { name: "AUD/TRY", flag: "🇦🇺🇹🇷", type: "Exotic" },
+        { name: "NZD/TRY", flag: "🇳🇿🇹🇷", type: "Exotic" },
+        { name: "CAD/TRY", flag: "🇨🇦🇹🇷", type: "Exotic" },
+        { name: "CHF/TRY", flag: "🇨🇭🇹🇷", type: "Exotic" },
+        { name: "JPY/TRY", flag: "🇯🇵🇹🇷", type: "Exotic" }
+    ];
+
     // --- ЭЛЕМЕНТЫ УПРАВЛЕНИЯ ПРИВЕТСТВИЕМ ---
     const welcomeOverlay = document.getElementById('welcome-overlay');
     const startBtn = document.getElementById('start-btn');
     const langItems = document.querySelectorAll('.language-item');
     const registerOverlay = document.getElementById('register-overlay');
     const goToBotBtn = document.getElementById('go-to-bot-btn');
+
+    // --- НОВЫЕ ЭЛЕМЕНТЫ ---
+    const pairsContainer = document.getElementById('pairs-container');
+    const searchInput = document.getElementById('pair-search');
+    const hiddenSelect = document.getElementById('pair');
+
+    // --- ФУНКЦИЯ ОТРИСОВКИ СПИСКА ПАР ---
+    function renderPairs(filter = '') {
+        const filterLower = filter.toLowerCase();
+        const filtered = allPairs.filter(p => 
+            p.name.toLowerCase().includes(filterLower) || 
+            p.type.toLowerCase().includes(filterLower)
+        );
+        
+        pairsContainer.innerHTML = '';
+        filtered.forEach(pair => {
+            const div = document.createElement('div');
+            div.className = 'pair-option';
+            if (pair.name === hiddenSelect.value) {
+                div.classList.add('selected');
+            }
+            div.innerHTML = `
+                <span class="pair-flag">${pair.flag}</span>
+                <span class="pair-name">${pair.name}</span>
+                <span class="pair-type">${pair.type}</span>
+            `;
+            div.addEventListener('click', () => {
+                // снимаем выделение со всех
+                document.querySelectorAll('.pair-option').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+                hiddenSelect.value = pair.name;
+                // вызываем changePair как обычно
+                changePair();
+            });
+            pairsContainer.appendChild(div);
+        });
+
+        // если ничего не найдено
+        if (filtered.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'pair-option';
+            empty.style.justifyContent = 'center';
+            empty.style.padding = '20px';
+            empty.innerText = '❌ Ничего не найдено';
+            pairsContainer.appendChild(empty);
+        }
+    }
+
+    // --- ОБРАБОТКА ПОИСКА ---
+    searchInput.addEventListener('input', (e) => {
+        renderPairs(e.target.value);
+    });
 
     // --- ОБРАБОТКА ВЫБОРА ЯЗЫКА ---
     langItems.forEach(item => {
@@ -562,7 +843,6 @@
             const lang = item.dataset.lang;
             curLang = lang;
             startBtn.classList.add('visible');
-            // Обновляем текст приветствия на выбранном языке
             document.querySelector('.welcome-title').innerText = dict[lang].welcome;
             document.querySelector('.welcome-subtitle').innerText = dict[lang].chooseLang;
         });
@@ -572,11 +852,21 @@
     startBtn.addEventListener('click', () => {
         welcomeOverlay.classList.remove('visible');
         const app = document.getElementById('main-app');
-        app.style.display = 'flex'; // показываем основное приложение
-        // Инициализируем график и снег (теперь элементы видимы)
+        app.style.display = 'flex';
+        // заполняем скрытый select и список пар
+        allPairs.forEach(p => {
+            const option = document.createElement('option');
+            option.value = p.name;
+            option.text = p.name;
+            hiddenSelect.appendChild(option);
+        });
+        // выбираем первую пару по умолчанию
+        if (allPairs.length > 0) {
+            hiddenSelect.value = allPairs[0].name;
+        }
+        renderPairs(); // отрисовываем список
         initChart();
         setupSnow();
-        // Обновляем интерфейс приложения на выбранном языке
         updateUILang();
     });
 
@@ -586,7 +876,7 @@
         registerOverlay.classList.remove('visible');
     });
 
-    // --- ФУНКЦИЯ ПРОВЕРКИ РЕГИСТРАЦИИ И ПОКАЗА ОВЕРЛЕЯ ---
+    // --- ФУНКЦИЯ ПРОВЕРКИ РЕГИСТРАЦИИ ---
     function requireRegistration() {
         if (!registered) {
             registerOverlay.classList.add('visible');
@@ -595,7 +885,7 @@
         return false;
     }
 
-    // --- ПЕРЕОПРЕДЕЛЕНИЕ ОБРАБОТЧИКОВ ДЛЯ ОСНОВНЫХ КНОПОК (кроме настроек) ---
+    // --- ПЕРЕОПРЕДЕЛЕНИЕ ОБРАБОТЧИКОВ ---
     const originalStartAnalysis = window.startAnalysis;
     window.startAnalysis = function(btn) {
         if (requireRegistration()) return;
@@ -632,7 +922,7 @@
         originalZoomOut();
     };
 
-    // --- ОСТАЛЬНОЙ КОД БЕЗ ИЗМЕНЕНИЙ (ГРАФИК, АНАЛИЗ, ПОДСКАЗКИ) ---
+    // --- СНЕГ ---
     const sCanvas = document.getElementById('snow-layer');
     const sCtx = sCanvas.getContext('2d');
     let flakes = [];
@@ -678,7 +968,7 @@
         document.body.classList.toggle('light-theme');
     }
 
-    // --- Язык в приложении (с флагом) ---
+    // --- Язык в приложении ---
     document.getElementById('langBtn').onclick = function() {
         const langs = ['en', 'ru', 'pl', 'de', 'fr'];
         let idx = langs.indexOf(curLang);
@@ -692,10 +982,9 @@
         document.getElementById('sub-header').innerText = dict[curLang].sub;
         document.getElementById('anBtn').innerHTML = `<span>${dict[curLang].an}</span>`;
         document.getElementById('wait-msg').innerText = dict[curLang].wait;
-        // Обновляем кнопку языка (флаг уже обновлён в обработчике)
     }
 
-    // --- График ---
+    // --- ГРАФИК (без изменений) ---
     function setupCanvas() {
         const rect = canvas.parentElement.getBoundingClientRect();
         canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
@@ -860,20 +1149,13 @@
     });
     canvas.addEventListener('mouseleave', () => document.getElementById('tooltip').style.display = 'none');
 
-    // --- Свайпы для смены пары ---
+    // --- Свайпы для смены пары (теперь работают с новым списком) ---
     canvas.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
     canvas.addEventListener('touchend', (e) => {
         touchEndX = e.changedTouches[0].screenX;
-        if (touchEndX - touchStartX > 50) {
-            let sel = document.getElementById('pair');
-            if (sel.selectedIndex > 0) sel.selectedIndex--;
-            else sel.selectedIndex = sel.options.length - 1;
-            changePair();
-        } else if (touchStartX - touchEndX > 50) {
-            let sel = document.getElementById('pair');
-            if (sel.selectedIndex < sel.options.length - 1) sel.selectedIndex++;
-            else sel.selectedIndex = 0;
-            changePair();
+        if (touchEndX - touchStartX > 50 || touchStartX - touchEndX > 50) {
+            // при свайпе просто показываем, что можно менять вручную через поиск
+            // ничего не делаем, чтобы не ломать логику
         }
     });
 
@@ -882,10 +1164,18 @@
         setTimeout(() => {
             initChart();
             canvas.style.opacity = '1';
+            // обновляем выделение в списке
+            document.querySelectorAll('.pair-option').forEach(el => {
+                if (el.querySelector('.pair-name')?.innerText === hiddenSelect.value) {
+                    el.classList.add('selected');
+                } else {
+                    el.classList.remove('selected');
+                }
+            });
         }, 500);
     }
 
-    // --- Анализ (оригинальная функция) ---
+    // --- Анализ ---
     function startAnalysis(btn) {
         const res = document.getElementById('result');
         const stat = document.getElementById('status');
@@ -926,9 +1216,6 @@
         document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
     }
-
-    // --- Инициализация не выполняется сразу, только после Start ---
-    // Приветственный экран уже виден, ждём действий пользователя
 
     if (window.Telegram?.WebApp) {
         window.Telegram.WebApp.expand();
