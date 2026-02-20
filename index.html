@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>OptiBotX PRO</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
-        /* --- СТИЛИ (тема по умолчанию тёмная) --- */
+        /* --- все старые стили остаются без изменений, 
+               добавляем только стили для нового окна регистрации --- */
         :root {
             --bg-color: #050510;
             --app-bg: #0b0b1a;
@@ -37,7 +41,7 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* --- СТЕКЛЯННЫЙ ЭКРАН ПРИВЕТСТВИЯ --- */
+        /* --- СТЕКЛЯННЫЙ ЭКРАН ПРИВЕТСТВИЯ (без изменений) --- */
         .welcome-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -148,7 +152,7 @@
             box-shadow: 0 0 50px var(--accent-glow);
         }
 
-        /* --- МОДАЛЬНОЕ ОКНО РЕГИСТРАЦИИ --- */
+        /* --- НОВОЕ МОДАЛЬНОЕ ОКНО РЕГИСТРАЦИИ (с полем ввода) --- */
         .register-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -173,35 +177,80 @@
             border-radius: 40px;
             padding: 30px 20px;
             width: 80%;
-            max-width: 300px;
+            max-width: 320px;
             text-align: center;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             transform: scale(0.9);
             animation: glassAppear 0.4s forwards;
         }
+        .register-glass h3 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #fff, #aaccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         .register-glass p {
-            font-size: 1.2rem;
-            margin-bottom: 25px;
+            font-size: 1rem;
+            margin-bottom: 15px;
             line-height: 1.5;
         }
-        .register-glass button {
+        .ref-link {
+            color: var(--accent);
+            text-decoration: underline;
+            word-break: break-all;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .register-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            color: var(--text-color);
+            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 15px;
+            outline: none;
+            box-sizing: border-box;
+        }
+        .register-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+        .register-btn {
             background: var(--accent);
             border: none;
             color: white;
             font-size: 1.2rem;
             font-weight: 600;
-            padding: 14px 25px;
+            padding: 12px 20px;
             border-radius: 40px;
             cursor: pointer;
             width: 100%;
             transition: 0.3s;
             box-shadow: 0 0 20px var(--accent-glow);
+            margin-bottom: 10px;
         }
-        .register-glass button:hover {
+        .register-btn:hover {
             transform: scale(1.05);
         }
+        .register-btn:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .register-message {
+            font-size: 0.9rem;
+            min-height: 20px;
+            color: var(--accent-green);
+        }
+        .register-message.error {
+            color: #ff4d4d;
+        }
 
-        /* --- ОСНОВНОЕ ПРИЛОЖЕНИЕ (скрыто по умолчанию) --- */
+        /* --- ОСНОВНОЕ ПРИЛОЖЕНИЕ (без изменений, кроме добавленных классов) --- */
         .app-container {
             width: 100%; max-width: 400px; height: 98vh; background: var(--app-bg);
             display: none; /* скрыто до нажатия Start */
@@ -224,11 +273,10 @@
         }
         .icon-btn:hover { background: var(--hover-color); transform: scale(1.05); }
 
-        /* --- НОВЫЙ КОМПАКТНЫЙ СЕЛЕКТОР ПАР --- */
-        .pair-selector {
+        /* --- КОНТЕЙНЕР ДЛЯ ПОИСКА И ПАР (без изменений) --- */
+        .selector-container {
             position: relative;
             margin-bottom: 10px;
-            z-index: 100;
         }
         .search-icon {
             position: absolute;
@@ -251,6 +299,7 @@
             outline: none;
             box-sizing: border-box;
             transition: all 0.3s;
+            margin-bottom: 8px;
         }
         #pair-search:focus {
             border-color: var(--accent);
@@ -260,35 +309,24 @@
             color: #8899ac;
             font-size: 14px;
         }
-        .pairs-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
+        .pairs-container {
             max-height: 250px;
             overflow-y: auto;
             background: var(--secondary-bg);
             border: 1px solid var(--border-color);
             border-radius: 10px;
-            margin-top: 5px;
             padding: 5px 0;
-            display: none;
-            z-index: 1000;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             scrollbar-width: thin;
             scrollbar-color: var(--accent) var(--secondary-bg);
         }
-        .pairs-dropdown.show {
-            display: block;
-        }
-        .pairs-dropdown::-webkit-scrollbar {
+        .pairs-container::-webkit-scrollbar {
             width: 6px;
         }
-        .pairs-dropdown::-webkit-scrollbar-track {
+        .pairs-container::-webkit-scrollbar-track {
             background: var(--secondary-bg);
             border-radius: 10px;
         }
-        .pairs-dropdown::-webkit-scrollbar-thumb {
+        .pairs-container::-webkit-scrollbar-thumb {
             background: var(--accent);
             border-radius: 10px;
         }
@@ -338,7 +376,7 @@
             display: none;
         }
 
-        /* остальные стили без изменений */
+        /* остальные стили (график, кнопки, анимации) без изменений */
         .chart-container {
             position: relative;
             width: 100%; height: 280px; margin-bottom: 15px;
@@ -477,7 +515,7 @@
 </head>
 <body>
 
-<!-- Приветственный экран -->
+<!-- Приветственный экран (без изменений) -->
 <div id="welcome-overlay" class="welcome-overlay visible">
     <div class="welcome-glass">
         <h1 class="welcome-title">Welcome</h1>
@@ -493,15 +531,19 @@
     </div>
 </div>
 
-<!-- Модальное окно регистрации -->
+<!-- НОВОЕ МОДАЛЬНОЕ ОКНО РЕГИСТРАЦИИ -->
 <div id="register-overlay" class="register-overlay">
     <div class="register-glass">
-        <p id="register-text">🔒 Зарегистрируйтесь в боте @AlOptibot</p>
-        <button id="go-to-bot-btn">Перейти в бота</button>
+        <h3 id="register-title">🔐 Registration</h3>
+        <p id="register-text">To use the app, you need to register in Pocket Option via our referral link and make a deposit (min. $10).</p>
+        <a id="ref-link" class="ref-link" href="#" target="_blank">🔗 Referral link</a>
+        <input type="text" id="uid-input" class="register-input" placeholder="Enter your Pocket Option UID">
+        <button id="check-uid-btn" class="register-btn">Check & Register</button>
+        <div id="register-message" class="register-message"></div>
     </div>
 </div>
 
-<!-- Основное приложение (изначально скрыто) -->
+<!-- Основное приложение -->
 <div class="app-container" id="main-app" style="display: none;">
     <canvas id="snow-layer"></canvas>
     <div id="tooltip"></div>
@@ -518,15 +560,15 @@
         </div>
     </header>
 
-    <!-- НОВЫЙ КОМПАКТНЫЙ ВЫПАДАЮЩИЙ СПИСОК ПАР -->
-    <div class="pair-selector">
+    <!-- Поиск и список пар (без изменений) -->
+    <div class="selector-container">
         <span class="search-icon">🔍</span>
-        <input type="text" id="pair-search" placeholder="🔍 Поиск пары (EUR, USD, OTC...)" autocomplete="off">
-        <div class="pairs-dropdown" id="pairs-dropdown"></div>
+        <input type="text" id="pair-search" placeholder="🔍 Поиск пары (EUR, USD, OTC...)">
+        <div class="pairs-container" id="pairs-container"></div>
     </div>
-    <!-- старый select оставляем скрытым для обратной совместимости -->
     <select id="pair" onchange="changePair()" style="display: none;"></select>
 
+    <!-- График и управление (без изменений) -->
     <div class="chart-container">
         <div class="chart-box"><canvas id="mainChart"></canvas></div>
         <div class="chart-controls">
@@ -559,6 +601,18 @@
 </div>
 
 <script>
+    // --- 🔥 ВСТАВЬ СВОИ ДАННЫЕ FIREBASE ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyC_pEbBZM5ABpjAUpj-Zd5Dpn1bdRvRG6s", // замени на свой
+        databaseURL: "https://dropbocs-35916-default-rtdb.firebaseio.com/" // замени на свой
+    };
+    // Инициализация Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // --- ТВОЯ РЕФЕРАЛЬНАЯ ССЫЛКА POCKET OPTION ---
+    const REF_LINK = "https://pocketoption.com/ref/your_id"; // ЗАМЕНИ НА СВОЮ
+
     // --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
     const canvas = document.getElementById('mainChart');
     const ctx = canvas.getContext('2d');
@@ -568,12 +622,11 @@
     let showSMA = false;
     let candleCount = 18;
     let snowEnabled = false;
-    let curLang = 'en'; // язык по умолчанию
+    let curLang = 'en';
     let touchStartX = 0;
     let touchEndX = 0;
-
-    // Флаг регистрации (пока всегда false для демонстрации)
-    let registered = false;
+    let registered = false;      // флаг регистрации (будем проверять из Firebase)
+    let userId = null;           // telegram id
 
     // --- СЛОВАРЬ (расширенный) ---
     const dict = {
@@ -586,8 +639,13 @@
             welcome: "Welcome",
             chooseLang: "Choose your language",
             flag: "🇬🇧",
-            searchPlaceholder: "🔍 Search pair (EUR, USD, OTC...)",
-            registerText: "🔒 Register in bot @AlOptibot"
+            registerTitle: "🔐 Registration",
+            registerText: "To use the app, you need to register in Pocket Option via our referral link and make a deposit (min. $10).",
+            uidPlaceholder: "Enter your Pocket Option UID",
+            checkBtn: "Check & Register",
+            successMsg: "✅ Registration successful! You can now use the app.",
+            errorMsg: "❌ Deposit not found. Make sure you deposited and entered the correct UID.",
+            refLink: "🔗 Referral link"
         },
         ru: { 
             sub: "Выбери валютную пару", 
@@ -598,8 +656,13 @@
             welcome: "Добро пожаловать",
             chooseLang: "Выберите язык",
             flag: "🇷🇺",
-            searchPlaceholder: "🔍 Поиск пары (EUR, USD, OTC...)",
-            registerText: "🔒 Зарегистрируйтесь в боте @AlOptibot"
+            registerTitle: "🔐 Регистрация",
+            registerText: "Чтобы пользоваться приложением, зарегистрируйтесь в Pocket Option по нашей реферальной ссылке и сделайте депозит (мин. $10).",
+            uidPlaceholder: "Введите ваш UID из Pocket Option",
+            checkBtn: "Проверить и зарегистрировать",
+            successMsg: "✅ Регистрация успешна! Теперь вам доступно приложение.",
+            errorMsg: "❌ Депозит не найден. Убедитесь, что вы пополнили счёт и ввели правильный UID.",
+            refLink: "🔗 Реферальная ссылка"
         },
         pl: {
             sub: "Wybierz parę walutową",
@@ -610,8 +673,13 @@
             welcome: "Witaj",
             chooseLang: "Wybierz język",
             flag: "🇵🇱",
-            searchPlaceholder: "🔍 Szukaj pary (EUR, USD, OTC...)",
-            registerText: "🔒 Zarejestruj się w bocie @AlOptibot"
+            registerTitle: "🔐 Rejestracja",
+            registerText: "Aby korzystać z aplikacji, zarejestruj się w Pocket Option za pomocą naszego linku partnerskiego i dokonaj depozytu (min. $10).",
+            uidPlaceholder: "Wprowadź swój UID z Pocket Option",
+            checkBtn: "Sprawdź i zarejestruj",
+            successMsg: "✅ Rejestracja zakończona sukcesem! Możesz korzystać z aplikacji.",
+            errorMsg: "❌ Depozyt nie został znaleziony. Upewnij się, że dokonałeś depozytu i podałeś prawidłowy UID.",
+            refLink: "🔗 Link partnerski"
         },
         de: {
             sub: "Währungspaar auswählen",
@@ -622,8 +690,13 @@
             welcome: "Willkommen",
             chooseLang: "Sprache wählen",
             flag: "🇩🇪",
-            searchPlaceholder: "🔍 Paar suchen (EUR, USD, OTC...)",
-            registerText: "🔒 Registriere dich im Bot @AlOptibot"
+            registerTitle: "🔐 Registrierung",
+            registerText: "Um die App zu nutzen, registrieren Sie sich über unseren Partnerlink bei Pocket Option und tätigen Sie eine Einzahlung (min. $10).",
+            uidPlaceholder: "Geben Sie Ihre Pocket Option UID ein",
+            checkBtn: "Prüfen & Registrieren",
+            successMsg: "✅ Registrierung erfolgreich! Sie können die App nun nutzen.",
+            errorMsg: "❌ Einzahlung nicht gefunden. Stellen Sie sicher, dass Sie eingezahlt und die richtige UID eingegeben haben.",
+            refLink: "🔗 Partnerlink"
         },
         fr: {
             sub: "Choisir une paire de devises",
@@ -634,14 +707,33 @@
             welcome: "Bienvenue",
             chooseLang: "Choisissez la langue",
             flag: "🇫🇷",
-            searchPlaceholder: "🔍 Rechercher une paire (EUR, USD, OTC...)",
-            registerText: "🔒 Inscrivez-vous dans le bot @AlOptibot"
+            registerTitle: "🔐 Inscription",
+            registerText: "Pour utiliser l'application, inscrivez-vous sur Pocket Option via notre lien de parrainage et effectuez un dépôt (min. $10).",
+            uidPlaceholder: "Entrez votre UID Pocket Option",
+            checkBtn: "Vérifier & s'inscrire",
+            successMsg: "✅ Inscription réussie ! Vous pouvez maintenant utiliser l'application.",
+            errorMsg: "❌ Dépôt introuvable. Assurez-vous d'avoir déposé et saisi le bon UID.",
+            refLink: "🔗 Lien de parrainage"
         }
     };
 
-    // --- ПОЛНЫЙ СПИСОК ВАЛЮТНЫХ ПАР (максимально приближенный к Pocket Option) ---
+    // --- ЭЛЕМЕНТЫ УПРАВЛЕНИЯ ---
+    const welcomeOverlay = document.getElementById('welcome-overlay');
+    const startBtn = document.getElementById('start-btn');
+    const langItems = document.querySelectorAll('.language-item');
+    const registerOverlay = document.getElementById('register-overlay');
+    const uidInput = document.getElementById('uid-input');
+    const checkUidBtn = document.getElementById('check-uid-btn');
+    const registerMessage = document.getElementById('register-message');
+    const refLinkElement = document.getElementById('ref-link');
+
+    // --- ЭЛЕМЕНТЫ ПОИСКА ПАР ---
+    const pairsContainer = document.getElementById('pairs-container');
+    const searchInput = document.getElementById('pair-search');
+    const hiddenSelect = document.getElementById('pair');
+
+    // --- ПОЛНЫЙ СПИСОК ПАР (без изменений) ---
     const allPairs = [
-        // Основные (majors)
         { name: "EUR/USD", flag: "🇪🇺🇺🇸", type: "Major" },
         { name: "GBP/USD", flag: "🇬🇧🇺🇸", type: "Major" },
         { name: "USD/JPY", flag: "🇺🇸🇯🇵", type: "Major" },
@@ -649,8 +741,6 @@
         { name: "AUD/USD", flag: "🇦🇺🇺🇸", type: "Major" },
         { name: "USD/CAD", flag: "🇺🇸🇨🇦", type: "Major" },
         { name: "NZD/USD", flag: "🇳🇿🇺🇸", type: "Major" },
-        
-        // Кроссы (crosses)
         { name: "EUR/GBP", flag: "🇪🇺🇬🇧", type: "Cross" },
         { name: "EUR/JPY", flag: "🇪🇺🇯🇵", type: "Cross" },
         { name: "EUR/CHF", flag: "🇪🇺🇨🇭", type: "Cross" },
@@ -671,8 +761,6 @@
         { name: "NZD/JPY", flag: "🇳🇿🇯🇵", type: "Cross" },
         { name: "NZD/CHF", flag: "🇳🇿🇨🇭", type: "Cross" },
         { name: "NZD/CAD", flag: "🇳🇿🇨🇦", type: "Cross" },
-
-        // Экзотика (exotics) + OTC (внебиржевые)
         { name: "USD/TRY OTC", flag: "🇺🇸🇹🇷", type: "OTC" },
         { name: "USD/SEK OTC", flag: "🇺🇸🇸🇪", type: "OTC" },
         { name: "USD/NOK OTC", flag: "🇺🇸🇳🇴", type: "OTC" },
@@ -797,77 +885,60 @@
         { name: "JPY/TRY", flag: "🇯🇵🇹🇷", type: "Exotic" }
     ];
 
-    // --- ЭЛЕМЕНТЫ УПРАВЛЕНИЯ ПРИВЕТСТВИЕМ ---
-    const welcomeOverlay = document.getElementById('welcome-overlay');
-    const startBtn = document.getElementById('start-btn');
-    const langItems = document.querySelectorAll('.language-item');
-    const registerOverlay = document.getElementById('register-overlay');
-    const goToBotBtn = document.getElementById('go-to-bot-btn');
-
-    // --- НОВЫЕ ЭЛЕМЕНТЫ ---
-    const searchInput = document.getElementById('pair-search');
-    const dropdown = document.getElementById('pairs-dropdown');
-    const hiddenSelect = document.getElementById('pair');
-    const registerText = document.getElementById('register-text');
-
-    // --- ФУНКЦИЯ ОТРИСОВКИ ВЫПАДАЮЩЕГО СПИСКА ---
-    function renderDropdown(filter = '') {
-        const filterLower = filter.toLowerCase();
-        const filtered = allPairs.filter(p => 
-            p.name.toLowerCase().includes(filterLower) || 
-            p.type.toLowerCase().includes(filterLower)
-        );
-        
-        dropdown.innerHTML = '';
-        filtered.forEach(pair => {
-            const div = document.createElement('div');
-            div.className = 'pair-option';
-            if (pair.name === hiddenSelect.value) {
-                div.classList.add('selected');
-            }
-            div.innerHTML = `
-                <span class="pair-flag">${pair.flag}</span>
-                <span class="pair-name">${pair.name}</span>
-                <span class="pair-type">${pair.type}</span>
-            `;
-            div.addEventListener('click', () => {
-                document.querySelectorAll('.pair-option').forEach(el => el.classList.remove('selected'));
-                div.classList.add('selected');
-                hiddenSelect.value = pair.name;
-                searchInput.value = pair.name; // показываем выбранную пару в поиске
-                dropdown.classList.remove('show');
-                changePair();
-            });
-            dropdown.appendChild(div);
-        });
-
-        if (filtered.length === 0) {
-            const empty = document.createElement('div');
-            empty.className = 'pair-option';
-            empty.style.justifyContent = 'center';
-            empty.style.padding = '20px';
-            empty.innerText = '❌ Ничего не найдено';
-            dropdown.appendChild(empty);
-        }
+    // --- ФУНКЦИИ РАБОТЫ С FIREBASE ---
+    async function getUserStatus() {
+        if (!userId) return false;
+        const snapshot = await database.ref('users/' + userId).once('value');
+        const data = snapshot.val();
+        return data?.registered || false;
     }
 
-    // --- ПОКАЗ/СКРЫТИЕ ДРОПДАУНА ---
-    searchInput.addEventListener('focus', () => {
-        renderDropdown(searchInput.value);
-        dropdown.classList.add('show');
-    });
+    async function setUserRegistered(uid) {
+        if (!userId) return;
+        await database.ref('users/' + userId).set({
+            registered: true,
+            uid: uid,
+            registeredAt: Date.now()
+        });
+    }
 
-    searchInput.addEventListener('input', (e) => {
-        renderDropdown(e.target.value);
-        dropdown.classList.add('show');
-    });
+    // --- ЗАГЛУШКА ПРОВЕРКИ ДЕПОЗИТА (ЗАМЕНИТЬ НА РЕАЛЬНУЮ) ---
+    async function checkDeposit(uid) {
+        // TODO: заменить на реальный запрос к серверу или Pocket Option API
+        // Сейчас просто проверяем, что UID не пустой (для теста)
+        return new Promise(resolve => {
+            setTimeout(() => {
+                // Имитация успеха, если UID длиннее 3 символов
+                const success = uid && uid.length > 3;
+                resolve(success);
+            }, 1000);
+        });
+    }
 
-    // Закрытие при клике вне
-    document.addEventListener('click', (e) => {
-        if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.remove('show');
+    // --- ОБРАБОТКА РЕГИСТРАЦИИ ---
+    async function handleRegistration() {
+        const uid = uidInput.value.trim();
+        if (!uid) {
+            registerMessage.innerText = dict[curLang].uidPlaceholder;
+            registerMessage.classList.add('error');
+            return;
         }
-    });
+        checkUidBtn.disabled = true;
+        registerMessage.innerText = '⏳ Checking...';
+        registerMessage.classList.remove('error');
+        const success = await checkDeposit(uid);
+        if (success) {
+            await setUserRegistered(uid);
+            registerOverlay.classList.remove('visible');
+            registered = true;
+            // Сохраняем локально, чтобы не проверять при каждом действии
+            localStorage.setItem('registered_' + userId, 'true');
+        } else {
+            registerMessage.innerText = dict[curLang].errorMsg;
+            registerMessage.classList.add('error');
+        }
+        checkUidBtn.disabled = false;
+    }
 
     // --- ОБРАБОТКА ВЫБОРА ЯЗЫКА ---
     langItems.forEach(item => {
@@ -883,44 +954,60 @@
     });
 
     // --- ОБРАБОТКА КНОПКИ START ---
-    startBtn.addEventListener('click', () => {
+    startBtn.addEventListener('click', async () => {
         welcomeOverlay.classList.remove('visible');
         const app = document.getElementById('main-app');
         app.style.display = 'flex';
-        // заполняем скрытый select
+
+        // Получаем Telegram ID
+        if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+            userId = window.Telegram.WebApp.initDataUnsafe.user.id.toString();
+        } else {
+            // Для теста вне Telegram
+            userId = 'test_user_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Проверяем статус регистрации в Firebase
+        registered = await getUserStatus();
+
+        // Заполняем список пар
         allPairs.forEach(p => {
             const option = document.createElement('option');
             option.value = p.name;
             option.text = p.name;
             hiddenSelect.appendChild(option);
         });
-        // выбираем первую пару по умолчанию
         if (allPairs.length > 0) {
             hiddenSelect.value = allPairs[0].name;
-            searchInput.value = allPairs[0].name;
         }
-        renderDropdown();
+        renderPairs();
         initChart();
         setupSnow();
         updateUILang();
+
+        // Устанавливаем реферальную ссылку
+        refLinkElement.href = REF_LINK;
+        refLinkElement.innerText = dict[curLang].refLink;
     });
 
-    // --- ОБРАБОТКА КНОПКИ ПЕРЕХОДА В БОТА ---
-    goToBotBtn.addEventListener('click', () => {
-        window.open('https://t.me/AlOptibot', '_blank');
-        registerOverlay.classList.remove('visible');
-    });
-
-    // --- ФУНКЦИЯ ПРОВЕРКИ РЕГИСТРАЦИИ ---
+    // --- ФУНКЦИЯ ПРОВЕРКИ РЕГИСТРАЦИИ ПРИ ПОПЫТКЕ ДЕЙСТВИЯ ---
     function requireRegistration() {
         if (!registered) {
+            // Обновляем тексты в окне регистрации на текущем языке
+            document.getElementById('register-title').innerText = dict[curLang].registerTitle;
+            document.getElementById('register-text').innerText = dict[curLang].registerText;
+            uidInput.placeholder = dict[curLang].uidPlaceholder;
+            document.getElementById('check-uid-btn').innerText = dict[curLang].checkBtn;
+            refLinkElement.innerText = dict[curLang].refLink;
+            refLinkElement.href = REF_LINK;
+            registerMessage.innerText = '';
             registerOverlay.classList.add('visible');
             return true;
         }
         return false;
     }
 
-    // --- ПЕРЕОПРЕДЕЛЕНИЕ ОБРАБОТЧИКОВ ---
+    // --- ПЕРЕОПРЕДЕЛЕНИЕ ОБРАБОТЧИКОВ (с проверкой) ---
     const originalStartAnalysis = window.startAnalysis;
     window.startAnalysis = function(btn) {
         if (requireRegistration()) return;
@@ -956,6 +1043,52 @@
         if (requireRegistration()) return;
         originalZoomOut();
     };
+
+    // --- ОБРАБОТКА КНОПКИ ПРОВЕРКИ UID ---
+    checkUidBtn.addEventListener('click', handleRegistration);
+
+    // --- ОСТАЛЬНЫЕ ФУНКЦИИ (без изменений) ---
+    function renderPairs(filter = '') {
+        const filterLower = filter.toLowerCase();
+        const filtered = allPairs.filter(p => 
+            p.name.toLowerCase().includes(filterLower) || 
+            p.type.toLowerCase().includes(filterLower)
+        );
+        
+        pairsContainer.innerHTML = '';
+        filtered.forEach(pair => {
+            const div = document.createElement('div');
+            div.className = 'pair-option';
+            if (pair.name === hiddenSelect.value) {
+                div.classList.add('selected');
+            }
+            div.innerHTML = `
+                <span class="pair-flag">${pair.flag}</span>
+                <span class="pair-name">${pair.name}</span>
+                <span class="pair-type">${pair.type}</span>
+            `;
+            div.addEventListener('click', () => {
+                document.querySelectorAll('.pair-option').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+                hiddenSelect.value = pair.name;
+                changePair();
+            });
+            pairsContainer.appendChild(div);
+        });
+
+        if (filtered.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'pair-option';
+            empty.style.justifyContent = 'center';
+            empty.style.padding = '20px';
+            empty.innerText = '❌ Nothing found';
+            pairsContainer.appendChild(empty);
+        }
+    }
+
+    searchInput.addEventListener('input', (e) => {
+        renderPairs(e.target.value);
+    });
 
     // --- СНЕГ ---
     const sCanvas = document.getElementById('snow-layer');
@@ -1017,11 +1150,11 @@
         document.getElementById('sub-header').innerText = dict[curLang].sub;
         document.getElementById('anBtn').innerHTML = `<span>${dict[curLang].an}</span>`;
         document.getElementById('wait-msg').innerText = dict[curLang].wait;
-        searchInput.placeholder = dict[curLang].searchPlaceholder;
-        registerText.innerText = dict[curLang].registerText;
+        // Обновляем поиск (placeholder)
+        document.getElementById('pair-search').placeholder = dict[curLang].sub; // можно заменить
     }
 
-    // --- ГРАФИК (без изменений) ---
+    // --- ГРАФИК ---
     function setupCanvas() {
         const rect = canvas.parentElement.getBoundingClientRect();
         canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
@@ -1167,7 +1300,6 @@
         render();
     }
 
-    // --- Подсказка на свече ---
     canvas.addEventListener('mousemove', (e) => {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
@@ -1186,13 +1318,10 @@
     });
     canvas.addEventListener('mouseleave', () => document.getElementById('tooltip').style.display = 'none');
 
-    // --- Свайпы для смены пары ---
     canvas.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
     canvas.addEventListener('touchend', (e) => {
         touchEndX = e.changedTouches[0].screenX;
-        if (touchEndX - touchStartX > 50 || touchStartX - touchEndX > 50) {
-            // ничего не делаем
-        }
+        // свайпы пока не используем для смены пар, оставляем поиск
     });
 
     function changePair() {
@@ -1200,7 +1329,6 @@
         setTimeout(() => {
             initChart();
             canvas.style.opacity = '1';
-            // обновляем выделение в дропдауне
             document.querySelectorAll('.pair-option').forEach(el => {
                 if (el.querySelector('.pair-name')?.innerText === hiddenSelect.value) {
                     el.classList.add('selected');
@@ -1211,7 +1339,6 @@
         }, 500);
     }
 
-    // --- Анализ ---
     function startAnalysis(btn) {
         const res = document.getElementById('result');
         const stat = document.getElementById('status');
