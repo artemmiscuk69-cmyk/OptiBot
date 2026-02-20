@@ -224,10 +224,11 @@
         }
         .icon-btn:hover { background: var(--hover-color); transform: scale(1.05); }
 
-        /* --- НОВЫЙ КОНТЕЙНЕР ДЛЯ ПОИСКА И ПАР --- */
-        .selector-container {
+        /* --- НОВЫЙ КОМПАКТНЫЙ СЕЛЕКТОР ПАР --- */
+        .pair-selector {
             position: relative;
             margin-bottom: 10px;
+            z-index: 100;
         }
         .search-icon {
             position: absolute;
@@ -245,12 +246,11 @@
             color: var(--text-color);
             border: 1px solid var(--border-color);
             border-radius: 10px;
-            padding: 12px 12px 12px 40px; /* отступ слева под иконку */
+            padding: 12px 12px 12px 40px;
             font-size: 14px;
             outline: none;
             box-sizing: border-box;
             transition: all 0.3s;
-            margin-bottom: 8px;
         }
         #pair-search:focus {
             border-color: var(--accent);
@@ -260,24 +260,35 @@
             color: #8899ac;
             font-size: 14px;
         }
-        .pairs-container {
+        .pairs-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
             max-height: 250px;
             overflow-y: auto;
             background: var(--secondary-bg);
             border: 1px solid var(--border-color);
             border-radius: 10px;
+            margin-top: 5px;
             padding: 5px 0;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             scrollbar-width: thin;
             scrollbar-color: var(--accent) var(--secondary-bg);
         }
-        .pairs-container::-webkit-scrollbar {
+        .pairs-dropdown.show {
+            display: block;
+        }
+        .pairs-dropdown::-webkit-scrollbar {
             width: 6px;
         }
-        .pairs-container::-webkit-scrollbar-track {
+        .pairs-dropdown::-webkit-scrollbar-track {
             background: var(--secondary-bg);
             border-radius: 10px;
         }
-        .pairs-container::-webkit-scrollbar-thumb {
+        .pairs-dropdown::-webkit-scrollbar-thumb {
             background: var(--accent);
             border-radius: 10px;
         }
@@ -485,7 +496,7 @@
 <!-- Модальное окно регистрации -->
 <div id="register-overlay" class="register-overlay">
     <div class="register-glass">
-        <p>🔒 Зарегистрируйтесь в боте @AlOptibot</p>
+        <p id="register-text">🔒 Зарегистрируйтесь в боте @AlOptibot</p>
         <button id="go-to-bot-btn">Перейти в бота</button>
     </div>
 </div>
@@ -507,11 +518,11 @@
         </div>
     </header>
 
-    <!-- НОВЫЙ БЛОК: поиск и список пар (вместо старого select) -->
-    <div class="selector-container">
+    <!-- НОВЫЙ КОМПАКТНЫЙ ВЫПАДАЮЩИЙ СПИСОК ПАР -->
+    <div class="pair-selector">
         <span class="search-icon">🔍</span>
-        <input type="text" id="pair-search" placeholder="🔍 Поиск пары (EUR, USD, OTC...)">
-        <div class="pairs-container" id="pairs-container"></div>
+        <input type="text" id="pair-search" placeholder="🔍 Поиск пары (EUR, USD, OTC...)" autocomplete="off">
+        <div class="pairs-dropdown" id="pairs-dropdown"></div>
     </div>
     <!-- старый select оставляем скрытым для обратной совместимости -->
     <select id="pair" onchange="changePair()" style="display: none;"></select>
@@ -574,7 +585,9 @@
             down: "SELL ",
             welcome: "Welcome",
             chooseLang: "Choose your language",
-            flag: "🇬🇧"
+            flag: "🇬🇧",
+            searchPlaceholder: "🔍 Search pair (EUR, USD, OTC...)",
+            registerText: "🔒 Register in bot @AlOptibot"
         },
         ru: { 
             sub: "Выбери валютную пару", 
@@ -584,7 +597,9 @@
             down: "ВНИЗ ",
             welcome: "Добро пожаловать",
             chooseLang: "Выберите язык",
-            flag: "🇷🇺"
+            flag: "🇷🇺",
+            searchPlaceholder: "🔍 Поиск пары (EUR, USD, OTC...)",
+            registerText: "🔒 Зарегистрируйтесь в боте @AlOptibot"
         },
         pl: {
             sub: "Wybierz parę walutową",
@@ -594,7 +609,9 @@
             down: "W DÓŁ ",
             welcome: "Witaj",
             chooseLang: "Wybierz język",
-            flag: "🇵🇱"
+            flag: "🇵🇱",
+            searchPlaceholder: "🔍 Szukaj pary (EUR, USD, OTC...)",
+            registerText: "🔒 Zarejestruj się w bocie @AlOptibot"
         },
         de: {
             sub: "Währungspaar auswählen",
@@ -604,7 +621,9 @@
             down: "VERKAUFEN ",
             welcome: "Willkommen",
             chooseLang: "Sprache wählen",
-            flag: "🇩🇪"
+            flag: "🇩🇪",
+            searchPlaceholder: "🔍 Paar suchen (EUR, USD, OTC...)",
+            registerText: "🔒 Registriere dich im Bot @AlOptibot"
         },
         fr: {
             sub: "Choisir une paire de devises",
@@ -614,7 +633,9 @@
             down: "VENTE ",
             welcome: "Bienvenue",
             chooseLang: "Choisissez la langue",
-            flag: "🇫🇷"
+            flag: "🇫🇷",
+            searchPlaceholder: "🔍 Rechercher une paire (EUR, USD, OTC...)",
+            registerText: "🔒 Inscrivez-vous dans le bot @AlOptibot"
         }
     };
 
@@ -784,19 +805,20 @@
     const goToBotBtn = document.getElementById('go-to-bot-btn');
 
     // --- НОВЫЕ ЭЛЕМЕНТЫ ---
-    const pairsContainer = document.getElementById('pairs-container');
     const searchInput = document.getElementById('pair-search');
+    const dropdown = document.getElementById('pairs-dropdown');
     const hiddenSelect = document.getElementById('pair');
+    const registerText = document.getElementById('register-text');
 
-    // --- ФУНКЦИЯ ОТРИСОВКИ СПИСКА ПАР ---
-    function renderPairs(filter = '') {
+    // --- ФУНКЦИЯ ОТРИСОВКИ ВЫПАДАЮЩЕГО СПИСКА ---
+    function renderDropdown(filter = '') {
         const filterLower = filter.toLowerCase();
         const filtered = allPairs.filter(p => 
             p.name.toLowerCase().includes(filterLower) || 
             p.type.toLowerCase().includes(filterLower)
         );
         
-        pairsContainer.innerHTML = '';
+        dropdown.innerHTML = '';
         filtered.forEach(pair => {
             const div = document.createElement('div');
             div.className = 'pair-option';
@@ -809,30 +831,42 @@
                 <span class="pair-type">${pair.type}</span>
             `;
             div.addEventListener('click', () => {
-                // снимаем выделение со всех
                 document.querySelectorAll('.pair-option').forEach(el => el.classList.remove('selected'));
                 div.classList.add('selected');
                 hiddenSelect.value = pair.name;
-                // вызываем changePair как обычно
+                searchInput.value = pair.name; // показываем выбранную пару в поиске
+                dropdown.classList.remove('show');
                 changePair();
             });
-            pairsContainer.appendChild(div);
+            dropdown.appendChild(div);
         });
 
-        // если ничего не найдено
         if (filtered.length === 0) {
             const empty = document.createElement('div');
             empty.className = 'pair-option';
             empty.style.justifyContent = 'center';
             empty.style.padding = '20px';
             empty.innerText = '❌ Ничего не найдено';
-            pairsContainer.appendChild(empty);
+            dropdown.appendChild(empty);
         }
     }
 
-    // --- ОБРАБОТКА ПОИСКА ---
+    // --- ПОКАЗ/СКРЫТИЕ ДРОПДАУНА ---
+    searchInput.addEventListener('focus', () => {
+        renderDropdown(searchInput.value);
+        dropdown.classList.add('show');
+    });
+
     searchInput.addEventListener('input', (e) => {
-        renderPairs(e.target.value);
+        renderDropdown(e.target.value);
+        dropdown.classList.add('show');
+    });
+
+    // Закрытие при клике вне
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('show');
+        }
     });
 
     // --- ОБРАБОТКА ВЫБОРА ЯЗЫКА ---
@@ -853,7 +887,7 @@
         welcomeOverlay.classList.remove('visible');
         const app = document.getElementById('main-app');
         app.style.display = 'flex';
-        // заполняем скрытый select и список пар
+        // заполняем скрытый select
         allPairs.forEach(p => {
             const option = document.createElement('option');
             option.value = p.name;
@@ -863,8 +897,9 @@
         // выбираем первую пару по умолчанию
         if (allPairs.length > 0) {
             hiddenSelect.value = allPairs[0].name;
+            searchInput.value = allPairs[0].name;
         }
-        renderPairs(); // отрисовываем список
+        renderDropdown();
         initChart();
         setupSnow();
         updateUILang();
@@ -982,6 +1017,8 @@
         document.getElementById('sub-header').innerText = dict[curLang].sub;
         document.getElementById('anBtn').innerHTML = `<span>${dict[curLang].an}</span>`;
         document.getElementById('wait-msg').innerText = dict[curLang].wait;
+        searchInput.placeholder = dict[curLang].searchPlaceholder;
+        registerText.innerText = dict[curLang].registerText;
     }
 
     // --- ГРАФИК (без изменений) ---
@@ -1149,13 +1186,12 @@
     });
     canvas.addEventListener('mouseleave', () => document.getElementById('tooltip').style.display = 'none');
 
-    // --- Свайпы для смены пары (теперь работают с новым списком) ---
+    // --- Свайпы для смены пары ---
     canvas.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
     canvas.addEventListener('touchend', (e) => {
         touchEndX = e.changedTouches[0].screenX;
         if (touchEndX - touchStartX > 50 || touchStartX - touchEndX > 50) {
-            // при свайпе просто показываем, что можно менять вручную через поиск
-            // ничего не делаем, чтобы не ломать логику
+            // ничего не делаем
         }
     });
 
@@ -1164,7 +1200,7 @@
         setTimeout(() => {
             initChart();
             canvas.style.opacity = '1';
-            // обновляем выделение в списке
+            // обновляем выделение в дропдауне
             document.querySelectorAll('.pair-option').forEach(el => {
                 if (el.querySelector('.pair-name')?.innerText === hiddenSelect.value) {
                     el.classList.add('selected');
