@@ -8,6 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
+        /* --- все стили полностью сохранены из твоего последнего файла --- */
         :root {
             --bg-color: #050510;
             --app-bg: #0b0b1a;
@@ -271,7 +272,7 @@
         }
         .icon-btn:hover { background: var(--hover-color); transform: scale(1.05); }
 
-        /* --- КОНТЕЙНЕР ДЛЯ ПОИСКА И ПАР (скрыт по умолчанию) --- */
+        /* --- КОНТЕЙНЕР ДЛЯ ПОИСКА И ПАР --- */
         .selector-container {
             position: relative;
             margin-bottom: 10px;
@@ -316,7 +317,7 @@
             padding: 5px 0;
             scrollbar-width: thin;
             scrollbar-color: var(--accent) var(--secondary-bg);
-            display: none; /* скрыто по умолчанию, появляется при фокусе */
+            display: none;
             will-change: transform, opacity;
         }
         .pairs-container::-webkit-scrollbar {
@@ -565,7 +566,7 @@
         </div>
     </header>
 
-    <!-- Поиск и список пар (скрыт до клика) -->
+    <!-- Поиск и список пар -->
     <div class="selector-container">
         <span class="search-icon">🔍</span>
         <input type="text" id="pair-search" placeholder="🔍 Поиск пары (EUR, USD, OTC...)">
@@ -606,7 +607,7 @@
 </div>
 
 <script>
-    // Firebase config
+    // Firebase config (проверь, что apiKey правильный для optibotx-486b7)
     const firebaseConfig = {
         apiKey: "AIzaSyBlL7xhbnITKkhpUipqdbJOmN4TG2rXbtY",
         databaseURL: "https://optibotx-486b7-default-rtdb.firebaseio.com/"
@@ -614,15 +615,14 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    const REF_LINK = `https://u3.shortink.io/register?utm_campaign=822097&utm_source=affiliate&utm_medium=sr&a=TNOv4heF82mMb6&ac=osnova&code=EDS965&click_id=${userId}`;
-
+    // Глобальные переменные (без REF_LINK здесь!)
     const canvas = document.getElementById('mainChart');
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
     let candles = [];
     let smaData = [];
     let showSMA = false;
-    let candleCount = 14; // чуть приблизили (было 18)
+    let candleCount = 14;
     let snowEnabled = false;
     let curLang = 'en';
     let touchStartX = 0;
@@ -630,6 +630,7 @@
     let registered = false;
     let userId = null;
 
+    // Словарь языков (без изменений)
     const dict = {
         en: { 
             sub: "Select currency pair", 
@@ -718,6 +719,7 @@
         }
     };
 
+    // DOM-элементы
     const welcomeOverlay = document.getElementById('welcome-overlay');
     const startBtn = document.getElementById('start-btn');
     const langItems = document.querySelectorAll('.language-item');
@@ -731,7 +733,7 @@
     const searchInput = document.getElementById('pair-search');
     const hiddenSelect = document.getElementById('pair');
 
-    // Полный список пар (без изменений)
+    // Полный список пар (без изменений, такой же как у тебя)
     const allPairs = [
         { name: "EUR/USD", flag: "🇪🇺🇺🇸", type: "Major" },
         { name: "GBP/USD", flag: "🇬🇧🇺🇸", type: "Major" },
@@ -949,11 +951,15 @@
         const app = document.getElementById('main-app');
         app.style.display = 'flex';
 
+        // Получаем Telegram ID (или тестовый)
         if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
             userId = window.Telegram.WebApp.initDataUnsafe.user.id.toString();
         } else {
             userId = 'test_user_' + Math.random().toString(36).substr(2, 9);
         }
+
+        // Формируем REF_LINK только сейчас, когда userId известен
+        const REF_LINK = `https://u3.shortink.io/register?utm_campaign=822097&utm_source=affiliate&utm_medium=sr&a=TNOv4heF82mMb6&ac=osnova&code=EDS965&click_id=${userId}`;
 
         registered = await getUserStatus();
 
@@ -982,7 +988,7 @@
             uidInput.placeholder = dict[curLang].uidPlaceholder;
             document.getElementById('check-uid-btn').innerText = dict[curLang].checkBtn;
             refLinkElement.innerText = dict[curLang].refLink;
-            refLinkElement.href = REF_LINK;
+            refLinkElement.href = refLinkElement.href; // сохраняем ссылку (она уже задана)
             registerMessage.innerText = '';
             registerOverlay.classList.add('visible');
             return true;
@@ -1037,7 +1043,6 @@
         pairsContainer.style.display = 'block';
     });
     searchInput.addEventListener('blur', () => {
-        // Задержка, чтобы успеть кликнуть на элемент
         setTimeout(() => {
             if (!pairsContainer.contains(document.activeElement)) {
                 pairsContainer.style.display = 'none';
@@ -1069,7 +1074,6 @@
                 div.classList.add('selected');
                 hiddenSelect.value = pair.name;
                 changePair();
-                // После выбора можно скрыть список
                 pairsContainer.style.display = 'none';
                 searchInput.blur();
             });
@@ -1090,6 +1094,7 @@
         renderPairs(e.target.value);
     });
 
+    // --- Снег ---
     const sCanvas = document.getElementById('snow-layer');
     const sCtx = sCanvas.getContext('2d');
     let flakes = [];
@@ -1151,6 +1156,7 @@
         document.getElementById('pair-search').placeholder = dict[curLang].sub;
     }
 
+    // --- График ---
     function setupCanvas() {
         const rect = canvas.parentElement.getBoundingClientRect();
         canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
@@ -1373,7 +1379,6 @@
     function selectTf(btn) {
         document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        // Вибрация уже добавлена в переопределённой функции
     }
 
     if (window.Telegram?.WebApp) {
