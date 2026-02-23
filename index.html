@@ -8,8 +8,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
-        /* --- все старые стили остаются без изменений, 
-               добавляем только стили для нового окна регистрации --- */
         :root {
             --bg-color: #050510;
             --app-bg: #0b0b1a;
@@ -41,7 +39,7 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* --- СТЕКЛЯННЫЙ ЭКРАН ПРИВЕТСТВИЯ (без изменений) --- */
+        /* --- СТЕКЛЯННЫЙ ЭКРАН ПРИВЕТСТВИЯ --- */
         .welcome-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -152,7 +150,7 @@
             box-shadow: 0 0 50px var(--accent-glow);
         }
 
-        /* --- НОВОЕ МОДАЛЬНОЕ ОКНО РЕГИСТРАЦИИ (с полем ввода) --- */
+        /* --- МОДАЛЬНОЕ ОКНО РЕГИСТРАЦИИ --- */
         .register-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -250,10 +248,10 @@
             color: #ff4d4d;
         }
 
-        /* --- ОСНОВНОЕ ПРИЛОЖЕНИЕ (без изменений, кроме добавленных классов) --- */
+        /* --- ОСНОВНОЕ ПРИЛОЖЕНИЕ --- */
         .app-container {
             width: 100%; max-width: 400px; height: 98vh; background: var(--app-bg);
-            display: none; /* скрыто до нажатия Start */
+            display: none;
             flex-direction: column; padding: 15px; box-sizing: border-box;
             position: relative; border: 1px solid var(--border-color); border-radius: 12px;
             animation: fadeInScale 0.5s ease-out;
@@ -273,7 +271,7 @@
         }
         .icon-btn:hover { background: var(--hover-color); transform: scale(1.05); }
 
-        /* --- КОНТЕЙНЕР ДЛЯ ПОИСКА И ПАР (без изменений) --- */
+        /* --- КОНТЕЙНЕР ДЛЯ ПОИСКА И ПАР (скрыт по умолчанию) --- */
         .selector-container {
             position: relative;
             margin-bottom: 10px;
@@ -318,6 +316,8 @@
             padding: 5px 0;
             scrollbar-width: thin;
             scrollbar-color: var(--accent) var(--secondary-bg);
+            display: none; /* скрыто по умолчанию, появляется при фокусе */
+            will-change: transform, opacity;
         }
         .pairs-container::-webkit-scrollbar {
             width: 6px;
@@ -376,7 +376,7 @@
             display: none;
         }
 
-        /* остальные стили (график, кнопки, анимации) без изменений */
+        /* --- ГРАФИК --- */
         .chart-container {
             position: relative;
             width: 100%; height: 280px; margin-bottom: 15px;
@@ -401,6 +401,9 @@
 
         .tf-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
         
+        .tf-btn, .analyze-btn {
+            will-change: transform;
+        }
         .tf-btn { 
             background: var(--secondary-bg); border: 1px solid var(--border-color); color: #666; 
             padding: 10px; border-radius: 8px; font-size: 12px; cursor: pointer; 
@@ -453,6 +456,7 @@
             width: 12px; height: 12px; background: #2575fc; border-radius: 50%; 
             box-shadow: 0 0 10px #2575fc;
             animation: pulseDot 1.2s infinite;
+            will-change: transform;
         }
         
         .result-display { 
@@ -469,6 +473,7 @@
             visibility: hidden;
             transition: opacity 0.2s, visibility 0.2s;
             box-sizing: border-box;
+            will-change: opacity, transform;
         }
         .result-display.visible {
             opacity: 1;
@@ -515,7 +520,7 @@
 </head>
 <body>
 
-<!-- Приветственный экран (без изменений) -->
+<!-- Приветственный экран -->
 <div id="welcome-overlay" class="welcome-overlay visible">
     <div class="welcome-glass">
         <h1 class="welcome-title">Welcome</h1>
@@ -531,7 +536,7 @@
     </div>
 </div>
 
-<!-- НОВОЕ МОДАЛЬНОЕ ОКНО РЕГИСТРАЦИИ -->
+<!-- Модальное окно регистрации -->
 <div id="register-overlay" class="register-overlay">
     <div class="register-glass">
         <h3 id="register-title">🔐 Registration</h3>
@@ -560,7 +565,7 @@
         </div>
     </header>
 
-    <!-- Поиск и список пар (без изменений) -->
+    <!-- Поиск и список пар (скрыт до клика) -->
     <div class="selector-container">
         <span class="search-icon">🔍</span>
         <input type="text" id="pair-search" placeholder="🔍 Поиск пары (EUR, USD, OTC...)">
@@ -568,7 +573,7 @@
     </div>
     <select id="pair" onchange="changePair()" style="display: none;"></select>
 
-    <!-- График и управление (без изменений) -->
+    <!-- График и управление -->
     <div class="chart-container">
         <div class="chart-box"><canvas id="mainChart"></canvas></div>
         <div class="chart-controls">
@@ -601,34 +606,30 @@
 </div>
 
 <script>
-    // --- 🔥 ВСТАВЬ СВОИ ДАННЫЕ FIREBASE ---
+    // Firebase config
     const firebaseConfig = {
-        apiKey: "AIzaSyC_pEbBZM5ABpjAUpj-Zd5Dpn1bdRvRG6s", // замени на свой
-        databaseURL: "https://dropbocs-35916-default-rtdb.firebaseio.com/" // замени на свой
+        apiKey: "AIzaSyC_pEbBZM5ABpjAUpj-Zd5Dpn1bdRvRG6s",
+        databaseURL: "https://dropbocs-35916-default-rtdb.firebaseio.com/"
     };
-    // Инициализация Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // --- ТВОЯ РЕФЕРАЛЬНАЯ ССЫЛКА POCKET OPTION ---
-    const REF_LINK = "https://pocketoption.com/ref/your_id"; // ЗАМЕНИ НА СВОЮ
+    const REF_LINK = "https://pocketoption.com/ref/your_id"; // замени на свою
 
-    // --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
     const canvas = document.getElementById('mainChart');
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
     let candles = [];
     let smaData = [];
     let showSMA = false;
-    let candleCount = 18;
+    let candleCount = 14; // чуть приблизили (было 18)
     let snowEnabled = false;
     let curLang = 'en';
     let touchStartX = 0;
     let touchEndX = 0;
-    let registered = false;      // флаг регистрации (будем проверять из Firebase)
-    let userId = null;           // telegram id
+    let registered = false;
+    let userId = null;
 
-    // --- СЛОВАРЬ (расширенный) ---
     const dict = {
         en: { 
             sub: "Select currency pair", 
@@ -717,7 +718,6 @@
         }
     };
 
-    // --- ЭЛЕМЕНТЫ УПРАВЛЕНИЯ ---
     const welcomeOverlay = document.getElementById('welcome-overlay');
     const startBtn = document.getElementById('start-btn');
     const langItems = document.querySelectorAll('.language-item');
@@ -727,12 +727,11 @@
     const registerMessage = document.getElementById('register-message');
     const refLinkElement = document.getElementById('ref-link');
 
-    // --- ЭЛЕМЕНТЫ ПОИСКА ПАР ---
     const pairsContainer = document.getElementById('pairs-container');
     const searchInput = document.getElementById('pair-search');
     const hiddenSelect = document.getElementById('pair');
 
-    // --- ПОЛНЫЙ СПИСОК ПАР (без изменений) ---
+    // Полный список пар (без изменений)
     const allPairs = [
         { name: "EUR/USD", flag: "🇪🇺🇺🇸", type: "Major" },
         { name: "GBP/USD", flag: "🇬🇧🇺🇸", type: "Major" },
@@ -885,7 +884,6 @@
         { name: "JPY/TRY", flag: "🇯🇵🇹🇷", type: "Exotic" }
     ];
 
-    // --- ФУНКЦИИ РАБОТЫ С FIREBASE ---
     async function getUserStatus() {
         if (!userId) return false;
         const snapshot = await database.ref('users/' + userId).once('value');
@@ -902,20 +900,15 @@
         });
     }
 
-    // --- ЗАГЛУШКА ПРОВЕРКИ ДЕПОЗИТА (ЗАМЕНИТЬ НА РЕАЛЬНУЮ) ---
     async function checkDeposit(uid) {
-        // TODO: заменить на реальный запрос к серверу или Pocket Option API
-        // Сейчас просто проверяем, что UID не пустой (для теста)
         return new Promise(resolve => {
             setTimeout(() => {
-                // Имитация успеха, если UID длиннее 3 символов
                 const success = uid && uid.length > 3;
                 resolve(success);
             }, 1000);
         });
     }
 
-    // --- ОБРАБОТКА РЕГИСТРАЦИИ ---
     async function handleRegistration() {
         const uid = uidInput.value.trim();
         if (!uid) {
@@ -931,7 +924,6 @@
             await setUserRegistered(uid);
             registerOverlay.classList.remove('visible');
             registered = true;
-            // Сохраняем локально, чтобы не проверять при каждом действии
             localStorage.setItem('registered_' + userId, 'true');
         } else {
             registerMessage.innerText = dict[curLang].errorMsg;
@@ -940,7 +932,6 @@
         checkUidBtn.disabled = false;
     }
 
-    // --- ОБРАБОТКА ВЫБОРА ЯЗЫКА ---
     langItems.forEach(item => {
         item.addEventListener('click', () => {
             langItems.forEach(i => i.classList.remove('selected'));
@@ -953,24 +944,19 @@
         });
     });
 
-    // --- ОБРАБОТКА КНОПКИ START ---
     startBtn.addEventListener('click', async () => {
         welcomeOverlay.classList.remove('visible');
         const app = document.getElementById('main-app');
         app.style.display = 'flex';
 
-        // Получаем Telegram ID
         if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
             userId = window.Telegram.WebApp.initDataUnsafe.user.id.toString();
         } else {
-            // Для теста вне Telegram
             userId = 'test_user_' + Math.random().toString(36).substr(2, 9);
         }
 
-        // Проверяем статус регистрации в Firebase
         registered = await getUserStatus();
 
-        // Заполняем список пар
         allPairs.forEach(p => {
             const option = document.createElement('option');
             option.value = p.name;
@@ -985,15 +971,12 @@
         setupSnow();
         updateUILang();
 
-        // Устанавливаем реферальную ссылку
         refLinkElement.href = REF_LINK;
         refLinkElement.innerText = dict[curLang].refLink;
     });
 
-    // --- ФУНКЦИЯ ПРОВЕРКИ РЕГИСТРАЦИИ ПРИ ПОПЫТКЕ ДЕЙСТВИЯ ---
     function requireRegistration() {
         if (!registered) {
-            // Обновляем тексты в окне регистрации на текущем языке
             document.getElementById('register-title').innerText = dict[curLang].registerTitle;
             document.getElementById('register-text').innerText = dict[curLang].registerText;
             uidInput.placeholder = dict[curLang].uidPlaceholder;
@@ -1007,7 +990,6 @@
         return false;
     }
 
-    // --- ПЕРЕОПРЕДЕЛЕНИЕ ОБРАБОТЧИКОВ (с проверкой) ---
     const originalStartAnalysis = window.startAnalysis;
     window.startAnalysis = function(btn) {
         if (requireRegistration()) return;
@@ -1018,6 +1000,10 @@
     window.selectTf = function(btn) {
         if (requireRegistration()) return;
         originalSelectTf(btn);
+        // Вибрация при выборе таймфрейма
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+            window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        }
     };
 
     const originalChangePair = window.changePair;
@@ -1044,10 +1030,21 @@
         originalZoomOut();
     };
 
-    // --- ОБРАБОТКА КНОПКИ ПРОВЕРКИ UID ---
     checkUidBtn.addEventListener('click', handleRegistration);
 
-    // --- ОСТАЛЬНЫЕ ФУНКЦИИ (без изменений) ---
+    // Управление видимостью списка пар
+    searchInput.addEventListener('focus', () => {
+        pairsContainer.style.display = 'block';
+    });
+    searchInput.addEventListener('blur', () => {
+        // Задержка, чтобы успеть кликнуть на элемент
+        setTimeout(() => {
+            if (!pairsContainer.contains(document.activeElement)) {
+                pairsContainer.style.display = 'none';
+            }
+        }, 200);
+    });
+
     function renderPairs(filter = '') {
         const filterLower = filter.toLowerCase();
         const filtered = allPairs.filter(p => 
@@ -1072,6 +1069,9 @@
                 div.classList.add('selected');
                 hiddenSelect.value = pair.name;
                 changePair();
+                // После выбора можно скрыть список
+                pairsContainer.style.display = 'none';
+                searchInput.blur();
             });
             pairsContainer.appendChild(div);
         });
@@ -1090,7 +1090,6 @@
         renderPairs(e.target.value);
     });
 
-    // --- СНЕГ ---
     const sCanvas = document.getElementById('snow-layer');
     const sCtx = sCanvas.getContext('2d');
     let flakes = [];
@@ -1136,7 +1135,6 @@
         document.body.classList.toggle('light-theme');
     }
 
-    // --- Язык в приложении ---
     document.getElementById('langBtn').onclick = function() {
         const langs = ['en', 'ru', 'pl', 'de', 'fr'];
         let idx = langs.indexOf(curLang);
@@ -1150,11 +1148,9 @@
         document.getElementById('sub-header').innerText = dict[curLang].sub;
         document.getElementById('anBtn').innerHTML = `<span>${dict[curLang].an}</span>`;
         document.getElementById('wait-msg').innerText = dict[curLang].wait;
-        // Обновляем поиск (placeholder)
-        document.getElementById('pair-search').placeholder = dict[curLang].sub; // можно заменить
+        document.getElementById('pair-search').placeholder = dict[curLang].sub;
     }
 
-    // --- ГРАФИК ---
     function setupCanvas() {
         const rect = canvas.parentElement.getBoundingClientRect();
         canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
@@ -1321,7 +1317,6 @@
     canvas.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
     canvas.addEventListener('touchend', (e) => {
         touchEndX = e.changedTouches[0].screenX;
-        // свайпы пока не используем для смены пар, оставляем поиск
     });
 
     function changePair() {
@@ -1378,6 +1373,7 @@
     function selectTf(btn) {
         document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        // Вибрация уже добавлена в переопределённой функции
     }
 
     if (window.Telegram?.WebApp) {
