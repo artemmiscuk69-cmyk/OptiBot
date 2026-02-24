@@ -861,8 +861,10 @@
         });
     }
 
-   // Вместо генерации случайного userId для теста используем постоянный
-if (!window.Telegram?.WebApp?.initDataUnsafe?.user) {
+   if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+    userId = window.Telegram.WebApp.initDataUnsafe.user.id.toString();
+} else {
+    // Для теста используем постоянный ID в localStorage
     let storedId = localStorage.getItem('testUserId');
     if (!storedId) {
         storedId = 'test_user_' + Math.random().toString(36).substr(2, 9);
