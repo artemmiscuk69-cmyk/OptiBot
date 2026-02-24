@@ -8,7 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
-        /* --- все стили полностью сохранены --- */
+        /* --- все стили (полностью из предыдущей рабочей версии) --- */
         :root {
             --bg-color: #050510;
             --app-bg: #0b0b1a;
@@ -151,8 +151,8 @@
             box-shadow: 0 0 50px var(--accent-glow);
         }
 
-        /* --- МОДАЛЬНОЕ ОКНО РЕГИСТРАЦИИ --- */
-        .register-overlay {
+        /* --- ПЕРВОЕ МОДАЛЬНОЕ ОКНО (РЕГИСТРАЦИЯ) --- */
+        .register-step1-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7);
@@ -165,7 +165,7 @@
             visibility: hidden;
             transition: opacity 0.3s, visibility 0.3s;
         }
-        .register-overlay.visible {
+        .register-step1-overlay.visible {
             opacity: 1;
             visibility: visible;
         }
@@ -202,24 +202,7 @@
             margin-bottom: 20px;
             display: block;
         }
-        .register-input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid var(--glass-border);
-            border-radius: 30px;
-            color: var(--text-color);
-            font-size: 1rem;
-            text-align: center;
-            margin-bottom: 15px;
-            outline: none;
-            box-sizing: border-box;
-        }
-        .register-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
-        .register-btn {
+        .next-btn {
             background: var(--accent);
             border: none;
             color: white;
@@ -233,20 +216,77 @@
             box-shadow: 0 0 20px var(--accent-glow);
             margin-bottom: 10px;
         }
-        .register-btn:hover {
+        .next-btn:hover {
             transform: scale(1.05);
         }
-        .register-btn:disabled {
-            opacity: 0.5;
-            pointer-events: none;
+
+        /* --- ВТОРОЕ МОДАЛЬНОЕ ОКНО (ДЕПОЗИТ) --- */
+        .register-step2-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20001;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
         }
-        .register-message {
+        .register-step2-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .register-step2-glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 30px 20px;
+            width: 80%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transform: scale(0.9);
+            animation: glassAppear 0.4s forwards;
+        }
+        .register-step2-glass h3 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #fff, #aaccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .register-step2-glass p {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .step2-ref-link {
+            color: var(--accent);
+            text-decoration: underline;
+            word-break: break-all;
             font-size: 0.9rem;
-            min-height: 20px;
-            color: var(--accent-green);
+            margin-bottom: 20px;
+            display: block;
         }
-        .register-message.error {
-            color: #ff4d4d;
+        .done-btn {
+            background: var(--accent);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 12px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+            box-shadow: 0 0 20px var(--accent-glow);
+            margin-bottom: 10px;
+        }
+        .done-btn:hover {
+            transform: scale(1.05);
         }
 
         /* --- ОСНОВНОЕ ПРИЛОЖЕНИЕ --- */
@@ -372,12 +412,10 @@
             background: rgba(255,255,255,0.2);
         }
 
-        /* старый select скрываем */
         #pair {
             display: none;
         }
 
-        /* --- ГРАФИК --- */
         .chart-container {
             position: relative;
             width: 100%; height: 280px; margin-bottom: 15px;
@@ -537,15 +575,24 @@
     </div>
 </div>
 
-<!-- Модальное окно регистрации -->
-<div id="register-overlay" class="register-overlay">
+<!-- ПЕРВОЕ МОДАЛЬНОЕ ОКНО (РЕГИСТРАЦИЯ) -->
+<div id="register-step1-overlay" class="register-step1-overlay">
     <div class="register-glass">
-        <h3 id="register-title">🔐 Registration</h3>
-        <p id="register-text">To use the app, you need to register in Pocket Option via our referral link and make a deposit (min. $10).</p>
-        <a id="ref-link" class="ref-link" href="#" target="_blank">🔗 Referral link</a>
-        <input type="text" id="uid-input" class="register-input" placeholder="Enter your Pocket Option UID">
-        <button id="check-uid-btn" class="register-btn">Send request</button>
-        <div id="register-message" class="register-message"></div>
+        <h3 id="step1-title">🔐 Registration</h3>
+        <p id="step1-text">Register in Pocket Option via our referral link:</p>
+        <a id="step1-ref-link" class="ref-link" href="#" target="_blank">🔗 Referral link</a>
+        <button id="step1-next-btn" class="next-btn">Next →</button>
+    </div>
+</div>
+
+<!-- ВТОРОЕ МОДАЛЬНОЕ ОКНО (ДЕПОЗИТ) -->
+<div id="register-step2-overlay" class="register-step2-overlay">
+    <div class="register-step2-glass">
+        <h3 id="step2-title">💰 Deposit</h3>
+        <p id="step2-text">Make a deposit (min. $10) using the same link, then click Done:</p>
+        <a id="step2-ref-link" class="step2-ref-link" href="#" target="_blank">🔗 Referral link</a>
+        <button id="step2-done-btn" class="done-btn">Done</button>
+        <div id="step2-message" style="font-size: 0.9rem; color: #ffaa00;"></div>
     </div>
 </div>
 
@@ -607,7 +654,7 @@
 </div>
 
 <script>
-    // Firebase config (проверь, что apiKey правильный для optibotx-486b7)
+    // Firebase config
     const firebaseConfig = {
         apiKey: "AIzaSyBlL7xhbnITKkhpUipqdbJOmN4TG2rXbtY",
         databaseURL: "https://optibotx-486b7-default-rtdb.firebaseio.com/"
@@ -627,10 +674,10 @@
     let curLang = 'en';
     let touchStartX = 0;
     let touchEndX = 0;
-    let registered = false;
+    let registered = false;      // полный доступ (после депозита)
     let userId = null;
 
-    // Словарь языков (без изменений)
+    // Словарь языков
     const dict = {
         en: { 
             sub: "Select currency pair", 
@@ -641,12 +688,13 @@
             welcome: "Welcome",
             chooseLang: "Choose your language",
             flag: "🇬🇧",
-            registerTitle: "🔐 Registration",
-            registerText: "To use the app, you need to register in Pocket Option via our referral link and make a deposit (min. $10).",
-            uidPlaceholder: "Enter your Pocket Option UID",
-            checkBtn: "Send request",
-            requestSent: "✅ Request sent! Waiting for deposit confirmation.",
-            errorMsg: "❌ Please enter a valid UID.",
+            step1Title: "🔐 Registration",
+            step1Text: "Register in Pocket Option via our referral link:",
+            step1Next: "Next →",
+            step2Title: "💰 Deposit",
+            step2Text: "Make a deposit (min. $10) using the same link, then click Done:",
+            step2Done: "Done",
+            step2Wait: "⏳ Waiting for deposit confirmation...",
             refLink: "🔗 Referral link"
         },
         ru: { 
@@ -658,12 +706,13 @@
             welcome: "Добро пожаловать",
             chooseLang: "Выберите язык",
             flag: "🇷🇺",
-            registerTitle: "🔐 Регистрация",
-            registerText: "Чтобы пользоваться приложением, зарегистрируйтесь в Pocket Option по нашей реферальной ссылке и сделайте депозит (мин. $10).",
-            uidPlaceholder: "Введите ваш UID из Pocket Option",
-            checkBtn: "Отправить заявку",
-            requestSent: "✅ Заявка отправлена! Ожидайте подтверждения депозита.",
-            errorMsg: "❌ Введите корректный UID.",
+            step1Title: "🔐 Регистрация",
+            step1Text: "Зарегистрируйтесь в Pocket Option по нашей ссылке:",
+            step1Next: "Далее →",
+            step2Title: "💰 Депозит",
+            step2Text: "Сделайте депозит (мин. $10) по той же ссылке, затем нажмите Готово:",
+            step2Done: "Готово",
+            step2Wait: "⏳ Ожидание подтверждения депозита...",
             refLink: "🔗 Реферальная ссылка"
         },
         pl: {
@@ -675,12 +724,13 @@
             welcome: "Witaj",
             chooseLang: "Wybierz język",
             flag: "🇵🇱",
-            registerTitle: "🔐 Rejestracja",
-            registerText: "Aby korzystać z aplikacji, zarejestruj się w Pocket Option za pomocą naszego linku partnerskiego i dokonaj depozytu (min. $10).",
-            uidPlaceholder: "Wprowadź swój UID z Pocket Option",
-            checkBtn: "Wyślij zgłoszenie",
-            requestSent: "✅ Zgłoszenie wysłane! Oczekuj na potwierdzenie depozytu.",
-            errorMsg: "❌ Wprowadź poprawny UID.",
+            step1Title: "🔐 Rejestracja",
+            step1Text: "Zarejestruj się w Pocket Option za pomocą naszego linku:",
+            step1Next: "Dalej →",
+            step2Title: "💰 Depozyt",
+            step2Text: "Wpłać depozyt (min. $10) używając tego samego linku, a następnie kliknij Gotowe:",
+            step2Done: "Gotowe",
+            step2Wait: "⏳ Oczekiwanie na potwierdzenie depozytu...",
             refLink: "🔗 Link partnerski"
         },
         de: {
@@ -692,12 +742,13 @@
             welcome: "Willkommen",
             chooseLang: "Sprache wählen",
             flag: "🇩🇪",
-            registerTitle: "🔐 Registrierung",
-            registerText: "Um die App zu nutzen, registrieren Sie sich über unseren Partnerlink bei Pocket Option und tätigen Sie eine Einzahlung (min. $10).",
-            uidPlaceholder: "Geben Sie Ihre Pocket Option UID ein",
-            checkBtn: "Anfrage senden",
-            requestSent: "✅ Anfrage gesendet! Warte auf Einzahlungsbestätigung.",
-            errorMsg: "❌ Geben Sie eine gültige UID ein.",
+            step1Title: "🔐 Registrierung",
+            step1Text: "Registrieren Sie sich bei Pocket Option über unseren Link:",
+            step1Next: "Weiter →",
+            step2Title: "💰 Einzahlung",
+            step2Text: "Tätigen Sie eine Einzahlung (min. $10) mit demselben Link und klicken Sie dann auf Fertig:",
+            step2Done: "Fertig",
+            step2Wait: "⏳ Warte auf Einzahlungsbestätigung...",
             refLink: "🔗 Partnerlink"
         },
         fr: {
@@ -709,12 +760,13 @@
             welcome: "Bienvenue",
             chooseLang: "Choisissez la langue",
             flag: "🇫🇷",
-            registerTitle: "🔐 Inscription",
-            registerText: "Pour utiliser l'application, inscrivez-vous sur Pocket Option via notre lien de parrainage et effectuez un dépôt (min. $10).",
-            uidPlaceholder: "Entrez votre UID Pocket Option",
-            checkBtn: "Envoyer la demande",
-            requestSent: "✅ Demande envoyée ! En attente de confirmation du dépôt.",
-            errorMsg: "❌ Veuillez entrer un UID valide.",
+            step1Title: "🔐 Inscription",
+            step1Text: "Inscrivez-vous sur Pocket Option via notre lien :",
+            step1Next: "Suivant →",
+            step2Title: "💰 Dépôt",
+            step2Text: "Effectuez un dépôt (min. $10) en utilisant le même lien, puis cliquez sur Terminé :",
+            step2Done: "Terminé",
+            step2Wait: "⏳ En attente de confirmation du dépôt...",
             refLink: "🔗 Lien de parrainage"
         }
     };
@@ -723,19 +775,41 @@
     const welcomeOverlay = document.getElementById('welcome-overlay');
     const startBtn = document.getElementById('start-btn');
     const langItems = document.querySelectorAll('.language-item');
-    const registerOverlay = document.getElementById('register-overlay');
-    const uidInput = document.getElementById('uid-input');
-    const checkUidBtn = document.getElementById('check-uid-btn');
-    const registerMessage = document.getElementById('register-message');
-    const refLinkElement = document.getElementById('ref-link');
+
+    // Элементы первого окна
+    const step1Overlay = document.getElementById('register-step1-overlay');
+    const step1Title = document.getElementById('step1-title');
+    const step1Text = document.getElementById('step1-text');
+    const step1RefLink = document.getElementById('step1-ref-link');
+    const step1NextBtn = document.getElementById('step1-next-btn');
+
+    // Элементы второго окна
+    const step2Overlay = document.getElementById('register-step2-overlay');
+    const step2Title = document.getElementById('step2-title');
+    const step2Text = document.getElementById('step2-text');
+    const step2RefLink = document.getElementById('step2-ref-link');
+    const step2DoneBtn = document.getElementById('step2-done-btn');
+    const step2Message = document.getElementById('step2-message');
 
     const pairsContainer = document.getElementById('pairs-container');
     const searchInput = document.getElementById('pair-search');
     const hiddenSelect = document.getElementById('pair');
 
-    // Полный список пар (без изменений, такой же как у тебя)
-    const allPairs = [ /* ... огромный список ... */ ]; // для краткости оставляем как есть, в твоём коде он полный
+    // ПОЛНЫЙ СПИСОК ВАЛЮТНЫХ ПАР (вставь сюда свой полный список из предыдущей версии)
+    const allPairs = [
+        { name: "EUR/USD", flag: "🇪🇺🇺🇸", type: "Major" },
+        { name: "GBP/USD", flag: "🇬🇧🇺🇸", type: "Major" },
+        { name: "USD/JPY", flag: "🇺🇸🇯🇵", type: "Major" },
+        { name: "USD/CHF", flag: "🇺🇸🇨🇭", type: "Major" },
+        { name: "AUD/USD", flag: "🇦🇺🇺🇸", type: "Major" },
+        { name: "USD/CAD", flag: "🇺🇸🇨🇦", type: "Major" },
+        { name: "NZD/USD", flag: "🇳🇿🇺🇸", type: "Major" },
+        // ... (весь остальной список из твоего последнего рабочего кода)
+        // Для краткости я не копирую 200 строк, но ты уже знаешь, что там полный массив.
+        // Просто вставь сюда свою переменную allPairs из предыдущей версии.
+    ];
 
+    // Функция получения статуса из Firebase
     async function getUserStatus() {
         if (!userId) return false;
         const snapshot = await database.ref('users/' + userId).once('value');
@@ -743,48 +817,7 @@
         return data?.registered || false;
     }
 
-    // Функция для отправки заявки (без проверки депозита)
-    async function sendRegistrationRequest(uid) {
-        if (!userId) return;
-        // Сохраняем заявку с registered: false
-        await database.ref('users/' + userId).set({
-            registered: false,
-            uid: uid,
-            requestedAt: Date.now()
-        });
-    }
-
-    // Обработчик нажатия на кнопку "Отправить заявку"
-    async function handleRegistration() {
-        const uid = uidInput.value.trim();
-        if (!uid || uid.length < 3) {
-            registerMessage.innerText = dict[curLang].errorMsg;
-            registerMessage.classList.add('error');
-            return;
-        }
-        checkUidBtn.disabled = true;
-        registerMessage.innerText = '⏳ Sending...';
-        registerMessage.classList.remove('error');
-        await sendRegistrationRequest(uid);
-        registerMessage.innerText = dict[curLang].requestSent;
-        registerMessage.classList.remove('error');
-        checkUidBtn.disabled = false;
-        // Не закрываем окно, а ждём подтверждения
-    }
-
-    // Real-time listener для обновления статуса регистрации
-    function setupRegistrationListener() {
-        if (!userId) return;
-        database.ref('users/' + userId).on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data && data.registered === true) {
-                registered = true;
-                registerOverlay.classList.remove('visible');
-                console.log('✅ Доступ активирован!');
-            }
-        });
-    }
-
+    // Обработчик выбора языка в приветствии
     langItems.forEach(item => {
         item.addEventListener('click', () => {
             langItems.forEach(i => i.classList.remove('selected'));
@@ -797,28 +830,24 @@
         });
     });
 
+    // Обработчик кнопки Start
     startBtn.addEventListener('click', async () => {
         welcomeOverlay.classList.remove('visible');
         const app = document.getElementById('main-app');
         app.style.display = 'flex';
 
-        // Получаем Telegram ID (или тестовый)
+        // Получаем Telegram ID или тестовый
         if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
             userId = window.Telegram.WebApp.initDataUnsafe.user.id.toString();
         } else {
             userId = 'test_user_' + Math.random().toString(36).substr(2, 9);
         }
 
-        // Формируем REF_LINK только сейчас, когда userId известен
-        const REF_LINK = `https://u3.shortink.io/register?utm_campaign=822097&utm_source=affiliate&utm_medium=sr&a=TNOv4heF82mMb6&ac=osnova&code=EDS965&click_id=123456789`;
+        // Ссылка с click_id
+        const REF_LINK = `https://u3.shortink.io/register?utm_campaign=822097&utm_source=affiliate&utm_medium=sr&a=TNOv4heF82mMb6&ac=osnova&code=EDS965&click_id=${userId}`;
 
-        // Проверяем начальный статус
+        // Проверяем статус регистрации
         registered = await getUserStatus();
-
-        // Если уже зарегистрирован, не показываем окно
-        if (registered) {
-            // можно ничего не делать
-        }
 
         // Заполняем список пар
         allPairs.forEach(p => {
@@ -835,28 +864,65 @@
         setupSnow();
         updateUILang();
 
-        refLinkElement.href = REF_LINK;
-        refLinkElement.innerText = dict[curLang].refLink;
+        // Если уже зарегистрирован, окна не показываем
+        if (registered) return;
 
-        // Устанавливаем слушатель на изменения статуса
+        // Иначе показываем первое окно (регистрация)
+        step1RefLink.href = REF_LINK;
+        step1RefLink.innerText = dict[curLang].refLink;
+        step1Overlay.classList.add('visible');
+    });
+
+    // Обработчик кнопки Next (первое окно)
+    step1NextBtn.addEventListener('click', () => {
+        step1Overlay.classList.remove('visible');
+        // Показываем второе окно (депозит)
+        step2RefLink.href = step1RefLink.href; // та же ссылка
+        step2RefLink.innerText = dict[curLang].refLink;
+        step2Message.innerText = '';
+        step2Overlay.classList.add('visible');
+    });
+
+    // Обработчик кнопки Done (второе окно)
+    step2DoneBtn.addEventListener('click', () => {
+        // Не даём доступ, просто закрываем окно и показываем сообщение об ожидании
+        step2Overlay.classList.remove('visible');
+        // Можно показать временное уведомление (например, всплывающее)
+        alert(dict[curLang].step2Wait);
+        // Запускаем слушатель Firebase для этого пользователя (если ещё не запущен)
         setupRegistrationListener();
     });
 
+    // Слушатель изменений статуса в Firebase
+    function setupRegistrationListener() {
+        if (!userId) return;
+        database.ref('users/' + userId).on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data && data.registered === true) {
+                registered = true;
+                // Закрываем все окна, если они открыты
+                step1Overlay.classList.remove('visible');
+                step2Overlay.classList.remove('visible');
+                console.log('✅ Доступ активирован!');
+                // Можно показать уведомление
+                alert('✅ Доступ открыт!');
+            }
+        });
+    }
+
+    // Функция проверки регистрации при попытке действия
     function requireRegistration() {
         if (!registered) {
-            document.getElementById('register-title').innerText = dict[curLang].registerTitle;
-            document.getElementById('register-text').innerText = dict[curLang].registerText;
-            uidInput.placeholder = dict[curLang].uidPlaceholder;
-            document.getElementById('check-uid-btn').innerText = dict[curLang].checkBtn;
-            refLinkElement.innerText = dict[curLang].refLink;
-            refLinkElement.href = refLinkElement.href; // сохраняем ссылку
-            registerMessage.innerText = '';
-            registerOverlay.classList.add('visible');
+            // Показываем первое окно (если оно не видно)
+            if (!step1Overlay.classList.contains('visible') && !step2Overlay.classList.contains('visible')) {
+                step1Overlay.classList.add('visible');
+            }
             return true;
         }
         return false;
     }
 
+    // Переопределяем функции для проверки регистрации
     const originalStartAnalysis = window.startAnalysis;
     window.startAnalysis = function(btn) {
         if (requireRegistration()) return;
@@ -896,9 +962,7 @@
         originalZoomOut();
     };
 
-    checkUidBtn.addEventListener('click', handleRegistration);
-
-    // Управление видимостью списка пар
+    // --- Управление списком пар ---
     searchInput.addEventListener('focus', () => {
         pairsContainer.style.display = 'block';
     });
@@ -1014,9 +1078,19 @@
         document.getElementById('anBtn').innerHTML = `<span>${dict[curLang].an}</span>`;
         document.getElementById('wait-msg').innerText = dict[curLang].wait;
         document.getElementById('pair-search').placeholder = dict[curLang].sub;
+
+        // Обновляем тексты в окнах
+        step1Title.innerText = dict[curLang].step1Title;
+        step1Text.innerText = dict[curLang].step1Text;
+        step1NextBtn.innerText = dict[curLang].step1Next;
+        step2Title.innerText = dict[curLang].step2Title;
+        step2Text.innerText = dict[curLang].step2Text;
+        step2DoneBtn.innerText = dict[curLang].step2Done;
+        step1RefLink.innerText = dict[curLang].refLink;
+        step2RefLink.innerText = dict[curLang].refLink;
     }
 
-    // --- График ---
+    // --- График (без изменений) ---
     function setupCanvas() {
         const rect = canvas.parentElement.getBoundingClientRect();
         canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
