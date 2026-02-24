@@ -241,7 +241,7 @@
             color: #ff4d4d;
         }
 
-        /* --- ВТОРОЕ МОДАЛЬНОЕ ОКНО (ДЕПОЗИТ) --- */
+        /* --- ВТОРОЕ МОДАЛЬНОЕ ОКНО (ДЕПОЗИТ - ОЖИДАНИЕ) --- */
         .register-step2-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -292,7 +292,7 @@
             margin-bottom: 20px;
             display: block;
         }
-        .done-btn {
+        .close-btn {
             background: var(--accent);
             border: none;
             color: white;
@@ -306,16 +306,14 @@
             box-shadow: 0 0 20px var(--accent-glow);
             margin-bottom: 10px;
         }
-        .done-btn:hover {
+        .close-btn:hover {
             transform: scale(1.05);
         }
         .step2-message {
             font-size: 0.9rem;
             min-height: 20px;
-            color: var(--accent-green);
-        }
-        .step2-message.error {
-            color: #ff4d4d;
+            color: #ffaa00;
+            margin-top: 10px;
         }
 
         /* --- ОСНОВНОЕ ПРИЛОЖЕНИЕ (без изменений) --- */
@@ -617,14 +615,14 @@
     </div>
 </div>
 
-<!-- ВТОРОЕ МОДАЛЬНОЕ ОКНО (ДЕПОЗИТ) -->
+<!-- ВТОРОЕ МОДАЛЬНОЕ ОКНО (ДЕПОЗИТ - ОЖИДАНИЕ) -->
 <div id="register-step2-overlay" class="register-step2-overlay">
     <div class="register-step2-glass">
         <h3 id="step2-title">💰 Deposit</h3>
-        <p id="step2-text">Make a deposit (min. $10) using the same link, then click Done:</p>
+        <p id="step2-text">Make a deposit (min. $10) using the same link, then wait for confirmation.</p>
         <a id="step2-ref-link" class="step2-ref-link" href="#" target="_blank">🔗 Referral link</a>
-        <button id="step2-done-btn" class="done-btn">Done</button>
-        <div id="step2-message" class="step2-message"></div>
+        <button id="step2-close-btn" class="close-btn">Close</button>
+        <div id="step2-message" class="step2-message">⏳ Waiting for deposit confirmation...</div>
     </div>
 </div>
 
@@ -720,18 +718,16 @@
             welcome: "Welcome",
             chooseLang: "Choose your language",
             flag: "🇬🇧",
-            // Первое окно
             step1Title: "🔐 Registration",
             step1Text: "Enter your Pocket Option UID to proceed:",
             step1Placeholder: "Enter your UID",
             step1Next: "Next →",
             step1Error: "Please enter a valid UID.",
             step1Success: "UID saved. Now make a deposit.",
-            // Второе окно
             step2Title: "💰 Deposit",
-            step2Text: "Make a deposit (min. $10) using the same link, then click Done:",
-            step2Done: "Done",
-            step2Wait: "Waiting for deposit confirmation...",
+            step2Text: "Make a deposit (min. $10) using the same link, then wait for confirmation.",
+            step2Close: "Close",
+            step2Waiting: "⏳ Waiting for deposit confirmation...",
             refLink: "🔗 Referral link"
         },
         ru: { 
@@ -750,9 +746,9 @@
             step1Error: "Введите корректный UID.",
             step1Success: "UID сохранён. Теперь сделайте депозит.",
             step2Title: "💰 Депозит",
-            step2Text: "Сделайте депозит (мин. $10) по той же ссылке, затем нажмите Готово:",
-            step2Done: "Готово",
-            step2Wait: "Ожидание подтверждения депозита...",
+            step2Text: "Сделайте депозит (мин. $10) по той же ссылке и ожидайте подтверждения.",
+            step2Close: "Закрыть",
+            step2Waiting: "⏳ Ожидание подтверждения депозита...",
             refLink: "🔗 Реферальная ссылка"
         },
         pl: {
@@ -771,9 +767,9 @@
             step1Error: "Wprowadź poprawny UID.",
             step1Success: "UID zapisany. Teraz dokonaj depozytu.",
             step2Title: "💰 Depozyt",
-            step2Text: "Wpłać depozyt (min. $10) używając tego samego linku, a następnie kliknij Gotowe:",
-            step2Done: "Gotowe",
-            step2Wait: "Oczekiwanie na potwierdzenie depozytu...",
+            step2Text: "Wpłać depozyt (min. $10) używając tego samego linku i czekaj na potwierdzenie.",
+            step2Close: "Zamknij",
+            step2Waiting: "⏳ Oczekiwanie na potwierdzenie depozytu...",
             refLink: "🔗 Link partnerski"
         },
         de: {
@@ -792,9 +788,9 @@
             step1Error: "Geben Sie eine gültige UID ein.",
             step1Success: "UID gespeichert. Tätigen Sie jetzt eine Einzahlung.",
             step2Title: "💰 Einzahlung",
-            step2Text: "Tätigen Sie eine Einzahlung (min. $10) mit demselben Link und klicken Sie dann auf Fertig:",
-            step2Done: "Fertig",
-            step2Wait: "Warte auf Einzahlungsbestätigung...",
+            step2Text: "Tätigen Sie eine Einzahlung (min. $10) mit demselben Link und warten Sie auf Bestätigung.",
+            step2Close: "Schließen",
+            step2Waiting: "⏳ Warte auf Einzahlungsbestätigung...",
             refLink: "🔗 Partnerlink"
         },
         fr: {
@@ -813,9 +809,9 @@
             step1Error: "Veuillez entrer un UID valide.",
             step1Success: "UID enregistré. Effectuez maintenant un dépôt.",
             step2Title: "💰 Dépôt",
-            step2Text: "Effectuez un dépôt (min. $10) en utilisant le même lien, puis cliquez sur Terminé :",
-            step2Done: "Terminé",
-            step2Wait: "En attente de confirmation du dépôt...",
+            step2Text: "Effectuez un dépôt (min. $10) en utilisant le même lien et attendez la confirmation.",
+            step2Close: "Fermer",
+            step2Waiting: "⏳ En attente de confirmation du dépôt...",
             refLink: "🔗 Lien de parrainage"
         }
     };
@@ -838,7 +834,7 @@
     const step2Title = document.getElementById('step2-title');
     const step2Text = document.getElementById('step2-text');
     const step2RefLink = document.getElementById('step2-ref-link');
-    const step2DoneBtn = document.getElementById('step2-done-btn');
+    const step2CloseBtn = document.getElementById('step2-close-btn');
     const step2Message = document.getElementById('step2-message');
 
     const pairsContainer = document.getElementById('pairs-container');
@@ -865,13 +861,6 @@
         });
     }
 
-    async function setUserRegistered() {
-        if (!userId) return;
-        await database.ref('users/' + userId).update({
-            registered: true
-        });
-    }
-
     // Слушатель изменений статуса
     function setupRegistrationListener() {
         if (!userId) return;
@@ -882,7 +871,6 @@
                 step1Overlay.classList.remove('visible');
                 step2Overlay.classList.remove('visible');
                 console.log('✅ Доступ активирован!');
-                // Можно показать уведомление (опционально)
             }
         });
     }
@@ -907,14 +895,9 @@
         step2Overlay.classList.add('visible');
     });
 
-    // Обработчик кнопки Done (второе окно)
-    step2DoneBtn.addEventListener('click', async () => {
-        step2DoneBtn.disabled = true;
-        step2Message.innerText = '⏳ Processing...';
-        await setUserRegistered();
-        step2Message.innerText = dict[curLang].step2Wait;
-        // Не закрываем окно, статус обновится через слушатель
-        step2DoneBtn.disabled = false;
+    // Обработчик кнопки Close (второе окно) – просто скрывает окно, не меняя статус
+    step2CloseBtn.addEventListener('click', () => {
+        step2Overlay.classList.remove('visible');
     });
 
     // Обработчик выбора языка в приветствии
@@ -980,7 +963,7 @@
     // Функция проверки регистрации при попытке действия
     function requireRegistration() {
         if (!registered) {
-            // Показываем первое окно, если оно не видно
+            // Если статус false, показываем первое окно (если оно не видно)
             if (!step1Overlay.classList.contains('visible') && !step2Overlay.classList.contains('visible')) {
                 step1Overlay.classList.add('visible');
             }
@@ -1153,7 +1136,8 @@
         step1NextBtn.innerText = dict[curLang].step1Next;
         step2Title.innerText = dict[curLang].step2Title;
         step2Text.innerText = dict[curLang].step2Text;
-        step2DoneBtn.innerText = dict[curLang].step2Done;
+        step2CloseBtn.innerText = dict[curLang].step2Close;
+        step2Message.innerText = dict[curLang].step2Waiting;
         step2RefLink.innerText = dict[curLang].refLink;
     }
 
@@ -1386,5 +1370,7 @@
         window.Telegram.WebApp.expand();
     }
 </script>
+</body>
+</html>
 </body>
 </html>
