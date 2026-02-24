@@ -861,18 +861,14 @@
         });
     }
 
-    // Слушатель изменений статуса
-    function setupRegistrationListener() {
-    if (!userId) return; // именно userId, а не userRef
-    database.ref("users/" + userId).on("value", (snapshot) => {
-        const data = snapshot.val();
-        if (data && data.registered === true) {
-            registered = true;
-            step1Overlay.classList.remove('visible');
-            step2Overlay.classList.remove('visible');
-            console.log('✅ Доступ активирован!');
-        }
-    });
+   // Вместо генерации случайного userId для теста используем постоянный
+if (!window.Telegram?.WebApp?.initDataUnsafe?.user) {
+    let storedId = localStorage.getItem('testUserId');
+    if (!storedId) {
+        storedId = 'test_user_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('testUserId', storedId);
+    }
+    userId = storedId;
 }
 
     // Обработчик кнопки Next (первое окно)
