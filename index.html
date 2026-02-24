@@ -841,7 +841,7 @@
     const searchInput = document.getElementById('pair-search');
     const hiddenSelect = document.getElementById('pair');
 
-    // Полный список пар (вставь свой полный массив, я для краткости оставлю комментарий, но в твоём коде он должен быть)
+    // Полный список пар (вставь свой полный массив)
     const allPairs = [ /* ... твой огромный список ... */ ];
 
     // Функции работы с Firebase
@@ -861,17 +861,19 @@
         });
     }
 
-   if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-    userId = window.Telegram.WebApp.initDataUnsafe.user.id.toString();
-} else {
-    // Для теста используем постоянный ID в localStorage
-    let storedId = localStorage.getItem('testUserId');
-    if (!storedId) {
-        storedId = 'test_user_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('testUserId', storedId);
+    // Слушатель изменений статуса
+    function setupRegistrationListener() {
+        if (!userId) return;
+        database.ref('users/' + userId).on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data && data.registered === true) {
+                registered = true;
+                step1Overlay.classList.remove('visible');
+                step2Overlay.classList.remove('visible');
+                console.log('✅ Доступ активирован!');
+            }
+        });
     }
-    userId = storedId;
-}
 
     // Обработчик кнопки Next (первое окно)
     step1NextBtn.addEventListener('click', async () => {
@@ -917,11 +919,17 @@
         const app = document.getElementById('main-app');
         app.style.display = 'flex';
 
-        // Получаем Telegram ID (или тестовый)
+        // Получаем Telegram ID (или тестовый с сохранением в localStorage)
         if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
             userId = window.Telegram.WebApp.initDataUnsafe.user.id.toString();
         } else {
-            userId = 'test_user_' + Math.random().toString(36).substr(2, 9);
+            // Для теста используем постоянный ID в localStorage
+            let storedId = localStorage.getItem('testUserId');
+            if (!storedId) {
+                storedId = 'test_user_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('testUserId', storedId);
+            }
+            userId = storedId;
         }
 
         // Формируем ссылку с click_id
@@ -1368,7 +1376,5 @@
         window.Telegram.WebApp.expand();
     }
 </script>
-</body>
-</html>
 </body>
 </html>
