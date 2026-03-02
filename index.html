@@ -4,11 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>OptiBotX PRO</title>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
-        /* --- все стили полностью сохранены (из твоего последнего кода) --- */
         :root {
             --bg-color: #050510;
             --app-bg: #0b0b1a;
@@ -151,8 +147,8 @@
             box-shadow: 0 0 50px var(--accent-glow);
         }
 
-        /* --- ПЕРВОЕ МОДАЛЬНОЕ ОКНО (РЕГИСТРАЦИЯ - ВВОД UID) --- */
-        .register-step1-overlay {
+        /* --- МОДАЛЬНОЕ ОКНО РЕГИСТРАЦИИ (ручной ввод кода) --- */
+        .register-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7);
@@ -165,7 +161,7 @@
             visibility: hidden;
             transition: opacity 0.3s, visibility 0.3s;
         }
-        .register-step1-overlay.visible {
+        .register-overlay.visible {
             opacity: 1;
             visibility: visible;
         }
@@ -194,6 +190,12 @@
             margin-bottom: 15px;
             line-height: 1.5;
         }
+        .register-glass .contact {
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
         .register-input {
             width: 100%;
             padding: 12px;
@@ -211,7 +213,7 @@
             border-color: var(--accent);
             box-shadow: 0 0 15px var(--accent-glow);
         }
-        .next-btn {
+        .register-btn {
             background: var(--accent);
             border: none;
             color: white;
@@ -225,98 +227,26 @@
             box-shadow: 0 0 20px var(--accent-glow);
             margin-bottom: 10px;
         }
-        .next-btn:hover {
+        .register-btn:hover {
             transform: scale(1.05);
         }
-        .next-btn:disabled {
+        .register-btn:disabled {
             opacity: 0.5;
             pointer-events: none;
         }
-        .step1-message {
-            font-size: 0.9rem;
-            min-height: 20px;
-            color: var(--accent-green);
-        }
-        .step1-message.error {
-            color: #ff4d4d;
-        }
-
-        /* --- ВТОРОЕ МОДАЛЬНОЕ ОКНО (ДЕПОЗИТ - ОЖИДАНИЕ) --- */
-        .register-step2-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(10px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 20001;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-        .register-step2-overlay.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-        .register-step2-glass {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 40px;
-            padding: 30px 20px;
-            width: 80%;
-            max-width: 320px;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            transform: scale(0.9);
-            animation: glassAppear 0.4s forwards;
-        }
-        .register-step2-glass h3 {
-            margin-top: 0;
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, #fff, #aaccff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .register-step2-glass p {
-            font-size: 1rem;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-        .step2-ref-link {
-            color: var(--accent);
-            text-decoration: underline;
-            word-break: break-all;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            display: block;
-        }
-        .close-btn {
-            background: var(--accent);
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 600;
-            padding: 12px 20px;
-            border-radius: 40px;
-            cursor: pointer;
-            width: 100%;
-            transition: 0.3s;
-            box-shadow: 0 0 20px var(--accent-glow);
-            margin-bottom: 10px;
-        }
-        .close-btn:hover {
-            transform: scale(1.05);
-        }
-        .step2-message {
+        .register-message {
             font-size: 0.9rem;
             min-height: 20px;
             color: #ffaa00;
-            margin-top: 10px;
+        }
+        .register-message.error {
+            color: #ff4d4d;
+        }
+        .register-message.success {
+            color: #00ff88;
         }
 
-        /* --- ОСНОВНОЕ ПРИЛОЖЕНИЕ (без изменений) --- */
+        /* --- ОСНОВНОЕ ПРИЛОЖЕНИЕ --- */
         .app-container {
             width: 100%; max-width: 400px; height: 98vh; background: var(--app-bg);
             display: none;
@@ -604,25 +534,15 @@
     </div>
 </div>
 
-<!-- ПЕРВОЕ МОДАЛЬНОЕ ОКНО (РЕГИСТРАЦИЯ - ВВОД UID) -->
-<div id="register-step1-overlay" class="register-step1-overlay">
+<!-- Модальное окно регистрации (ручной ввод кода) -->
+<div id="register-overlay" class="register-overlay">
     <div class="register-glass">
-        <h3 id="step1-title">🔐 Registration</h3>
-        <p id="step1-text">Enter your Pocket Option UID to proceed:</p>
-        <input type="text" id="step1-uid-input" class="register-input" placeholder="Enter your UID">
-        <button id="step1-next-btn" class="next-btn">Next →</button>
-        <div id="step1-message" class="step1-message"></div>
-    </div>
-</div>
-
-<!-- ВТОРОЕ МОДАЛЬНОЕ ОКНО (ДЕПОЗИТ - ОЖИДАНИЕ) -->
-<div id="register-step2-overlay" class="register-step2-overlay">
-    <div class="register-step2-glass">
-        <h3 id="step2-title">💰 Deposit</h3>
-        <p id="step2-text">Make a deposit (min. $10) using the same link, then wait for confirmation.</p>
-        <a id="step2-ref-link" class="step2-ref-link" href="#" target="_blank">🔗 Referral link</a>
-        <button id="step2-close-btn" class="close-btn">Close</button>
-        <div id="step2-message" class="step2-message">⏳ Waiting for deposit confirmation...</div>
+        <h3 id="register-title">🔐 Registration</h3>
+        <p id="register-text">To continue, please write to @accardo_1 and get an activation code.</p>
+        <div class="contact" id="register-contact">@accardo_1</div>
+        <input type="text" id="code-input" class="register-input" placeholder="Enter activation code">
+        <button id="activate-btn" class="register-btn">Activate</button>
+        <div id="register-message" class="register-message"></div>
     </div>
 </div>
 
@@ -646,7 +566,7 @@
     <!-- Поиск и список пар -->
     <div class="selector-container">
         <span class="search-icon">🔍</span>
-        <input type="text" id="pair-search" placeholder="🔍 Поиск пары (EUR, USD, OTC...)">
+        <input type="text" id="pair-search" placeholder="🔍 Поиск пары (EUR, USD, OTC...)" readonly onfocus="this.blur()" onmousedown="event.preventDefault(); document.querySelector('.pairs-container').style.display='block';">
         <div class="pairs-container" id="pairs-container"></div>
     </div>
     <select id="pair" onchange="changePair()" style="display: none;"></select>
@@ -684,30 +604,22 @@
 </div>
 
 <script>
-    // Firebase config (проверь, что apiKey правильный для optibotx-486b7)
-    const firebaseConfig = {
-        apiKey: "AIzaSyBlL7xhbnITKkhpUipqdbJOmN4TG2rXbtY",
-        databaseURL: "https://optibotx-486b7-default-rtdb.firebaseio.com/"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    // Глобальные переменные
+    // --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
     const canvas = document.getElementById('mainChart');
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
     let candles = [];
     let smaData = [];
     let showSMA = false;
-    let candleCount = 14;
+    let candleCount = 14; // приблизили
     let snowEnabled = false;
     let curLang = 'en';
     let touchStartX = 0;
     let touchEndX = 0;
-    let registered = false;
-    let userId = null;
+    // Статус регистрации
+    let registered = localStorage.getItem('optibotx_registered') === 'true';
 
-    // Словарь языков (добавлены строки для двух окон)
+    // --- СЛОВАРЬ ---
     const dict = {
         en: { 
             sub: "Select currency pair", 
@@ -718,17 +630,13 @@
             welcome: "Welcome",
             chooseLang: "Choose your language",
             flag: "🇬🇧",
-            step1Title: "🔐 Registration",
-            step1Text: "Enter your Pocket Option UID to proceed:",
-            step1Placeholder: "Enter your UID",
-            step1Next: "Next →",
-            step1Error: "Please enter a valid UID.",
-            step1Success: "UID saved. Now make a deposit.",
-            step2Title: "💰 Deposit",
-            step2Text: "Make a deposit (min. $10) using the same link, then wait for confirmation.",
-            step2Close: "Close",
-            step2Waiting: "⏳ Waiting for deposit confirmation...",
-            refLink: "🔗 Referral link"
+            registerTitle: "🔐 Registration",
+            registerText: "To continue, please write to @accardo_1 and get an activation code.",
+            contact: "@accardo_1",
+            codePlaceholder: "Enter activation code",
+            activate: "Activate",
+            wrongCode: "❌ Invalid code",
+            success: "✅ Access granted!"
         },
         ru: { 
             sub: "Выбери валютную пару", 
@@ -739,17 +647,13 @@
             welcome: "Добро пожаловать",
             chooseLang: "Выберите язык",
             flag: "🇷🇺",
-            step1Title: "🔐 Регистрация",
-            step1Text: "Введите ваш UID из Pocket Option для продолжения:",
-            step1Placeholder: "Введите UID",
-            step1Next: "Далее →",
-            step1Error: "Введите корректный UID.",
-            step1Success: "UID сохранён. Теперь сделайте депозит.",
-            step2Title: "💰 Депозит",
-            step2Text: "Сделайте депозит (мин. $10) по той же ссылке и ожидайте подтверждения.",
-            step2Close: "Закрыть",
-            step2Waiting: "⏳ Ожидание подтверждения депозита...",
-            refLink: "🔗 Реферальная ссылка"
+            registerTitle: "🔐 Регистрация",
+            registerText: "Чтобы продолжить, напишите @accardo_1 и получите код активации.",
+            contact: "@accardo_1",
+            codePlaceholder: "Введите код активации",
+            activate: "Активировать",
+            wrongCode: "❌ Неверный код",
+            success: "✅ Доступ открыт!"
         },
         pl: {
             sub: "Wybierz parę walutową",
@@ -760,17 +664,13 @@
             welcome: "Witaj",
             chooseLang: "Wybierz język",
             flag: "🇵🇱",
-            step1Title: "🔐 Rejestracja",
-            step1Text: "Wprowadź swój UID z Pocket Option, aby kontynuować:",
-            step1Placeholder: "Wprowadź UID",
-            step1Next: "Dalej →",
-            step1Error: "Wprowadź poprawny UID.",
-            step1Success: "UID zapisany. Teraz dokonaj depozytu.",
-            step2Title: "💰 Depozyt",
-            step2Text: "Wpłać depozyt (min. $10) używając tego samego linku i czekaj na potwierdzenie.",
-            step2Close: "Zamknij",
-            step2Waiting: "⏳ Oczekiwanie na potwierdzenie depozytu...",
-            refLink: "🔗 Link partnerski"
+            registerTitle: "🔐 Rejestracja",
+            registerText: "Aby kontynuować, napisz do @accardo_1 i otrzymaj kod aktywacyjny.",
+            contact: "@accardo_1",
+            codePlaceholder: "Wprowadź kod aktywacyjny",
+            activate: "Aktywuj",
+            wrongCode: "❌ Błędny kod",
+            success: "✅ Dostęp przyznany!"
         },
         de: {
             sub: "Währungspaar auswählen",
@@ -781,17 +681,13 @@
             welcome: "Willkommen",
             chooseLang: "Sprache wählen",
             flag: "🇩🇪",
-            step1Title: "🔐 Registrierung",
-            step1Text: "Geben Sie Ihre Pocket Option UID ein, um fortzufahren:",
-            step1Placeholder: "UID eingeben",
-            step1Next: "Weiter →",
-            step1Error: "Geben Sie eine gültige UID ein.",
-            step1Success: "UID gespeichert. Tätigen Sie jetzt eine Einzahlung.",
-            step2Title: "💰 Einzahlung",
-            step2Text: "Tätigen Sie eine Einzahlung (min. $10) mit demselben Link und warten Sie auf Bestätigung.",
-            step2Close: "Schließen",
-            step2Waiting: "⏳ Warte auf Einzahlungsbestätigung...",
-            refLink: "🔗 Partnerlink"
+            registerTitle: "🔐 Registrierung",
+            registerText: "Um fortzufahren, schreiben Sie an @accardo_1 und erhalten Sie einen Aktivierungscode.",
+            contact: "@accardo_1",
+            codePlaceholder: "Aktivierungscode eingeben",
+            activate: "Aktivieren",
+            wrongCode: "❌ Falscher Code",
+            success: "✅ Zugang gewährt!"
         },
         fr: {
             sub: "Choisir une paire de devises",
@@ -802,105 +698,194 @@
             welcome: "Bienvenue",
             chooseLang: "Choisissez la langue",
             flag: "🇫🇷",
-            step1Title: "🔐 Inscription",
-            step1Text: "Entrez votre UID Pocket Option pour continuer :",
-            step1Placeholder: "Entrez votre UID",
-            step1Next: "Suivant →",
-            step1Error: "Veuillez entrer un UID valide.",
-            step1Success: "UID enregistré. Effectuez maintenant un dépôt.",
-            step2Title: "💰 Dépôt",
-            step2Text: "Effectuez un dépôt (min. $10) en utilisant le même lien et attendez la confirmation.",
-            step2Close: "Fermer",
-            step2Waiting: "⏳ En attente de confirmation du dépôt...",
-            refLink: "🔗 Lien de parrainage"
+            registerTitle: "🔐 Inscription",
+            registerText: "Pour continuer, écrivez à @accardo_1 et obtenez un code d'activation.",
+            contact: "@accardo_1",
+            codePlaceholder: "Entrez le code d'activation",
+            activate: "Activer",
+            wrongCode: "❌ Code invalide",
+            success: "✅ Accès accordé!"
         }
     };
 
-    // DOM-элементы
+    // --- ЭЛЕМЕНТЫ ---
     const welcomeOverlay = document.getElementById('welcome-overlay');
     const startBtn = document.getElementById('start-btn');
     const langItems = document.querySelectorAll('.language-item');
-
-    // Элементы первого окна
-    const step1Overlay = document.getElementById('register-step1-overlay');
-    const step1Title = document.getElementById('step1-title');
-    const step1Text = document.getElementById('step1-text');
-    const step1UidInput = document.getElementById('step1-uid-input');
-    const step1NextBtn = document.getElementById('step1-next-btn');
-    const step1Message = document.getElementById('step1-message');
-
-    // Элементы второго окна
-    const step2Overlay = document.getElementById('register-step2-overlay');
-    const step2Title = document.getElementById('step2-title');
-    const step2Text = document.getElementById('step2-text');
-    const step2RefLink = document.getElementById('step2-ref-link');
-    const step2CloseBtn = document.getElementById('step2-close-btn');
-    const step2Message = document.getElementById('step2-message');
-
     const pairsContainer = document.getElementById('pairs-container');
     const searchInput = document.getElementById('pair-search');
     const hiddenSelect = document.getElementById('pair');
+    const anBtn = document.getElementById('anBtn');
+    const waitMsg = document.getElementById('wait-msg');
+    const resultDiv = document.getElementById('result');
+    const snowToggle = document.getElementById('snowToggle');
+    const langBtn = document.getElementById('langBtn');
+    const themeBtn = document.getElementById('themeBtn');
+    const smaBtn = document.getElementById('smaBtn');
 
-    // Полный список пар (вставь свой полный массив)
-    const allPairs = [ /* ... твой огромный список ... */ ];
+    // Элементы окна регистрации
+    const registerOverlay = document.getElementById('register-overlay');
+    const registerTitle = document.getElementById('register-title');
+    const registerText = document.getElementById('register-text');
+    const registerContact = document.getElementById('register-contact');
+    const codeInput = document.getElementById('code-input');
+    const activateBtn = document.getElementById('activate-btn');
+    const registerMessage = document.getElementById('register-message');
 
-    // Функции работы с Firebase
-    async function getUserStatus() {
-        if (!userId) return false;
-        const snapshot = await database.ref('users/' + userId).once('value');
-        const data = snapshot.val();
-        return data?.registered || false;
-    }
+    // --- ПОЛНЫЙ СПИСОК ВАЛЮТНЫХ ПАР ---
+    const allPairs = [
+        { name: "EUR/USD", flag: "🇪🇺🇺🇸", type: "Major" },
+        { name: "GBP/USD", flag: "🇬🇧🇺🇸", type: "Major" },
+        { name: "USD/JPY", flag: "🇺🇸🇯🇵", type: "Major" },
+        { name: "USD/CHF", flag: "🇺🇸🇨🇭", type: "Major" },
+        { name: "AUD/USD", flag: "🇦🇺🇺🇸", type: "Major" },
+        { name: "USD/CAD", flag: "🇺🇸🇨🇦", type: "Major" },
+        { name: "NZD/USD", flag: "🇳🇿🇺🇸", type: "Major" },
+        { name: "EUR/GBP", flag: "🇪🇺🇬🇧", type: "Cross" },
+        { name: "EUR/JPY", flag: "🇪🇺🇯🇵", type: "Cross" },
+        { name: "EUR/CHF", flag: "🇪🇺🇨🇭", type: "Cross" },
+        { name: "EUR/CAD", flag: "🇪🇺🇨🇦", type: "Cross" },
+        { name: "EUR/AUD", flag: "🇪🇺🇦🇺", type: "Cross" },
+        { name: "EUR/NZD", flag: "🇪🇺🇳🇿", type: "Cross" },
+        { name: "GBP/JPY", flag: "🇬🇧🇯🇵", type: "Cross" },
+        { name: "GBP/CHF", flag: "🇬🇧🇨🇭", type: "Cross" },
+        { name: "GBP/CAD", flag: "🇬🇧🇨🇦", type: "Cross" },
+        { name: "GBP/AUD", flag: "🇬🇧🇦🇺", type: "Cross" },
+        { name: "GBP/NZD", flag: "🇬🇧🇳🇿", type: "Cross" },
+        { name: "CHF/JPY", flag: "🇨🇭🇯🇵", type: "Cross" },
+        { name: "CAD/JPY", flag: "🇨🇦🇯🇵", type: "Cross" },
+        { name: "AUD/JPY", flag: "🇦🇺🇯🇵", type: "Cross" },
+        { name: "AUD/CHF", flag: "🇦🇺🇨🇭", type: "Cross" },
+        { name: "AUD/CAD", flag: "🇦🇺🇨🇦", type: "Cross" },
+        { name: "AUD/NZD", flag: "🇦🇺🇳🇿", type: "Cross" },
+        { name: "NZD/JPY", flag: "🇳🇿🇯🇵", type: "Cross" },
+        { name: "NZD/CHF", flag: "🇳🇿🇨🇭", type: "Cross" },
+        { name: "NZD/CAD", flag: "🇳🇿🇨🇦", type: "Cross" },
+        { name: "USD/TRY OTC", flag: "🇺🇸🇹🇷", type: "OTC" },
+        { name: "USD/SEK OTC", flag: "🇺🇸🇸🇪", type: "OTC" },
+        { name: "USD/NOK OTC", flag: "🇺🇸🇳🇴", type: "OTC" },
+        { name: "USD/DKK OTC", flag: "🇺🇸🇩🇰", type: "OTC" },
+        { name: "USD/ZAR OTC", flag: "🇺🇸🇿🇦", type: "OTC" },
+        { name: "USD/MXN OTC", flag: "🇺🇸🇲🇽", type: "OTC" },
+        { name: "USD/PLN OTC", flag: "🇺🇸🇵🇱", type: "OTC" },
+        { name: "USD/HUF OTC", flag: "🇺🇸🇭🇺", type: "OTC" },
+        { name: "USD/CZK OTC", flag: "🇺🇸🇨🇿", type: "OTC" },
+        { name: "USD/SGD OTC", flag: "🇺🇸🇸🇬", type: "OTC" },
+        { name: "USD/HKD OTC", flag: "🇺🇸🇭🇰", type: "OTC" },
+        { name: "USD/KRW OTC", flag: "🇺🇸🇰🇷", type: "OTC" },
+        { name: "USD/INR OTC", flag: "🇺🇸🇮🇳", type: "OTC" },
+        { name: "USD/BRL OTC", flag: "🇺🇸🇧🇷", type: "OTC" },
+        { name: "USD/CNY OTC", flag: "🇺🇸🇨🇳", type: "OTC" },
+        { name: "USD/RUB OTC", flag: "🇺🇸🇷🇺", type: "OTC" },
+        { name: "EUR/TRY OTC", flag: "🇪🇺🇹🇷", type: "OTC" },
+        { name: "EUR/SEK OTC", flag: "🇪🇺🇸🇪", type: "OTC" },
+        { name: "EUR/NOK OTC", flag: "🇪🇺🇳🇴", type: "OTC" },
+        { name: "EUR/PLN OTC", flag: "🇪🇺🇵🇱", type: "OTC" },
+        { name: "EUR/HUF OTC", flag: "🇪🇺🇭🇺", type: "OTC" },
+        { name: "EUR/CZK OTC", flag: "🇪🇺🇨🇿", type: "OTC" },
+        { name: "GBP/TRY OTC", flag: "🇬🇧🇹🇷", type: "OTC" },
+        { name: "GBP/ZAR OTC", flag: "🇬🇧🇿🇦", type: "OTC" },
+        { name: "AUD/TRY OTC", flag: "🇦🇺🇹🇷", type: "OTC" },
+        { name: "NZD/TRY OTC", flag: "🇳🇿🇹🇷", type: "OTC" },
+        { name: "CAD/TRY OTC", flag: "🇨🇦🇹🇷", type: "OTC" },
+        { name: "CHF/TRY OTC", flag: "🇨🇭🇹🇷", type: "OTC" },
+        { name: "JPY/TRY OTC", flag: "🇯🇵🇹🇷", type: "OTC" },
+        { name: "SGD/JPY OTC", flag: "🇸🇬🇯🇵", type: "OTC" },
+        { name: "ZAR/JPY OTC", flag: "🇿🇦🇯🇵", type: "OTC" },
+        { name: "TRY/JPY OTC", flag: "🇹🇷🇯🇵", type: "OTC" },
+        { name: "EUR/RUB OTC", flag: "🇪🇺🇷🇺", type: "OTC" },
+        { name: "USD/THB OTC", flag: "🇺🇸🇹🇭", type: "OTC" },
+        { name: "USD/IDR OTC", flag: "🇺🇸🇮🇩", type: "OTC" },
+        { name: "USD/PHP OTC", flag: "🇺🇸🇵🇭", type: "OTC" },
+        { name: "USD/VND OTC", flag: "🇺🇸🇻🇳", type: "OTC" },
+        { name: "USD/PKR OTC", flag: "🇺🇸🇵🇰", type: "OTC" },
+        { name: "USD/BDT OTC", flag: "🇺🇸🇧🇩", type: "OTC" },
+        { name: "USD/LKR OTC", flag: "🇺🇸🇱🇰", type: "OTC" },
+        { name: "USD/MMK OTC", flag: "🇺🇸🇲🇲", type: "OTC" },
+        { name: "USD/KWD OTC", flag: "🇺🇸🇰🇼", type: "OTC" },
+        { name: "USD/SAR OTC", flag: "🇺🇸🇸🇦", type: "OTC" },
+        { name: "USD/AED OTC", flag: "🇺🇸🇦🇪", type: "OTC" },
+        { name: "USD/QAR OTC", flag: "🇺🇸🇶🇦", type: "OTC" },
+        { name: "USD/BHD OTC", flag: "🇺🇸🇧🇭", type: "OTC" },
+        { name: "USD/OMR OTC", flag: "🇺🇸🇴🇲", type: "OTC" },
+        { name: "USD/JOD OTC", flag: "🇺🇸🇯🇴", type: "OTC" },
+        { name: "USD/ILS OTC", flag: "🇺🇸🇮🇱", type: "OTC" },
+        { name: "EUR/GEL OTC", flag: "🇪🇺🇬🇪", type: "OTC" },
+        { name: "EUR/AMD OTC", flag: "🇪🇺🇦🇲", type: "OTC" },
+        { name: "EUR/AZN OTC", flag: "🇪🇺🇦🇿", type: "OTC" },
+        { name: "EUR/BYN OTC", flag: "🇪🇺🇧🇾", type: "OTC" },
+        { name: "EUR/KZT OTC", flag: "🇪🇺🇰🇿", type: "OTC" },
+        { name: "EUR/UZS OTC", flag: "🇪🇺🇺🇿", type: "OTC" },
+        { name: "EUR/TMT OTC", flag: "🇪🇺🇹🇲", type: "OTC" },
+        { name: "EUR/TJS OTC", flag: "🇪🇺🇹🇯", type: "OTC" },
+        { name: "EUR/KGS OTC", flag: "🇪🇺🇰🇬", type: "OTC" },
+        { name: "GBP/SEK OTC", flag: "🇬🇧🇸🇪", type: "OTC" },
+        { name: "GBP/NOK OTC", flag: "🇬🇧🇳🇴", type: "OTC" },
+        { name: "GBP/DKK OTC", flag: "🇬🇧🇩🇰", type: "OTC" },
+        { name: "GBP/PLN OTC", flag: "🇬🇧🇵🇱", type: "OTC" },
+        { name: "GBP/HUF OTC", flag: "🇬🇧🇭🇺", type: "OTC" },
+        { name: "GBP/CZK OTC", flag: "🇬🇧🇨🇿", type: "OTC" },
+        { name: "GBP/SGD OTC", flag: "🇬🇧🇸🇬", type: "OTC" },
+        { name: "GBP/HKD OTC", flag: "🇬🇧🇭🇰", type: "OTC" },
+        { name: "GBP/INR OTC", flag: "🇬🇧🇮🇳", type: "OTC" },
+        { name: "GBP/BRL OTC", flag: "🇬🇧🇧🇷", type: "OTC" },
+        { name: "AUD/SGD OTC", flag: "🇦🇺🇸🇬", type: "OTC" },
+        { name: "AUD/HKD OTC", flag: "🇦🇺🇭🇰", type: "OTC" },
+        { name: "AUD/ZAR OTC", flag: "🇦🇺🇿🇦", type: "OTC" },
+        { name: "AUD/MXN OTC", flag: "🇦🇺🇲🇽", type: "OTC" },
+        { name: "NZD/SGD OTC", flag: "🇳🇿🇸🇬", type: "OTC" },
+        { name: "NZD/HKD OTC", flag: "🇳🇿🇭🇰", type: "OTC" },
+        { name: "NZD/ZAR OTC", flag: "🇳🇿🇿🇦", type: "OTC" },
+        { name: "CAD/SGD OTC", flag: "🇨🇦🇸🇬", type: "OTC" },
+        { name: "CAD/HKD OTC", flag: "🇨🇦🇭🇰", type: "OTC" },
+        { name: "CAD/ZAR OTC", flag: "🇨🇦🇿🇦", type: "OTC" },
+        { name: "CHF/SGD OTC", flag: "🇨🇭🇸🇬", type: "OTC" },
+        { name: "CHF/HKD OTC", flag: "🇨🇭🇭🇰", type: "OTC" },
+        { name: "CHF/ZAR OTC", flag: "🇨🇭🇿🇦", type: "OTC" },
+        { name: "JPY/SGD OTC", flag: "🇯🇵🇸🇬", type: "OTC" },
+        { name: "JPY/HKD OTC", flag: "🇯🇵🇭🇰", type: "OTC" },
+        { name: "JPY/KRW OTC", flag: "🇯🇵🇰🇷", type: "OTC" },
+        { name: "JPY/CNY OTC", flag: "🇯🇵🇨🇳", type: "OTC" },
+        { name: "EUR/SEK", flag: "🇪🇺🇸🇪", type: "Exotic" },
+        { name: "EUR/NOK", flag: "🇪🇺🇳🇴", type: "Exotic" },
+        { name: "USD/SEK", flag: "🇺🇸🇸🇪", type: "Exotic" },
+        { name: "USD/NOK", flag: "🇺🇸🇳🇴", type: "Exotic" },
+        { name: "USD/DKK", flag: "🇺🇸🇩🇰", type: "Exotic" },
+        { name: "USD/ZAR", flag: "🇺🇸🇿🇦", type: "Exotic" },
+        { name: "USD/MXN", flag: "🇺🇸🇲🇽", type: "Exotic" },
+        { name: "USD/PLN", flag: "🇺🇸🇵🇱", type: "Exotic" },
+        { name: "USD/HUF", flag: "🇺🇸🇭🇺", type: "Exotic" },
+        { name: "USD/CZK", flag: "🇺🇸🇨🇿", type: "Exotic" },
+        { name: "USD/SGD", flag: "🇺🇸🇸🇬", type: "Exotic" },
+        { name: "USD/HKD", flag: "🇺🇸🇭🇰", type: "Exotic" },
+        { name: "USD/KRW", flag: "🇺🇸🇰🇷", type: "Exotic" },
+        { name: "USD/INR", flag: "🇺🇸🇮🇳", type: "Exotic" },
+        { name: "USD/BRL", flag: "🇺🇸🇧🇷", type: "Exotic" },
+        { name: "USD/CNY", flag: "🇺🇸🇨🇳", type: "Exotic" },
+        { name: "USD/RUB", flag: "🇺🇸🇷🇺", type: "Exotic" },
+        { name: "EUR/RUB", flag: "🇪🇺🇷🇺", type: "Exotic" },
+        { name: "GBP/SEK", flag: "🇬🇧🇸🇪", type: "Exotic" },
+        { name: "GBP/NOK", flag: "🇬🇧🇳🇴", type: "Exotic" },
+        { name: "AUD/MXN", flag: "🇦🇺🇲🇽", type: "Exotic" },
+        { name: "AUD/ZAR", flag: "🇦🇺🇿🇦", type: "Exotic" },
+        { name: "NZD/MXN", flag: "🇳🇿🇲🇽", type: "Exotic" },
+        { name: "NZD/ZAR", flag: "🇳🇿🇿🇦", type: "Exotic" },
+        { name: "CAD/MXN", flag: "🇨🇦🇲🇽", type: "Exotic" },
+        { name: "CAD/ZAR", flag: "🇨🇦🇿🇦", type: "Exotic" },
+        { name: "CHF/MXN", flag: "🇨🇭🇲🇽", type: "Exotic" },
+        { name: "CHF/ZAR", flag: "🇨🇭🇿🇦", type: "Exotic" },
+        { name: "JPY/MXN", flag: "🇯🇵🇲🇽", type: "Exotic" },
+        { name: "JPY/ZAR", flag: "🇯🇵🇿🇦", type: "Exotic" },
+        { name: "EUR/TRY", flag: "🇪🇺🇹🇷", type: "Exotic" },
+        { name: "GBP/TRY", flag: "🇬🇧🇹🇷", type: "Exotic" },
+        { name: "AUD/TRY", flag: "🇦🇺🇹🇷", type: "Exotic" },
+        { name: "NZD/TRY", flag: "🇳🇿🇹🇷", type: "Exotic" },
+        { name: "CAD/TRY", flag: "🇨🇦🇹🇷", type: "Exotic" },
+        { name: "CHF/TRY", flag: "🇨🇭🇹🇷", type: "Exotic" },
+        { name: "JPY/TRY", flag: "🇯🇵🇹🇷", type: "Exotic" }
+    ];
 
-    async function saveUid(uid) {
-        if (!userId) return;
-        await database.ref('users/' + userId).set({
-            registered: false,
-            uid: uid,
-            requestedAt: Date.now()
-        });
-    }
-
-    // Слушатель изменений статуса
-    function setupRegistrationListener() {
-        if (!userId) return;
-        database.ref('users/' + userId).on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data && data.registered === true) {
-                registered = true;
-                step1Overlay.classList.remove('visible');
-                step2Overlay.classList.remove('visible');
-                console.log('✅ Доступ активирован!');
-            }
-        });
-    }
-
-    // Обработчик кнопки Next (первое окно)
-    step1NextBtn.addEventListener('click', async () => {
-        const uid = step1UidInput.value.trim();
-        if (!uid || uid.length < 3) {
-            step1Message.innerText = dict[curLang].step1Error;
-            step1Message.classList.add('error');
-            return;
-        }
-        step1NextBtn.disabled = true;
-        step1Message.innerText = '⏳ Saving...';
-        step1Message.classList.remove('error');
-        await saveUid(uid);
-        step1Message.innerText = dict[curLang].step1Success;
-        step1Message.classList.remove('error');
-        step1NextBtn.disabled = false;
-        // Переход ко второму окну
-        step1Overlay.classList.remove('visible');
-        step2Overlay.classList.add('visible');
-    });
-
-    // Обработчик кнопки Close (второе окно) – просто скрывает окно, не меняя статус
-    step2CloseBtn.addEventListener('click', () => {
-        step2Overlay.classList.remove('visible');
-    });
-
-    // Обработчик выбора языка в приветствии
+    // --- ИНИЦИАЛИЗАЦИЯ ПРИ ВЫБОРЕ ЯЗЫКА ---
     langItems.forEach(item => {
         item.addEventListener('click', () => {
             langItems.forEach(i => i.classList.remove('selected'));
@@ -913,31 +898,11 @@
         });
     });
 
-    // Обработчик кнопки Start
-    startBtn.addEventListener('click', async () => {
+    // --- СТАРТ ---
+    startBtn.addEventListener('click', () => {
         welcomeOverlay.classList.remove('visible');
         const app = document.getElementById('main-app');
         app.style.display = 'flex';
-
-        // Получаем Telegram ID (или тестовый с сохранением в localStorage)
-        if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-            userId = window.Telegram.WebApp.initDataUnsafe.user.id.toString();
-        } else {
-            // Для теста используем постоянный ID в localStorage
-            let storedId = localStorage.getItem('testUserId');
-            if (!storedId) {
-                storedId = 'test_user_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('testUserId', storedId);
-            }
-            userId = storedId;
-        }
-
-        // Формируем ссылку с click_id
-        const REF_LINK = `https://u3.shortink.io/register?utm_campaign=822097&utm_source=affiliate&utm_medium=sr&a=TNOv4heF82mMb6&ac=osnova&code=EDS965&click_id=${userId}`;
-
-        // Проверяем статус
-        registered = await getUserStatus();
-
         // Заполняем список пар
         allPairs.forEach(p => {
             const option = document.createElement('option');
@@ -947,134 +912,47 @@
         });
         if (allPairs.length > 0) {
             hiddenSelect.value = allPairs[0].name;
+            searchInput.value = allPairs[0].name; // отображаем выбранную пару
         }
         renderPairs();
         initChart();
         setupSnow();
         updateUILang();
 
-        // Устанавливаем ссылку во втором окне
-        step2RefLink.href = REF_LINK;
-        step2RefLink.innerText = dict[curLang].refLink;
-
-        // Устанавливаем слушатель
-        setupRegistrationListener();
-
-        // Если уже зарегистрирован, окна не показываем
-        if (registered) return;
-        // Иначе показываем первое окно
-        step1Overlay.classList.add('visible');
+        // Если уже зарегистрирован, окно регистрации не показывается
     });
 
-    // Функция проверки регистрации при попытке действия
-    function requireRegistration() {
-        if (!registered) {
-            // Если статус false, показываем первое окно (если оно не видно)
-            if (!step1Overlay.classList.contains('visible') && !step2Overlay.classList.contains('visible')) {
-                step1Overlay.classList.add('visible');
-            }
-            return true;
-        }
-        return false;
+    // --- ОБНОВЛЕНИЕ ЯЗЫКА ---
+    function updateUILang() {
+        document.getElementById('sub-header').innerText = dict[curLang].sub;
+        anBtn.innerHTML = `<span>${dict[curLang].an}</span>`;
+        waitMsg.innerText = dict[curLang].wait;
+        document.getElementById('pair-search').placeholder = dict[curLang].sub;
+
+        // Обновляем тексты в окне регистрации
+        registerTitle.innerText = dict[curLang].registerTitle;
+        registerText.innerText = dict[curLang].registerText;
+        registerContact.innerText = dict[curLang].contact;
+        codeInput.placeholder = dict[curLang].codePlaceholder;
+        activateBtn.innerText = dict[curLang].activate;
     }
 
-    // Переопределяем функции для проверки регистрации
-    const originalStartAnalysis = window.startAnalysis;
-    window.startAnalysis = function(btn) {
-        if (requireRegistration()) return;
-        originalStartAnalysis(btn);
+    langBtn.onclick = function() {
+        const langs = ['en', 'ru', 'pl', 'de', 'fr'];
+        let idx = langs.indexOf(curLang);
+        idx = (idx + 1) % langs.length;
+        curLang = langs[idx];
+        this.innerHTML = `${dict[curLang].flag} ${curLang.toUpperCase()}`;
+        updateUILang();
     };
 
-    const originalSelectTf = window.selectTf;
-    window.selectTf = function(btn) {
-        if (requireRegistration()) return;
-        originalSelectTf(btn);
-        if (window.Telegram?.WebApp?.HapticFeedback) {
-            window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-        }
-    };
-
-    const originalChangePair = window.changePair;
-    window.changePair = function() {
-        if (requireRegistration()) return;
-        originalChangePair();
-    };
-
-    const originalToggleSMA = window.toggleSMA;
-    window.toggleSMA = function() {
-        if (requireRegistration()) return;
-        originalToggleSMA();
-    };
-
-    const originalZoomIn = window.zoomIn;
-    window.zoomIn = function() {
-        if (requireRegistration()) return;
-        originalZoomIn();
-    };
-
-    const originalZoomOut = window.zoomOut;
-    window.zoomOut = function() {
-        if (requireRegistration()) return;
-        originalZoomOut();
-    };
-
-    // Управление видимостью списка пар
-    searchInput.addEventListener('focus', () => {
-        pairsContainer.style.display = 'block';
-    });
-    searchInput.addEventListener('blur', () => {
-        setTimeout(() => {
-            if (!pairsContainer.contains(document.activeElement)) {
-                pairsContainer.style.display = 'none';
-            }
-        }, 200);
-    });
-
-    function renderPairs(filter = '') {
-        const filterLower = filter.toLowerCase();
-        const filtered = allPairs.filter(p => 
-            p.name.toLowerCase().includes(filterLower) || 
-            p.type.toLowerCase().includes(filterLower)
-        );
-        
-        pairsContainer.innerHTML = '';
-        filtered.forEach(pair => {
-            const div = document.createElement('div');
-            div.className = 'pair-option';
-            if (pair.name === hiddenSelect.value) {
-                div.classList.add('selected');
-            }
-            div.innerHTML = `
-                <span class="pair-flag">${pair.flag}</span>
-                <span class="pair-name">${pair.name}</span>
-                <span class="pair-type">${pair.type}</span>
-            `;
-            div.addEventListener('click', () => {
-                document.querySelectorAll('.pair-option').forEach(el => el.classList.remove('selected'));
-                div.classList.add('selected');
-                hiddenSelect.value = pair.name;
-                changePair();
-                pairsContainer.style.display = 'none';
-                searchInput.blur();
-            });
-            pairsContainer.appendChild(div);
-        });
-
-        if (filtered.length === 0) {
-            const empty = document.createElement('div');
-            empty.className = 'pair-option';
-            empty.style.justifyContent = 'center';
-            empty.style.padding = '20px';
-            empty.innerText = '❌ Nothing found';
-            pairsContainer.appendChild(empty);
-        }
+    // --- ТЕМА ---
+    function toggleTheme() {
+        document.body.classList.toggle('light-theme');
     }
+    themeBtn.onclick = toggleTheme;
 
-    searchInput.addEventListener('input', (e) => {
-        renderPairs(e.target.value);
-    });
-
-    // --- Снег ---
+    // --- СНЕГ ---
     const sCanvas = document.getElementById('snow-layer');
     const sCtx = sCanvas.getContext('2d');
     let flakes = [];
@@ -1113,41 +991,70 @@
 
     function toggleSnow() {
         snowEnabled = !snowEnabled;
-        document.getElementById('snowToggle').innerText = snowEnabled ? '❄️' : '☃️';
+        snowToggle.innerText = snowEnabled ? '❄️' : '☃️';
+    }
+    snowToggle.onclick = toggleSnow;
+
+    // --- ПОИСК ПАР ---
+    function renderPairs(filter = '') {
+        const filterLower = filter.toLowerCase();
+        const filtered = allPairs.filter(p => 
+            p.name.toLowerCase().includes(filterLower) || 
+            p.type.toLowerCase().includes(filterLower)
+        );
+        
+        pairsContainer.innerHTML = '';
+        filtered.forEach(pair => {
+            const div = document.createElement('div');
+            div.className = 'pair-option';
+            if (pair.name === hiddenSelect.value) {
+                div.classList.add('selected');
+            }
+            div.innerHTML = `
+                <span class="pair-flag">${pair.flag}</span>
+                <span class="pair-name">${pair.name}</span>
+                <span class="pair-type">${pair.type}</span>
+            `;
+            div.addEventListener('click', () => {
+                document.querySelectorAll('.pair-option').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+                hiddenSelect.value = pair.name;
+                searchInput.value = pair.name; // отображаем выбранную пару
+                changePair();
+                pairsContainer.style.display = 'none';
+                searchInput.blur();
+            });
+            pairsContainer.appendChild(div);
+        });
+
+        if (filtered.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'pair-option';
+            empty.style.justifyContent = 'center';
+            empty.style.padding = '20px';
+            empty.innerText = '❌ Nothing found';
+            pairsContainer.appendChild(empty);
+        }
     }
 
-    function toggleTheme() {
-        document.body.classList.toggle('light-theme');
-    }
+    // Клик по полю поиска открывает список
+    searchInput.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        pairsContainer.style.display = 'block';
+    });
+    // Закрытие списка при клике вне
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !pairsContainer.contains(e.target)) {
+            pairsContainer.style.display = 'none';
+        }
+    });
+    searchInput.addEventListener('input', (e) => {
+        renderPairs(e.target.value);
+        // Если список скрыт, показываем
+        pairsContainer.style.display = 'block';
+    });
 
-    document.getElementById('langBtn').onclick = function() {
-        const langs = ['en', 'ru', 'pl', 'de', 'fr'];
-        let idx = langs.indexOf(curLang);
-        idx = (idx + 1) % langs.length;
-        curLang = langs[idx];
-        this.innerHTML = `${dict[curLang].flag} ${curLang.toUpperCase()}`;
-        updateUILang();
-    };
-
-    function updateUILang() {
-        document.getElementById('sub-header').innerText = dict[curLang].sub;
-        document.getElementById('anBtn').innerHTML = `<span>${dict[curLang].an}</span>`;
-        document.getElementById('wait-msg').innerText = dict[curLang].wait;
-        document.getElementById('pair-search').placeholder = dict[curLang].sub;
-
-        // Обновляем тексты в окнах
-        step1Title.innerText = dict[curLang].step1Title;
-        step1Text.innerText = dict[curLang].step1Text;
-        step1UidInput.placeholder = dict[curLang].step1Placeholder;
-        step1NextBtn.innerText = dict[curLang].step1Next;
-        step2Title.innerText = dict[curLang].step2Title;
-        step2Text.innerText = dict[curLang].step2Text;
-        step2CloseBtn.innerText = dict[curLang].step2Close;
-        step2Message.innerText = dict[curLang].step2Waiting;
-        step2RefLink.innerText = dict[curLang].refLink;
-    }
-
-    // --- График (без изменений) ---
+    // --- ГРАФИК ---
     function setupCanvas() {
         const rect = canvas.parentElement.getBoundingClientRect();
         canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
@@ -1259,6 +1166,7 @@
         }
     }
 
+    // --- ОБНОВЛЕНИЕ СВЕЧЕЙ ---
     setInterval(() => {
         if(candles.length === 0) return;
         candles.shift();
@@ -1278,6 +1186,7 @@
         animateNew();
     }, 3000);
 
+    // --- МАСШТАБИРОВАНИЕ ---
     function zoomIn() {
         if (candleCount > 5) candleCount -= 2;
         initChart();
@@ -1286,13 +1195,18 @@
         if (candleCount < 30) candleCount += 2;
         initChart();
     }
+    window.zoomIn = zoomIn;
+    window.zoomOut = zoomOut;
 
+    // --- SMA ---
     function toggleSMA() {
         showSMA = !showSMA;
-        document.getElementById('smaBtn').classList.toggle('active', showSMA);
+        smaBtn.classList.toggle('active', showSMA);
         render();
     }
+    window.toggleSMA = toggleSMA;
 
+    // --- ПОДСКАЗКА НА СВЕЧЕ ---
     canvas.addEventListener('mousemove', (e) => {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
@@ -1311,11 +1225,7 @@
     });
     canvas.addEventListener('mouseleave', () => document.getElementById('tooltip').style.display = 'none');
 
-    canvas.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
-    canvas.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-    });
-
+    // --- СМЕНА ПАРЫ ---
     function changePair() {
         canvas.style.opacity = '0.3';
         setTimeout(() => {
@@ -1330,8 +1240,16 @@
             });
         }, 500);
     }
+    window.changePair = changePair;
 
+    // --- АНАЛИЗ (с проверкой регистрации) ---
     function startAnalysis(btn) {
+        if (!registered) {
+            // Показываем окно регистрации
+            registerOverlay.classList.add('visible');
+            return;
+        }
+        // Если зарегистрирован, выполняем анализ
         const res = document.getElementById('result');
         const stat = document.getElementById('status');
         res.classList.remove('visible');
@@ -1350,6 +1268,7 @@
             res.style.animation = 'popIn 0.4s';
             setTimeout(() => res.style.animation = '', 400);
 
+            // Вибрация в Telegram
             if (window.Telegram?.WebApp?.HapticFeedback) {
                 if (isUp) {
                     window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
@@ -1358,20 +1277,48 @@
                 }
                 window.Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
             }
-
-            confettiEffect(isUp);
         }, 1500);
     }
+    window.startAnalysis = startAnalysis;
 
-    function confettiEffect(isUp) {
-        console.log('🎉 Confetti', isUp ? 'green' : 'red');
-    }
+    // --- АКТИВАЦИЯ ПО КОДУ ---
+    activateBtn.addEventListener('click', () => {
+        const code = codeInput.value.trim();
+        if (code === '1034163834') {
+            registered = true;
+            localStorage.setItem('optibotx_registered', 'true');
+            registerMessage.innerText = dict[curLang].success;
+            registerMessage.classList.remove('error');
+            registerMessage.classList.add('success');
+            setTimeout(() => {
+                registerOverlay.classList.remove('visible');
+                registerMessage.innerText = '';
+            }, 1500);
+        } else {
+            registerMessage.innerText = dict[curLang].wrongCode;
+            registerMessage.classList.add('error');
+            registerMessage.classList.remove('success');
+        }
+    });
 
+    // Закрытие окна регистрации при клике вне (опционально)
+    registerOverlay.addEventListener('click', (e) => {
+        if (e.target === registerOverlay) {
+            registerOverlay.classList.remove('visible');
+        }
+    });
+
+    // --- ВЫБОР ТАЙМФРЕЙМА ---
     function selectTf(btn) {
         document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+            window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        }
     }
+    window.selectTf = selectTf;
 
+    // --- ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ---
     if (window.Telegram?.WebApp) {
         window.Telegram.WebApp.expand();
     }
