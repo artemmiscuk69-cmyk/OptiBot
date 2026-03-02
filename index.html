@@ -246,7 +246,7 @@
             color: #00ff88;
         }
 
-        /* --- МОДАЛЬНОЕ ОКНО АДМИН-ПАНЕЛИ --- */
+        /* --- МОДАЛЬНОЕ ОКНО АДМИН-ПАНЕЛИ (расширенное) --- */
         .admin-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -271,11 +271,13 @@
             border-radius: 40px;
             padding: 30px 20px;
             width: 80%;
-            max-width: 340px;
+            max-width: 380px;
             text-align: center;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             transform: scale(0.9);
             animation: glassAppear 0.4s forwards;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         .admin-glass h3 {
             margin-top: 0;
@@ -549,6 +551,45 @@
             opacity: 0;
         }
 
+        /* --- ТРИ TELEGRAM-ССЫЛКИ (красивые кнопки) --- */
+        .tg-links {
+            display: flex;
+            justify-content: space-around;
+            gap: 8px;
+            margin: 10px 0 0;
+        }
+        .tg-link-btn {
+            flex: 1;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 10px 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .tg-link-btn:hover {
+            background: var(--hover-color);
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 5px 15px var(--accent-glow);
+        }
+        .tg-link-btn .tg-icon {
+            font-size: 20px;
+            filter: drop-shadow(0 0 5px var(--accent));
+        }
+        .tg-link-btn span {
+            word-break: break-word;
+            text-align: center;
+        }
+
         .status-area { 
             display: flex; justify-content: center; align-items: center; gap: 10px; height: 30px; margin-bottom: 10px;
             animation: fadeIn 0.5s;
@@ -648,7 +689,7 @@
     </div>
 </div>
 
-<!-- Админ-панель (открывается после ввода админ-кода) -->
+<!-- Админ-панель (расширенная) -->
 <div id="admin-overlay" class="admin-overlay">
     <div class="admin-glass">
         <h3>⚙️ Admin Panel</h3>
@@ -659,6 +700,18 @@
         <div class="admin-field">
             <label>Watermark text:</label>
             <input type="text" id="admin-watermark" placeholder="Watermark">
+        </div>
+        <div class="admin-field">
+            <label>Telegram Channel URL:</label>
+            <input type="url" id="admin-channel" placeholder="https://t.me/...">
+        </div>
+        <div class="admin-field">
+            <label>Telegram Reviews URL:</label>
+            <input type="url" id="admin-reviews" placeholder="https://t.me/...">
+        </div>
+        <div class="admin-field">
+            <label>Telegram Support URL:</label>
+            <input type="url" id="admin-support" placeholder="https://t.me/...">
         </div>
         <button id="admin-save-btn" class="admin-btn">Save Changes</button>
         <button id="admin-close-btn" class="admin-btn admin-close">Close</button>
@@ -718,6 +771,22 @@
 
     <button id="anBtn" class="analyze-btn" onclick="startAnalysis(this)"><span>Анализировать</span></button>
 
+    <!-- Три Telegram-ссылки (под кнопкой) -->
+    <div class="tg-links">
+        <a id="tg-channel" class="tg-link-btn" href="#" target="_blank">
+            <span class="tg-icon">📢</span>
+            <span id="tg-channel-text">Channel</span>
+        </a>
+        <a id="tg-reviews" class="tg-link-btn" href="#" target="_blank">
+            <span class="tg-icon">⭐</span>
+            <span id="tg-reviews-text">Reviews</span>
+        </a>
+        <a id="tg-support" class="tg-link-btn" href="#" target="_blank">
+            <span class="tg-icon">🆘</span>
+            <span id="tg-support-text">Support</span>
+        </a>
+    </div>
+
     <div id="status" class="status-area">
         <div class="dot"></div> <span id="wait-msg">Ожидание...</span>
     </div>
@@ -744,11 +813,14 @@
     // Админские настройки (по умолчанию)
     let adminUsername = localStorage.getItem('admin_username') || '@accardo_1';
     let adminWatermark = localStorage.getItem('admin_watermark') || 'OptiBotX PRO';
+    let adminChannel = localStorage.getItem('admin_channel') || 'https://t.me/optibotx_channel';
+    let adminReviews = localStorage.getItem('admin_reviews') || 'https://t.me/optibotx_reviews';
+    let adminSupport = localStorage.getItem('admin_support') || 'https://t.me/accardo_1';
 
     // Применяем водяной знак
     document.getElementById('watermark').innerText = adminWatermark;
 
-    // --- СЛОВАРЬ ---
+    // --- СЛОВАРЬ (добавлены ключи для трёх ссылок) ---
     const dict = {
         en: { 
             sub: "Select currency pair", 
@@ -766,7 +838,10 @@
             wrongCode: "❌ Invalid code",
             success: "✅ Access granted!",
             adminSuccess: "✅ Admin mode",
-            contact: "Contact"
+            contact: "Contact",
+            channel: "Channel",
+            reviews: "Reviews",
+            support: "Support"
         },
         ru: { 
             sub: "Выбери валютную пару", 
@@ -784,7 +859,10 @@
             wrongCode: "❌ Неверный код",
             success: "✅ Доступ открыт!",
             adminSuccess: "✅ Режим администратора",
-            contact: "Контакт"
+            contact: "Контакт",
+            channel: "Канал",
+            reviews: "Отзывы",
+            support: "Поддержка"
         },
         pl: {
             sub: "Wybierz parę walutową",
@@ -802,7 +880,10 @@
             wrongCode: "❌ Błędny kod",
             success: "✅ Dostęp przyznany!",
             adminSuccess: "✅ Tryb administratora",
-            contact: "Kontakt"
+            contact: "Kontakt",
+            channel: "Kanał",
+            reviews: "Opinie",
+            support: "Wsparcie"
         },
         de: {
             sub: "Währungspaar auswählen",
@@ -820,7 +901,10 @@
             wrongCode: "❌ Falscher Code",
             success: "✅ Zugang gewährt!",
             adminSuccess: "✅ Admin-Modus",
-            contact: "Kontakt"
+            contact: "Kontakt",
+            channel: "Kanal",
+            reviews: "Bewertungen",
+            support: "Support"
         },
         fr: {
             sub: "Choisir une paire de devises",
@@ -838,7 +922,10 @@
             wrongCode: "❌ Code invalide",
             success: "✅ Accès accordé!",
             adminSuccess: "✅ Mode administrateur",
-            contact: "Contact"
+            contact: "Contact",
+            channel: "Chaîne",
+            reviews: "Avis",
+            support: "Support"
         }
     };
 
@@ -866,15 +953,31 @@
     const activateBtn = document.getElementById('activate-btn');
     const registerMessage = document.getElementById('register-message');
 
-    // Элементы админки
+    // Элементы админки (расширенные)
     const adminOpenBtn = document.getElementById('admin-open-btn');
     const adminOverlay = document.getElementById('admin-overlay');
     const adminUsernameInput = document.getElementById('admin-username');
     const adminWatermarkInput = document.getElementById('admin-watermark');
+    const adminChannelInput = document.getElementById('admin-channel');
+    const adminReviewsInput = document.getElementById('admin-reviews');
+    const adminSupportInput = document.getElementById('admin-support');
     const adminSaveBtn = document.getElementById('admin-save-btn');
     const adminCloseBtn = document.getElementById('admin-close-btn');
 
-    // --- ПОЛНЫЙ СПИСОК ВАЛЮТНЫХ ПАР ---
+    // Элементы Telegram-ссылок
+    const tgChannelLink = document.getElementById('tg-channel');
+    const tgReviewsLink = document.getElementById('tg-reviews');
+    const tgSupportLink = document.getElementById('tg-support');
+    const tgChannelText = document.getElementById('tg-channel-text');
+    const tgReviewsText = document.getElementById('tg-reviews-text');
+    const tgSupportText = document.getElementById('tg-support-text');
+
+    // Применяем сохранённые ссылки
+    tgChannelLink.href = adminChannel;
+    tgReviewsLink.href = adminReviews;
+    tgSupportLink.href = adminSupport;
+
+    // --- ПОЛНЫЙ СПИСОК ВАЛЮТНЫХ ПАР (более 200) ---
     const allPairs = [
         { name: "EUR/USD", flag: "🇪🇺🇺🇸", type: "Major" },
         { name: "GBP/USD", flag: "🇬🇧🇺🇸", type: "Major" },
@@ -1062,18 +1165,22 @@
         updateUILang();
     });
 
-    // --- ОБНОВЛЕНИЕ ЯЗЫКА ---
+    // --- ОБНОВЛЕНИЕ ЯЗЫКА (включая текст ссылок) ---
     function updateUILang() {
         document.getElementById('sub-header').innerText = dict[curLang].sub;
         anBtn.innerHTML = `<span>${dict[curLang].an}</span>`;
         waitMsg.innerText = dict[curLang].wait;
         document.getElementById('pair-search').placeholder = dict[curLang].sub;
 
-        // Обновляем тексты в окне регистрации
         registerTitle.innerText = dict[curLang].registerTitle;
         registerText.innerText = dict[curLang].registerText;
         codeInput.placeholder = dict[curLang].codePlaceholder;
         activateBtn.innerText = dict[curLang].submit;
+
+        // Текст трёх ссылок
+        tgChannelText.innerText = dict[curLang].channel;
+        tgReviewsText.innerText = dict[curLang].reviews;
+        tgSupportText.innerText = dict[curLang].support;
     }
 
     langBtn.onclick = function() {
@@ -1387,7 +1494,6 @@
             registerOverlay.classList.add('visible');
             return;
         }
-        // Если зарегистрирован, выполняем анализ
         const res = document.getElementById('result');
         const stat = document.getElementById('status');
         res.classList.remove('visible');
@@ -1406,7 +1512,6 @@
             res.style.animation = 'popIn 0.4s';
             setTimeout(() => res.style.animation = '', 400);
 
-            // Вибрация в Telegram
             if (window.Telegram?.WebApp?.HapticFeedback) {
                 if (isUp) {
                     window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
@@ -1438,6 +1543,9 @@
             // Предзаполняем поля
             adminUsernameInput.value = adminUsername.replace('@', '');
             adminWatermarkInput.value = adminWatermark;
+            adminChannelInput.value = adminChannel;
+            adminReviewsInput.value = adminReviews;
+            adminSupportInput.value = adminSupport;
             adminOverlay.classList.add('visible');
             registerMessage.innerText = '';
         } else {
@@ -1447,17 +1555,14 @@
         }
     });
 
-    // Закрытие окна регистрации при клике вне
     registerOverlay.addEventListener('click', (e) => {
         if (e.target === registerOverlay) {
             registerOverlay.classList.remove('visible');
         }
     });
 
-    // --- АДМИН-ПАНЕЛЬ ---
-    // Кнопка открытия админки (если пользователь уже админ, можно открыть напрямую, но для безопасности оставим код)
+    // --- АДМИН-ПАНЕЛЬ (сохранение всех полей) ---
     adminOpenBtn.addEventListener('click', () => {
-        // Можно сразу открывать окно регистрации с предложением ввести админ-код
         registerOverlay.classList.add('visible');
     });
 
@@ -1473,6 +1578,24 @@
             adminWatermark = newWatermark;
             localStorage.setItem('admin_watermark', adminWatermark);
             watermarkDiv.innerText = adminWatermark;
+        }
+        let newChannel = adminChannelInput.value.trim();
+        if (newChannel) {
+            adminChannel = newChannel;
+            localStorage.setItem('admin_channel', adminChannel);
+            tgChannelLink.href = adminChannel;
+        }
+        let newReviews = adminReviewsInput.value.trim();
+        if (newReviews) {
+            adminReviews = newReviews;
+            localStorage.setItem('admin_reviews', adminReviews);
+            tgReviewsLink.href = adminReviews;
+        }
+        let newSupport = adminSupportInput.value.trim();
+        if (newSupport) {
+            adminSupport = newSupport;
+            localStorage.setItem('admin_support', adminSupport);
+            tgSupportLink.href = adminSupport;
         }
         adminOverlay.classList.remove('visible');
     });
