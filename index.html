@@ -147,7 +147,7 @@
             box-shadow: 0 0 50px var(--accent-glow);
         }
 
-        /* --- МОДАЛЬНОЕ ОКНО РЕГИСТРАЦИИ (единое для ввода кода) --- */
+        /* --- МОДАЛЬНОЕ ОКНО РЕГИСТРАЦИИ (только код) --- */
         .register-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -246,121 +246,87 @@
             color: #00ff88;
         }
 
-        /* --- МОДАЛЬНОЕ ОКНО АДМИН-ПАНЕЛИ (расширенное) --- */
-        .admin-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(10px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 30000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-        .admin-overlay.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-        .admin-glass {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 40px;
-            padding: 30px 20px;
-            width: 80%;
-            max-width: 380px;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            transform: scale(0.9);
-            animation: glassAppear 0.4s forwards;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .admin-glass h3 {
-            margin-top: 0;
-            font-size: 1.5rem;
-            color: var(--accent);
-            margin-bottom: 20px;
-        }
-        .admin-field {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        .admin-field label {
-            display: block;
-            font-size: 0.9rem;
-            color: #aaa;
-            margin-bottom: 5px;
-        }
-        .admin-field input {
-            width: 100%;
-            padding: 10px;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            color: var(--text-color);
-            font-size: 1rem;
-            outline: none;
-            box-sizing: border-box;
-        }
-        .admin-field input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
-        .admin-btn {
-            background: var(--accent);
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 600;
-            padding: 12px 20px;
-            border-radius: 40px;
-            cursor: pointer;
-            width: 100%;
-            transition: 0.3s;
-            box-shadow: 0 0 20px var(--accent-glow);
-            margin-top: 10px;
-        }
-        .admin-btn:hover {
-            transform: scale(1.05);
-        }
-        .admin-close {
-            margin-top: 15px;
-            background: transparent;
-            border: 1px solid var(--glass-border);
-            color: var(--text-color);
-        }
-
-        /* --- ОСНОВНОЕ ПРИЛОЖЕНИЕ --- */
+        /* --- ОСНОВНОЕ ПРИЛОЖЕНИЕ (адаптивная вёрстка) --- */
         .app-container {
-            width: 100%; max-width: 400px; height: 98vh; background: var(--app-bg);
+            width: 100%;
+            max-width: 400px;
+            height: 100vh; /* на всю высоту экрана */
+            background: var(--app-bg);
             display: none;
-            flex-direction: column; padding: 15px; box-sizing: border-box;
-            position: relative; border: 1px solid var(--border-color); border-radius: 12px;
+            flex-direction: column;
+            padding: 12px 15px;
+            box-sizing: border-box;
+            position: relative;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
             animation: fadeInScale 0.5s ease-out;
             transition: background 0.3s, border-color 0.3s;
+            overflow-y: auto; /* на случай если контент не помещается */
         }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .logo h1 { font-size: 18px; margin: 0; color: var(--text-color); animation: glowPulse 2s infinite; }
-        .logo span { color: var(--accent); font-weight: 800; text-shadow: 0 0 8px var(--accent); }
-        .header-buttons { display: flex; gap: 5px; }
+        /* Для маленьких экранов уменьшаем отступы */
+        @media (max-height: 700px) {
+            .app-container {
+                padding: 8px 12px;
+            }
+            .chart-container {
+                height: 220px;
+            }
+            .tf-btn {
+                padding: 6px;
+                font-size: 10px;
+            }
+            .analyze-btn {
+                padding: 12px;
+                margin: 6px 0;
+            }
+        }
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 8px; 
+            flex-shrink: 0;
+        }
+        .logo h1 { 
+            font-size: clamp(16px, 4vw, 18px); 
+            margin: 0; 
+            color: var(--text-color); 
+            animation: glowPulse 2s infinite; 
+        }
+        .logo span { 
+            color: var(--accent); 
+            font-weight: 800; 
+            text-shadow: 0 0 8px var(--accent); 
+        }
+        .header-buttons { 
+            display: flex; 
+            gap: 4px; 
+            flex-wrap: wrap; 
+            justify-content: flex-end;
+        }
         .icon-btn { 
-            background: var(--secondary-bg); border: 1px solid var(--border-color); color: var(--text-color); 
-            padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 14px;
+            background: var(--secondary-bg); 
+            border: 1px solid var(--border-color); 
+            color: var(--text-color); 
+            padding: 5px 8px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 13px;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             gap: 4px;
         }
-        .icon-btn:hover { background: var(--hover-color); transform: scale(1.05); }
+        .icon-btn:hover { 
+            background: var(--hover-color); 
+            transform: scale(1.05); 
+        }
 
         /* --- КОНТЕЙНЕР ДЛЯ ПОИСКА И ПАР --- */
         .selector-container {
             position: relative;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
         }
         .search-icon {
             position: absolute;
@@ -378,7 +344,7 @@
             color: var(--text-color);
             border: 1px solid var(--border-color);
             border-radius: 10px;
-            padding: 12px 12px 12px 40px;
+            padding: 10px 12px 10px 40px;
             font-size: 14px;
             outline: none;
             box-sizing: border-box;
@@ -394,7 +360,7 @@
             font-size: 14px;
         }
         .pairs-container {
-            max-height: 250px;
+            max-height: 200px;
             overflow-y: auto;
             background: var(--secondary-bg);
             border: 1px solid var(--border-color);
@@ -420,13 +386,14 @@
             border-radius: 10px;
         }
         .pair-option {
-            padding: 10px 15px;
+            padding: 8px 12px;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
             gap: 10px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 13px;
         }
         .pair-option:last-child {
             border-bottom: none;
@@ -445,7 +412,6 @@
         }
         .pair-option .pair-name {
             flex: 1;
-            font-size: 13px;
             font-weight: 500;
         }
         .pair-option .pair-type {
@@ -460,7 +426,6 @@
             background: rgba(255,255,255,0.2);
         }
 
-        /* старый select скрываем */
         #pair {
             display: none;
         }
@@ -468,54 +433,99 @@
         /* --- ГРАФИК --- */
         .chart-container {
             position: relative;
-            width: 100%; height: 280px; margin-bottom: 15px;
+            width: 100%;
+            height: 240px; /* уменьшил для мобильных */
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+        @media (max-height: 700px) {
+            .chart-container {
+                height: 180px;
+            }
         }
         .chart-box { 
-            width: 100%; height: 100%; background: var(--app-bg); 
-            border-radius: 10px; border: 1px solid var(--border-color);
-            position: relative; overflow: hidden;
+            width: 100%; 
+            height: 100%; 
+            background: var(--app-bg); 
+            border-radius: 10px; 
+            border: 1px solid var(--border-color);
+            position: relative; 
+            overflow: hidden;
             transition: box-shadow 0.3s;
         }
-        .chart-box:hover { box-shadow: 0 0 20px var(--accent-glow); }
-        #mainChart { width: 100%; height: 100%; display: block; }
+        .chart-box:hover { 
+            box-shadow: 0 0 20px var(--accent-glow); 
+        }
+        #mainChart { 
+            width: 100%; 
+            height: 100%; 
+            display: block; 
+        }
         .watermark {
             position: absolute;
             bottom: 5px;
             right: 10px;
-            font-size: 11px;
+            font-size: 10px;
             color: rgba(255,255,255,0.2);
             pointer-events: none;
             z-index: 5;
             text-shadow: 0 0 2px rgba(0,0,0,0.5);
-            transition: color 0.3s;
         }
         body.light-theme .watermark {
             color: rgba(0,0,0,0.2);
         }
         .chart-controls {
-            position: absolute; top: 5px; right: 5px; display: flex; gap: 5px; z-index: 10;
+            position: absolute; 
+            top: 5px; 
+            right: 5px; 
+            display: flex; 
+            gap: 5px; 
+            z-index: 10;
         }
         .chart-controls button {
-            background: var(--secondary-bg); border: 1px solid var(--border-color); color: var(--text-color);
-            width: 30px; height: 30px; border-radius: 15px; cursor: pointer; font-weight: bold;
+            background: var(--secondary-bg); 
+            border: 1px solid var(--border-color); 
+            color: var(--text-color);
+            width: 28px; 
+            height: 28px; 
+            border-radius: 14px; 
+            cursor: pointer; 
+            font-weight: bold;
             transition: all 0.3s;
+            font-size: 14px;
         }
-        .chart-controls button:hover { background: var(--accent); color: white; }
+        .chart-controls button:hover { 
+            background: var(--accent); 
+            color: white; 
+        }
 
-        .tf-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
+        .tf-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 5px; 
+            margin-bottom: 5px; 
+            flex-shrink: 0;
+        }
         
         .tf-btn, .analyze-btn {
             will-change: transform;
         }
         .tf-btn { 
-            background: var(--secondary-bg); border: 1px solid var(--border-color); color: #666; 
-            padding: 10px; border-radius: 8px; font-size: 12px; cursor: pointer; 
+            background: var(--secondary-bg); 
+            border: 1px solid var(--border-color); 
+            color: #666; 
+            padding: 8px 0; 
+            border-radius: 8px; 
+            font-size: 11px; 
+            cursor: pointer; 
             transition: all 0.3s ease;
-            position: relative; overflow: hidden;
+            position: relative; 
+            overflow: hidden;
+            font-weight: 600;
         }
         
         .tf-btn:hover {
-            transform: scale(1.1);
+            transform: scale(1.05);
             background: var(--hover-color);
             color: var(--text-color);
             border-color: var(--accent);
@@ -524,46 +534,75 @@
         }
 
         .tf-btn.active { 
-            background: var(--accent); color: white; border-color: var(--accent); 
+            background: var(--accent); 
+            color: white; 
+            border-color: var(--accent); 
             box-shadow: 0 0 15px var(--accent-glow);
             animation: pulse 1.5s infinite;
         }
-        .tf-btn.active:hover { transform: scale(1.1); background: var(--accent); }
 
+        /* --- КНОПКА АНАЛИЗА С COOLDOWN --- */
         .analyze-btn { 
-            width: 100%; background: var(--accent); border: none; padding: 16px; border-radius: 12px; 
-            color: white; font-weight: bold; cursor: pointer; font-size: 16px; margin: 10px 0;
-            transition: all 0.3s; position: relative; overflow: hidden;
+            width: 100%; 
+            background: var(--accent); 
+            border: none; 
+            padding: 14px; 
+            border-radius: 12px; 
+            color: white; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: clamp(14px, 4vw, 16px); 
+            margin: 5px 0;
+            transition: all 0.3s; 
+            position: relative; 
+            overflow: hidden;
+            flex-shrink: 0;
         }
         .analyze-btn:hover { 
-            background: var(--accent); transform: translateY(-2px); box-shadow: 0 10px 20px var(--accent-glow);
+            background: var(--accent); 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 20px var(--accent-glow);
         }
-        .analyze-btn:active { transform: translateY(0); }
-        .analyze-btn.loading {
-            pointer-events: none; opacity: 0.8;
+        .analyze-btn:active { 
+            transform: translateY(0); 
         }
-        .analyze-btn.loading::before {
-            content: ''; position: absolute; top: 50%; left: 50%; width: 20px; height: 20px;
-            margin-top: -10px; margin-left: -10px; border: 2px solid transparent; border-top-color: white;
-            border-radius: 50%; animation: spin 1s linear infinite;
+        .analyze-btn.cooldown {
+            pointer-events: none;
+            opacity: 0.7;
+            position: relative;
         }
-        .analyze-btn.loading span {
+        .analyze-btn.cooldown::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 24px;
+            height: 24px;
+            margin-left: -12px;
+            margin-top: -12px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .analyze-btn.cooldown span {
             opacity: 0;
         }
 
-        /* --- ТРИ TELEGRAM-ССЫЛКИ (красивые кнопки) --- */
+        /* --- ТРИ TELEGRAM-ССЫЛКИ --- */
         .tg-links {
             display: flex;
             justify-content: space-around;
-            gap: 8px;
-            margin: 10px 0 0;
+            gap: 6px;
+            margin: 5px 0 0;
+            flex-shrink: 0;
         }
         .tg-link-btn {
             flex: 1;
             background: var(--secondary-bg);
             border: 1px solid var(--border-color);
             border-radius: 20px;
-            padding: 10px 5px;
+            padding: 8px 4px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -571,7 +610,7 @@
             color: var(--text-color);
             text-decoration: none;
             transition: all 0.3s;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             cursor: pointer;
         }
@@ -582,20 +621,25 @@
             box-shadow: 0 5px 15px var(--accent-glow);
         }
         .tg-link-btn .tg-icon {
-            font-size: 20px;
+            font-size: 18px;
             filter: drop-shadow(0 0 5px var(--accent));
-        }
-        .tg-link-btn span {
-            word-break: break-word;
-            text-align: center;
         }
 
         .status-area { 
-            display: flex; justify-content: center; align-items: center; gap: 10px; height: 30px; margin-bottom: 10px;
-            animation: fadeIn 0.5s;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 8px; 
+            height: 24px; 
+            margin: 5px 0;
+            font-size: 13px;
+            flex-shrink: 0;
         }
         .dot { 
-            width: 12px; height: 12px; background: #2575fc; border-radius: 50%; 
+            width: 10px; 
+            height: 10px; 
+            background: #2575fc; 
+            border-radius: 50%; 
             box-shadow: 0 0 10px #2575fc;
             animation: pulseDot 1.2s infinite;
             will-change: transform;
@@ -603,19 +647,20 @@
         
         .result-display { 
             width: 100%;
-            height: 50px;
+            height: 36px;
             background: var(--secondary-bg);
             border: 1px solid var(--border-color);
             border-radius: 10px;
             text-align: center;
             font-weight: bold;
-            line-height: 50px;
-            margin-bottom: 10px;
+            line-height: 36px;
+            margin-bottom: 5px;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.2s, visibility 0.2s;
             box-sizing: border-box;
-            will-change: opacity, transform;
+            font-size: 14px;
+            flex-shrink: 0;
         }
         .result-display.visible {
             opacity: 1;
@@ -623,21 +668,41 @@
         }
 
         #snow-layer { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            pointer-events: none; z-index: 1000; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            pointer-events: none; 
+            z-index: 1000; 
             transition: opacity 0.3s;
         }
         #tooltip {
-            position: absolute; background: rgba(0,0,0,0.8); color: white; padding: 4px 8px;
-            border-radius: 4px; font-size: 10px; pointer-events: none; z-index: 1001;
+            position: absolute; 
+            background: rgba(0,0,0,0.8); 
+            color: white; 
+            padding: 4px 8px;
+            border-radius: 4px; 
+            font-size: 10px; 
+            pointer-events: none; 
+            z-index: 1001;
             display: none;
         }
         .indicator-btn {
-            background: var(--secondary-bg); border: 1px solid var(--border-color); color: var(--text-color);
-            padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px;
-            transition: all 0.3s; margin-right: 5px;
+            background: var(--secondary-bg); 
+            border: 1px solid var(--border-color); 
+            color: var(--text-color);
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 10px;
+            transition: all 0.3s; 
+            margin-right: 5px;
         }
-        .indicator-btn.active { background: var(--accent); color: white; }
+        .indicator-btn.active { 
+            background: var(--accent); 
+            color: white; 
+        }
 
         /* Анимации */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -669,6 +734,7 @@
         <p class="welcome-subtitle">Choose your language</p>
         <div class="language-list">
             <div class="language-item" data-lang="en"><span class="flag">🇬🇧</span> English</div>
+            <div class="language-item" data-lang="es"><span class="flag">🇪🇸</span> Español</div>
             <div class="language-item" data-lang="ru"><span class="flag">🇷🇺</span> Русский</div>
             <div class="language-item" data-lang="pl"><span class="flag">🇵🇱</span> Polski</div>
             <div class="language-item" data-lang="de"><span class="flag">🇩🇪</span> Deutsch</div>
@@ -678,43 +744,14 @@
     </div>
 </div>
 
-<!-- Единое модальное окно для ввода кода (регистрация/админка) -->
+<!-- Модальное окно регистрации (только код) -->
 <div id="register-overlay" class="register-overlay">
     <div class="register-glass">
         <h3 id="register-title">🔐 Access</h3>
-        <p id="register-text">Enter activation code to continue, or admin code for settings.</p>
+        <p id="register-text">To register, contact <span id="dynamic-contact" class="contact">@accardo_1</span> and get an activation code.</p>
         <input type="text" id="code-input" class="register-input" placeholder="Enter code">
-        <button id="activate-btn" class="register-btn">Submit</button>
+        <button id="activate-btn" class="register-btn">Activate</button>
         <div id="register-message" class="register-message"></div>
-    </div>
-</div>
-
-<!-- Админ-панель (расширенная) -->
-<div id="admin-overlay" class="admin-overlay">
-    <div class="admin-glass">
-        <h3>⚙️ Admin Panel</h3>
-        <div class="admin-field">
-            <label>Username (contact):</label>
-            <input type="text" id="admin-username" placeholder="@username">
-        </div>
-        <div class="admin-field">
-            <label>Watermark text:</label>
-            <input type="text" id="admin-watermark" placeholder="Watermark">
-        </div>
-        <div class="admin-field">
-            <label>Telegram Channel URL:</label>
-            <input type="url" id="admin-channel" placeholder="https://t.me/...">
-        </div>
-        <div class="admin-field">
-            <label>Telegram Reviews URL:</label>
-            <input type="url" id="admin-reviews" placeholder="https://t.me/...">
-        </div>
-        <div class="admin-field">
-            <label>Telegram Support URL:</label>
-            <input type="url" id="admin-support" placeholder="https://t.me/...">
-        </div>
-        <button id="admin-save-btn" class="admin-btn">Save Changes</button>
-        <button id="admin-close-btn" class="admin-btn admin-close">Close</button>
     </div>
 </div>
 
@@ -728,7 +765,6 @@
             <h1>AI OptiBotX <span>PRO</span></h1>
         </div>
         <div class="header-buttons">
-            <button id="admin-open-btn" class="icon-btn" title="Admin">⚙️</button>
             <button id="themeBtn" class="icon-btn" onclick="toggleTheme()">🌓</button>
             <button id="snowToggle" class="icon-btn" onclick="toggleSnow()">☃️</button>
             <button id="langBtn" class="icon-btn">🇬🇧 EN</button>
@@ -738,7 +774,7 @@
     <!-- Поиск и список пар -->
     <div class="selector-container">
         <span class="search-icon">🔍</span>
-        <input type="text" id="pair-search" placeholder="🔍 Поиск пары (EUR, USD, OTC...)" autocomplete="off">
+        <input type="text" id="pair-search" placeholder="🔍 Search pair (EUR, USD, OTC...)" autocomplete="off">
         <div class="pairs-container" id="pairs-container"></div>
     </div>
     <select id="pair" onchange="changePair()" style="display: none;"></select>
@@ -769,26 +805,26 @@
         <button class="tf-btn" onclick="selectTf(this)">15m</button>
     </div>
 
-    <button id="anBtn" class="analyze-btn" onclick="startAnalysis(this)"><span>Анализировать</span></button>
+    <button id="anBtn" class="analyze-btn" onclick="startAnalysis(this)"><span>Analyze</span></button>
 
     <!-- Три Telegram-ссылки (под кнопкой) -->
     <div class="tg-links">
-        <a id="tg-channel" class="tg-link-btn" href="#" target="_blank">
+        <a id="tg-channel" class="tg-link-btn" href="https://t.me/optibotx_channel" target="_blank">
             <span class="tg-icon">📢</span>
             <span id="tg-channel-text">Channel</span>
         </a>
-        <a id="tg-reviews" class="tg-link-btn" href="#" target="_blank">
+        <a id="tg-reviews" class="tg-link-btn" href="https://t.me/optibotx_reviews" target="_blank">
             <span class="tg-icon">⭐</span>
             <span id="tg-reviews-text">Reviews</span>
         </a>
-        <a id="tg-support" class="tg-link-btn" href="#" target="_blank">
+        <a id="tg-support" class="tg-link-btn" href="https://t.me/accardo_1" target="_blank">
             <span class="tg-icon">🆘</span>
             <span id="tg-support-text">Support</span>
         </a>
     </div>
 
     <div id="status" class="status-area">
-        <div class="dot"></div> <span id="wait-msg">Ожидание...</span>
+        <div class="dot"></div> <span id="wait-msg">Waiting...</span>
     </div>
 
     <div id="result" class="result-display"></div>
@@ -805,22 +841,16 @@
     let candleCount = 14;
     let snowEnabled = false;
     let curLang = 'en';
-    let touchStartX = 0;
-    let touchEndX = 0;
-    // Статус регистрации
     let registered = localStorage.getItem('optibotx_registered') === 'true';
+    let cooldownActive = false; // для кнопки анализа
 
-    // Админские настройки (по умолчанию)
-    let adminUsername = localStorage.getItem('admin_username') || '@accardo_1';
-    let adminWatermark = localStorage.getItem('admin_watermark') || 'OptiBotX PRO';
-    let adminChannel = localStorage.getItem('admin_channel') || 'https://t.me/optibotx_channel';
-    let adminReviews = localStorage.getItem('admin_reviews') || 'https://t.me/optibotx_reviews';
-    let adminSupport = localStorage.getItem('admin_support') || 'https://t.me/accardo_1';
+    // Контакт для регистрации (можно изменить здесь)
+    const adminUsername = '@accardo_1';
 
-    // Применяем водяной знак
-    document.getElementById('watermark').innerText = adminWatermark;
+    // Применяем водяной знак (статичный, не меняется)
+    document.getElementById('watermark').innerText = 'OptiBotX PRO';
 
-    // --- СЛОВАРЬ (добавлены ключи для трёх ссылок) ---
+    // --- СЛОВАРЬ С ПЕРЕВОДАМИ (добавлен испанский, все строки переведены) ---
     const dict = {
         en: { 
             sub: "Select currency pair", 
@@ -832,16 +862,33 @@
             chooseLang: "Choose your language",
             flag: "🇬🇧",
             registerTitle: "🔐 Access",
-            registerText: "Enter activation code to continue, or admin code for settings.",
+            registerText: "To register, contact {contact} and get an activation code.",
             codePlaceholder: "Enter code",
-            submit: "Submit",
+            submit: "Activate",
             wrongCode: "❌ Invalid code",
             success: "✅ Access granted!",
-            adminSuccess: "✅ Admin mode",
-            contact: "Contact",
             channel: "Channel",
             reviews: "Reviews",
             support: "Support"
+        },
+        es: { 
+            sub: "Seleccione un par de divisas", 
+            an: "Analizar", 
+            wait: "Esperando...", 
+            up: "COMPRAR ", 
+            down: "VENDER ",
+            welcome: "Bienvenido",
+            chooseLang: "Elija su idioma",
+            flag: "🇪🇸",
+            registerTitle: "🔐 Acceso",
+            registerText: "Para registrarse, contacte con {contact} y obtenga un código de activación.",
+            codePlaceholder: "Ingrese el código",
+            submit: "Activar",
+            wrongCode: "❌ Código inválido",
+            success: "✅ Acceso concedido!",
+            channel: "Canal",
+            reviews: "Reseñas",
+            support: "Soporte"
         },
         ru: { 
             sub: "Выбери валютную пару", 
@@ -853,13 +900,11 @@
             chooseLang: "Выберите язык",
             flag: "🇷🇺",
             registerTitle: "🔐 Доступ",
-            registerText: "Введите код активации для продолжения или админ-код для настроек.",
+            registerText: "Для регистрации напишите {contact} и получите код активации.",
             codePlaceholder: "Введите код",
-            submit: "Отправить",
+            submit: "Активировать",
             wrongCode: "❌ Неверный код",
             success: "✅ Доступ открыт!",
-            adminSuccess: "✅ Режим администратора",
-            contact: "Контакт",
             channel: "Канал",
             reviews: "Отзывы",
             support: "Поддержка"
@@ -874,13 +919,11 @@
             chooseLang: "Wybierz język",
             flag: "🇵🇱",
             registerTitle: "🔐 Dostęp",
-            registerText: "Wprowadź kod aktywacyjny, aby kontynuować, lub kod administratora dla ustawień.",
+            registerText: "Aby się zarejestrować, skontaktuj się z {contact} i uzyskaj kod aktywacyjny.",
             codePlaceholder: "Wprowadź kod",
-            submit: "Wyślij",
+            submit: "Aktywuj",
             wrongCode: "❌ Błędny kod",
             success: "✅ Dostęp przyznany!",
-            adminSuccess: "✅ Tryb administratora",
-            contact: "Kontakt",
             channel: "Kanał",
             reviews: "Opinie",
             support: "Wsparcie"
@@ -895,19 +938,17 @@
             chooseLang: "Sprache wählen",
             flag: "🇩🇪",
             registerTitle: "🔐 Zugang",
-            registerText: "Geben Sie den Aktivierungscode ein, um fortzufahren, oder den Admin-Code für Einstellungen.",
+            registerText: "Um sich zu registrieren, kontaktieren Sie {contact} und erhalten Sie einen Aktivierungscode.",
             codePlaceholder: "Code eingeben",
-            submit: "Senden",
+            submit: "Aktivieren",
             wrongCode: "❌ Falscher Code",
             success: "✅ Zugang gewährt!",
-            adminSuccess: "✅ Admin-Modus",
-            contact: "Kontakt",
             channel: "Kanal",
             reviews: "Bewertungen",
             support: "Support"
         },
         fr: {
-            sub: "Choisir une paire de devises",
+            sub: "Choisissez une paire de devises",
             an: "Analyser",
             wait: "Attente...",
             up: "ACHAT ",
@@ -916,13 +957,11 @@
             chooseLang: "Choisissez la langue",
             flag: "🇫🇷",
             registerTitle: "🔐 Accès",
-            registerText: "Entrez le code d'activation pour continuer, ou le code administrateur pour les paramètres.",
+            registerText: "Pour vous inscrire, contactez {contact} et obtenez un code d'activation.",
             codePlaceholder: "Entrez le code",
-            submit: "Soumettre",
+            submit: "Activer",
             wrongCode: "❌ Code invalide",
             success: "✅ Accès accordé!",
-            adminSuccess: "✅ Mode administrateur",
-            contact: "Contact",
             channel: "Chaîne",
             reviews: "Avis",
             support: "Support"
@@ -943,41 +982,22 @@
     const langBtn = document.getElementById('langBtn');
     const themeBtn = document.getElementById('themeBtn');
     const smaBtn = document.getElementById('smaBtn');
-    const watermarkDiv = document.getElementById('watermark');
 
-    // Элементы окна регистрации (единого)
     const registerOverlay = document.getElementById('register-overlay');
     const registerTitle = document.getElementById('register-title');
     const registerText = document.getElementById('register-text');
     const codeInput = document.getElementById('code-input');
     const activateBtn = document.getElementById('activate-btn');
     const registerMessage = document.getElementById('register-message');
-
-    // Элементы админки (расширенные)
-    const adminOpenBtn = document.getElementById('admin-open-btn');
-    const adminOverlay = document.getElementById('admin-overlay');
-    const adminUsernameInput = document.getElementById('admin-username');
-    const adminWatermarkInput = document.getElementById('admin-watermark');
-    const adminChannelInput = document.getElementById('admin-channel');
-    const adminReviewsInput = document.getElementById('admin-reviews');
-    const adminSupportInput = document.getElementById('admin-support');
-    const adminSaveBtn = document.getElementById('admin-save-btn');
-    const adminCloseBtn = document.getElementById('admin-close-btn');
+    const dynamicContact = document.getElementById('dynamic-contact');
+    dynamicContact.innerText = adminUsername;
 
     // Элементы Telegram-ссылок
-    const tgChannelLink = document.getElementById('tg-channel');
-    const tgReviewsLink = document.getElementById('tg-reviews');
-    const tgSupportLink = document.getElementById('tg-support');
     const tgChannelText = document.getElementById('tg-channel-text');
     const tgReviewsText = document.getElementById('tg-reviews-text');
     const tgSupportText = document.getElementById('tg-support-text');
 
-    // Применяем сохранённые ссылки
-    tgChannelLink.href = adminChannel;
-    tgReviewsLink.href = adminReviews;
-    tgSupportLink.href = adminSupport;
-
-    // --- ПОЛНЫЙ СПИСОК ВАЛЮТНЫХ ПАР (более 200) ---
+    // --- ПОЛНЫЙ СПИСОК ВАЛЮТНЫХ ПАР (такой же, как в предыдущих версиях) ---
     const allPairs = [
         { name: "EUR/USD", flag: "🇪🇺🇺🇸", type: "Major" },
         { name: "GBP/USD", flag: "🇬🇧🇺🇸", type: "Major" },
@@ -1146,8 +1166,7 @@
     // --- СТАРТ ---
     startBtn.addEventListener('click', () => {
         welcomeOverlay.classList.remove('visible');
-        const app = document.getElementById('main-app');
-        app.style.display = 'flex';
+        document.getElementById('main-app').style.display = 'flex';
         // Заполняем список пар
         allPairs.forEach(p => {
             const option = document.createElement('option');
@@ -1157,7 +1176,7 @@
         });
         if (allPairs.length > 0) {
             hiddenSelect.value = allPairs[0].name;
-            searchInput.value = allPairs[0].name; // отображаем выбранную пару
+            searchInput.value = allPairs[0].name;
         }
         renderPairs();
         initChart();
@@ -1165,26 +1184,28 @@
         updateUILang();
     });
 
-    // --- ОБНОВЛЕНИЕ ЯЗЫКА (включая текст ссылок) ---
+    // --- ОБНОВЛЕНИЕ ЯЗЫКА ---
     function updateUILang() {
         document.getElementById('sub-header').innerText = dict[curLang].sub;
+        // Текст кнопки анализа с заменой контакта
         anBtn.innerHTML = `<span>${dict[curLang].an}</span>`;
         waitMsg.innerText = dict[curLang].wait;
-        document.getElementById('pair-search').placeholder = dict[curLang].sub;
+        searchInput.placeholder = dict[curLang].sub;
 
+        // Окно регистрации
         registerTitle.innerText = dict[curLang].registerTitle;
-        registerText.innerText = dict[curLang].registerText;
+        registerText.innerText = dict[curLang].registerText.replace('{contact}', adminUsername);
         codeInput.placeholder = dict[curLang].codePlaceholder;
         activateBtn.innerText = dict[curLang].submit;
 
-        // Текст трёх ссылок
+        // Telegram ссылки
         tgChannelText.innerText = dict[curLang].channel;
         tgReviewsText.innerText = dict[curLang].reviews;
         tgSupportText.innerText = dict[curLang].support;
     }
 
     langBtn.onclick = function() {
-        const langs = ['en', 'ru', 'pl', 'de', 'fr'];
+        const langs = ['en', 'es', 'ru', 'pl', 'de', 'fr'];
         let idx = langs.indexOf(curLang);
         idx = (idx + 1) % langs.length;
         curLang = langs[idx];
@@ -1282,17 +1303,14 @@
         }
     }
 
-    // Открытие списка при фокусе на поле ввода
     searchInput.addEventListener('focus', () => {
         pairsContainer.style.display = 'block';
     });
-    // Закрытие при клике вне
     document.addEventListener('click', (e) => {
         if (!searchInput.contains(e.target) && !pairsContainer.contains(e.target)) {
             pairsContainer.style.display = 'none';
         }
     });
-    // Фильтрация по мере ввода
     searchInput.addEventListener('input', (e) => {
         renderPairs(e.target.value);
         if (!pairsContainer.style.display || pairsContainer.style.display === 'none') {
@@ -1412,7 +1430,6 @@
         }
     }
 
-    // --- ОБНОВЛЕНИЕ СВЕЧЕЙ ---
     setInterval(() => {
         if(candles.length === 0) return;
         candles.shift();
@@ -1432,7 +1449,6 @@
         animateNew();
     }, 3000);
 
-    // --- МАСШТАБИРОВАНИЕ ---
     function zoomIn() {
         if (candleCount > 5) candleCount -= 2;
         initChart();
@@ -1444,7 +1460,6 @@
     window.zoomIn = zoomIn;
     window.zoomOut = zoomOut;
 
-    // --- SMA ---
     function toggleSMA() {
         showSMA = !showSMA;
         smaBtn.classList.toggle('active', showSMA);
@@ -1452,7 +1467,6 @@
     }
     window.toggleSMA = toggleSMA;
 
-    // --- ПОДСКАЗКА НА СВЕЧЕ ---
     canvas.addEventListener('mousemove', (e) => {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
@@ -1471,7 +1485,6 @@
     });
     canvas.addEventListener('mouseleave', () => document.getElementById('tooltip').style.display = 'none');
 
-    // --- СМЕНА ПАРЫ ---
     function changePair() {
         canvas.style.opacity = '0.3';
         setTimeout(() => {
@@ -1488,20 +1501,25 @@
     }
     window.changePair = changePair;
 
-    // --- АНАЛИЗ (с проверкой регистрации) ---
+    // --- АНАЛИЗ (с проверкой регистрации и cooldown) ---
     function startAnalysis(btn) {
         if (!registered) {
             registerOverlay.classList.add('visible');
             return;
         }
+        if (cooldownActive) return;
+
+        cooldownActive = true;
+        btn.classList.add('cooldown');
+        
+        // Симуляция анализа (как было)
         const res = document.getElementById('result');
         const stat = document.getElementById('status');
         res.classList.remove('visible');
         stat.style.display = 'flex';
-        btn.classList.add('loading');
         
         setTimeout(() => {
-            btn.classList.remove('loading');
+            // Завершаем анализ
             stat.style.display = 'none'; 
             res.classList.add('visible');
             const isUp = Math.random() > 0.5;
@@ -1520,11 +1538,17 @@
                 }
                 window.Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
             }
-        }, 1500);
+
+            // Через 5 секунд снимаем cooldown
+            setTimeout(() => {
+                cooldownActive = false;
+                btn.classList.remove('cooldown');
+            }, 5000);
+        }, 1500); // анализ длится 1.5 сек
     }
     window.startAnalysis = startAnalysis;
 
-    // --- ОБРАБОТКА КНОПКИ АКТИВАЦИИ (единое окно) ---
+    // --- АКТИВАЦИЯ ПО КОДУ ---
     activateBtn.addEventListener('click', () => {
         const code = codeInput.value.trim();
         if (code === '1034163834') {
@@ -1537,17 +1561,6 @@
                 registerOverlay.classList.remove('visible');
                 registerMessage.innerText = '';
             }, 1500);
-        } else if (code === '03847435125') {
-            // Открываем админ-панель
-            registerOverlay.classList.remove('visible');
-            // Предзаполняем поля
-            adminUsernameInput.value = adminUsername.replace('@', '');
-            adminWatermarkInput.value = adminWatermark;
-            adminChannelInput.value = adminChannel;
-            adminReviewsInput.value = adminReviews;
-            adminSupportInput.value = adminSupport;
-            adminOverlay.classList.add('visible');
-            registerMessage.innerText = '';
         } else {
             registerMessage.innerText = dict[curLang].wrongCode;
             registerMessage.classList.add('error');
@@ -1558,55 +1571,6 @@
     registerOverlay.addEventListener('click', (e) => {
         if (e.target === registerOverlay) {
             registerOverlay.classList.remove('visible');
-        }
-    });
-
-    // --- АДМИН-ПАНЕЛЬ (сохранение всех полей) ---
-    adminOpenBtn.addEventListener('click', () => {
-        registerOverlay.classList.add('visible');
-    });
-
-    adminSaveBtn.addEventListener('click', () => {
-        let newUsername = adminUsernameInput.value.trim();
-        if (newUsername) {
-            if (!newUsername.startsWith('@')) newUsername = '@' + newUsername;
-            adminUsername = newUsername;
-            localStorage.setItem('admin_username', adminUsername);
-        }
-        let newWatermark = adminWatermarkInput.value.trim();
-        if (newWatermark) {
-            adminWatermark = newWatermark;
-            localStorage.setItem('admin_watermark', adminWatermark);
-            watermarkDiv.innerText = adminWatermark;
-        }
-        let newChannel = adminChannelInput.value.trim();
-        if (newChannel) {
-            adminChannel = newChannel;
-            localStorage.setItem('admin_channel', adminChannel);
-            tgChannelLink.href = adminChannel;
-        }
-        let newReviews = adminReviewsInput.value.trim();
-        if (newReviews) {
-            adminReviews = newReviews;
-            localStorage.setItem('admin_reviews', adminReviews);
-            tgReviewsLink.href = adminReviews;
-        }
-        let newSupport = adminSupportInput.value.trim();
-        if (newSupport) {
-            adminSupport = newSupport;
-            localStorage.setItem('admin_support', adminSupport);
-            tgSupportLink.href = adminSupport;
-        }
-        adminOverlay.classList.remove('visible');
-    });
-
-    adminCloseBtn.addEventListener('click', () => {
-        adminOverlay.classList.remove('visible');
-    });
-
-    adminOverlay.addEventListener('click', (e) => {
-        if (e.target === adminOverlay) {
-            adminOverlay.classList.remove('visible');
         }
     });
 
