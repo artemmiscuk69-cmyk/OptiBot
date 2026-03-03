@@ -250,7 +250,7 @@
         .app-container {
             width: 100%;
             max-width: 400px;
-            height: 100vh; /* на всю высоту экрана */
+            height: 100vh;
             background: var(--app-bg);
             display: none;
             flex-direction: column;
@@ -261,18 +261,17 @@
             border-radius: 12px;
             animation: fadeInScale 0.5s ease-out;
             transition: background 0.3s, border-color 0.3s;
-            overflow-y: auto; /* на случай если контент не помещается */
+            overflow-y: auto;
         }
-        /* Для маленьких экранов уменьшаем отступы */
         @media (max-height: 700px) {
             .app-container {
                 padding: 8px 12px;
             }
             .chart-container {
-                height: 220px;
+                height: 180px;
             }
             .tf-btn {
-                padding: 6px;
+                padding: 6px 0;
                 font-size: 10px;
             }
             .analyze-btn {
@@ -434,7 +433,7 @@
         .chart-container {
             position: relative;
             width: 100%;
-            height: 240px; /* уменьшил для мобильных */
+            height: 240px;
             margin-bottom: 8px;
             flex-shrink: 0;
         }
@@ -541,7 +540,7 @@
             animation: pulse 1.5s infinite;
         }
 
-        /* --- КНОПКА АНАЛИЗА С COOLDOWN --- */
+        /* --- КНОПКА АНАЛИЗА С ТАЙМЕРОМ --- */
         .analyze-btn { 
             width: 100%; 
             background: var(--accent); 
@@ -563,30 +562,46 @@
             transform: translateY(-2px); 
             box-shadow: 0 10px 20px var(--accent-glow);
         }
-        .analyze-btn:active { 
-            transform: translateY(0); 
-        }
         .analyze-btn.cooldown {
             pointer-events: none;
             opacity: 0.7;
-            position: relative;
         }
-        .analyze-btn.cooldown::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 24px;
-            height: 24px;
-            margin-left: -12px;
-            margin-top: -12px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .analyze-btn .btn-text {
+            transition: opacity 0.2s;
         }
-        .analyze-btn.cooldown span {
+        .analyze-btn.cooldown .btn-text {
             opacity: 0;
+        }
+        .timer-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        .timer-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            position: absolute;
+        }
+        .timer-number {
+            position: absolute;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 5px var(--accent);
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* --- ТРИ TELEGRAM-ССЫЛКИ --- */
@@ -805,7 +820,9 @@
         <button class="tf-btn" onclick="selectTf(this)">15m</button>
     </div>
 
-    <button id="anBtn" class="analyze-btn" onclick="startAnalysis(this)"><span>Analyze</span></button>
+    <button id="anBtn" class="analyze-btn" onclick="startAnalysis(this)">
+        <span class="btn-text">Analyze</span>
+    </button>
 
     <!-- Три Telegram-ссылки (под кнопкой) -->
     <div class="tg-links">
@@ -900,7 +917,7 @@
             chooseLang: "Выберите язык",
             flag: "🇷🇺",
             registerTitle: "🔐 Доступ",
-            registerText: "Для регистрации напишите {contact} и получите код активации.",
+            registerText: "Для регистрации напишите {contact} и получите код доступа.",
             codePlaceholder: "Введите код",
             submit: "Активировать",
             wrongCode: "❌ Неверный код",
@@ -976,6 +993,7 @@
     const searchInput = document.getElementById('pair-search');
     const hiddenSelect = document.getElementById('pair');
     const anBtn = document.getElementById('anBtn');
+    const anBtnText = anBtn.querySelector('.btn-text');
     const waitMsg = document.getElementById('wait-msg');
     const resultDiv = document.getElementById('result');
     const snowToggle = document.getElementById('snowToggle');
@@ -997,7 +1015,7 @@
     const tgReviewsText = document.getElementById('tg-reviews-text');
     const tgSupportText = document.getElementById('tg-support-text');
 
-    // --- ПОЛНЫЙ СПИСОК ВАЛЮТНЫХ ПАР (такой же, как в предыдущих версиях) ---
+    // --- ПОЛНЫЙ СПИСОК ВАЛЮТНЫХ ПАР (более 200) ---
     const allPairs = [
         { name: "EUR/USD", flag: "🇪🇺🇺🇸", type: "Major" },
         { name: "GBP/USD", flag: "🇬🇧🇺🇸", type: "Major" },
@@ -1187,8 +1205,7 @@
     // --- ОБНОВЛЕНИЕ ЯЗЫКА ---
     function updateUILang() {
         document.getElementById('sub-header').innerText = dict[curLang].sub;
-        // Текст кнопки анализа с заменой контакта
-        anBtn.innerHTML = `<span>${dict[curLang].an}</span>`;
+        anBtnText.innerText = dict[curLang].an;
         waitMsg.innerText = dict[curLang].wait;
         searchInput.placeholder = dict[curLang].sub;
 
@@ -1501,7 +1518,7 @@
     }
     window.changePair = changePair;
 
-    // --- АНАЛИЗ (с проверкой регистрации и cooldown) ---
+    // --- АНАЛИЗ (с проверкой регистрации и cooldown с таймером) ---
     function startAnalysis(btn) {
         if (!registered) {
             registerOverlay.classList.add('visible');
@@ -1511,15 +1528,35 @@
 
         cooldownActive = true;
         btn.classList.add('cooldown');
-        
-        // Симуляция анализа (как было)
+
+        // Создаём элементы для отображения таймера
+        const timerOverlay = document.createElement('div');
+        timerOverlay.className = 'timer-overlay';
+        const circle = document.createElement('div');
+        circle.className = 'timer-circle';
+        const number = document.createElement('span');
+        number.className = 'timer-number';
+        number.innerText = '5';
+        timerOverlay.appendChild(circle);
+        timerOverlay.appendChild(number);
+        btn.appendChild(timerOverlay);
+
+        let timeLeft = 5;
+        const interval = setInterval(() => {
+            timeLeft--;
+            number.innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+            }
+        }, 1000);
+
+        // Симуляция анализа (длится 1.5 сек)
         const res = document.getElementById('result');
         const stat = document.getElementById('status');
         res.classList.remove('visible');
         stat.style.display = 'flex';
         
         setTimeout(() => {
-            // Завершаем анализ
             stat.style.display = 'none'; 
             res.classList.add('visible');
             const isUp = Math.random() > 0.5;
@@ -1538,13 +1575,16 @@
                 }
                 window.Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
             }
+        }, 1500);
 
-            // Через 5 секунд снимаем cooldown
-            setTimeout(() => {
-                cooldownActive = false;
-                btn.classList.remove('cooldown');
-            }, 5000);
-        }, 1500); // анализ длится 1.5 сек
+        // Через 5 секунд убираем блокировку
+        setTimeout(() => {
+            clearInterval(interval);
+            cooldownActive = false;
+            btn.classList.remove('cooldown');
+            const overlay = btn.querySelector('.timer-overlay');
+            if (overlay) overlay.remove();
+        }, 5000);
     }
     window.startAnalysis = startAnalysis;
 
