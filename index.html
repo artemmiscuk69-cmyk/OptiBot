@@ -36,7 +36,6 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* --- СТЕКЛЯННЫЙ ЭКРАН ПРИВЕТСТВИЯ --- */
         .welcome-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -147,7 +146,6 @@
             box-shadow: 0 0 50px var(--accent-glow);
         }
 
-        /* --- МОДАЛЬНОЕ ОКНО РЕГИСТРАЦИИ (только код) --- */
         .register-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -246,7 +244,6 @@
             color: #00ff88;
         }
 
-        /* --- ОСНОВНОЕ ПРИЛОЖЕНИЕ (адаптивная вёрстка) --- */
         .app-container {
             width: 100%;
             max-width: 400px;
@@ -297,6 +294,12 @@
             font-weight: 800; 
             text-shadow: 0 0 8px var(--accent); 
         }
+        /* Добавляем элемент sub-header */
+        .sub-header {
+            font-size: 10px;
+            color: #444;
+            margin-top: 2px;
+        }
         .header-buttons { 
             display: flex; 
             gap: 4px; 
@@ -321,7 +324,6 @@
             transform: scale(1.05); 
         }
 
-        /* --- КОНТЕЙНЕР ДЛЯ ПОИСКА И ПАР --- */
         .selector-container {
             position: relative;
             margin-bottom: 8px;
@@ -429,7 +431,6 @@
             display: none;
         }
 
-        /* --- ГРАФИК --- */
         .chart-container {
             position: relative;
             width: 100%;
@@ -540,7 +541,6 @@
             animation: pulse 1.5s infinite;
         }
 
-        /* --- КНОПКА АНАЛИЗА С ТАЙМЕРОМ --- */
         .analyze-btn { 
             width: 100%; 
             background: var(--accent); 
@@ -604,7 +604,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* --- ТРИ TELEGRAM-ССЫЛКИ --- */
         .tg-links {
             display: flex;
             justify-content: space-around;
@@ -719,7 +718,6 @@
             color: white; 
         }
 
-        /* Анимации */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeInScale { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -742,7 +740,6 @@
 </head>
 <body>
 
-<!-- Приветственный экран -->
 <div id="welcome-overlay" class="welcome-overlay visible">
     <div class="welcome-glass">
         <h1 class="welcome-title">Welcome</h1>
@@ -759,7 +756,6 @@
     </div>
 </div>
 
-<!-- Модальное окно регистрации (только код) -->
 <div id="register-overlay" class="register-overlay">
     <div class="register-glass">
         <h3 id="register-title">🔐 Access</h3>
@@ -770,7 +766,6 @@
     </div>
 </div>
 
-<!-- Основное приложение -->
 <div class="app-container" id="main-app" style="display: none;">
     <canvas id="snow-layer"></canvas>
     <div id="tooltip"></div>
@@ -778,6 +773,7 @@
     <header>
         <div class="logo">
             <h1>AI OptiBotX <span>PRO</span></h1>
+            <div id="sub-header" class="sub-header">Select currency pair</div>
         </div>
         <div class="header-buttons">
             <button id="themeBtn" class="icon-btn" onclick="toggleTheme()">🌓</button>
@@ -786,7 +782,6 @@
         </div>
     </header>
 
-    <!-- Поиск и список пар -->
     <div class="selector-container">
         <span class="search-icon">🔍</span>
         <input type="text" id="pair-search" placeholder="🔍 Search pair (EUR, USD, OTC...)" autocomplete="off">
@@ -794,7 +789,6 @@
     </div>
     <select id="pair" onchange="changePair()" style="display: none;"></select>
 
-    <!-- График и управление -->
     <div class="chart-container">
         <div class="chart-box">
             <canvas id="mainChart"></canvas>
@@ -824,7 +818,6 @@
         <span class="btn-text">Analyze</span>
     </button>
 
-    <!-- Три Telegram-ссылки (под кнопкой) -->
     <div class="tg-links">
         <a id="tg-channel" class="tg-link-btn" href="https://t.me/optibotx_channel" target="_blank">
             <span class="tg-icon">📢</span>
@@ -859,15 +852,11 @@
     let snowEnabled = false;
     let curLang = 'en';
     let registered = localStorage.getItem('optibotx_registered') === 'true';
-    let cooldownActive = false; // для кнопки анализа
+    let cooldownActive = false;
 
-    // Контакт для регистрации (можно изменить здесь)
     const adminUsername = '@accardo_1';
-
-    // Применяем водяной знак (статичный, не меняется)
     document.getElementById('watermark').innerText = 'OptiBotX PRO';
 
-    // --- СЛОВАРЬ С ПЕРЕВОДАМИ (добавлен испанский, все строки переведены) ---
     const dict = {
         en: { 
             sub: "Select currency pair", 
@@ -993,13 +982,12 @@
     const searchInput = document.getElementById('pair-search');
     const hiddenSelect = document.getElementById('pair');
     const anBtn = document.getElementById('anBtn');
-    const anBtnText = anBtn.querySelector('.btn-text');
     const waitMsg = document.getElementById('wait-msg');
-    const resultDiv = document.getElementById('result');
     const snowToggle = document.getElementById('snowToggle');
     const langBtn = document.getElementById('langBtn');
     const themeBtn = document.getElementById('themeBtn');
     const smaBtn = document.getElementById('smaBtn');
+    const subHeader = document.getElementById('sub-header');
 
     const registerOverlay = document.getElementById('register-overlay');
     const registerTitle = document.getElementById('register-title');
@@ -1010,12 +998,11 @@
     const dynamicContact = document.getElementById('dynamic-contact');
     dynamicContact.innerText = adminUsername;
 
-    // Элементы Telegram-ссылок
     const tgChannelText = document.getElementById('tg-channel-text');
     const tgReviewsText = document.getElementById('tg-reviews-text');
     const tgSupportText = document.getElementById('tg-support-text');
 
-    // --- ПОЛНЫЙ СПИСОК ВАЛЮТНЫХ ПАР (более 200) ---
+    // --- ПОЛНЫЙ СПИСОК ПАР (сокращён для краткости, вставьте свой полный) ---
     const allPairs = [
         { name: "EUR/USD", flag: "🇪🇺🇺🇸", type: "Major" },
         { name: "GBP/USD", flag: "🇬🇧🇺🇸", type: "Major" },
@@ -1173,11 +1160,10 @@
         item.addEventListener('click', () => {
             langItems.forEach(i => i.classList.remove('selected'));
             item.classList.add('selected');
-            const lang = item.dataset.lang;
-            curLang = lang;
+            curLang = item.dataset.lang;
             startBtn.classList.add('visible');
-            document.querySelector('.welcome-title').innerText = dict[lang].welcome;
-            document.querySelector('.welcome-subtitle').innerText = dict[lang].chooseLang;
+            document.querySelector('.welcome-title').innerText = dict[curLang].welcome;
+            document.querySelector('.welcome-subtitle').innerText = dict[curLang].chooseLang;
         });
     });
 
@@ -1185,7 +1171,6 @@
     startBtn.addEventListener('click', () => {
         welcomeOverlay.classList.remove('visible');
         document.getElementById('main-app').style.display = 'flex';
-        // Заполняем список пар
         allPairs.forEach(p => {
             const option = document.createElement('option');
             option.value = p.name;
@@ -1204,18 +1189,27 @@
 
     // --- ОБНОВЛЕНИЕ ЯЗЫКА ---
     function updateUILang() {
-        document.getElementById('sub-header').innerText = dict[curLang].sub;
-        anBtnText.innerText = dict[curLang].an;
+        if (subHeader) subHeader.innerText = dict[curLang].sub;
+        // Обновляем текст кнопки анализа
+        const btnSpan = anBtn.querySelector('.btn-text');
+        if (btnSpan) {
+            btnSpan.innerText = dict[curLang].an;
+        } else {
+            // Если спан исчез, создадим его заново
+            anBtn.innerHTML = '';
+            const newSpan = document.createElement('span');
+            newSpan.className = 'btn-text';
+            newSpan.innerText = dict[curLang].an;
+            anBtn.appendChild(newSpan);
+        }
         waitMsg.innerText = dict[curLang].wait;
         searchInput.placeholder = dict[curLang].sub;
 
-        // Окно регистрации
         registerTitle.innerText = dict[curLang].registerTitle;
         registerText.innerText = dict[curLang].registerText.replace('{contact}', adminUsername);
         codeInput.placeholder = dict[curLang].codePlaceholder;
         activateBtn.innerText = dict[curLang].submit;
 
-        // Telegram ссылки
         tgChannelText.innerText = dict[curLang].channel;
         tgReviewsText.innerText = dict[curLang].reviews;
         tgSupportText.innerText = dict[curLang].support;
@@ -1230,47 +1224,37 @@
         updateUILang();
     };
 
-    // --- ТЕМА ---
     function toggleTheme() {
         document.body.classList.toggle('light-theme');
     }
     themeBtn.onclick = toggleTheme;
 
-    // --- СНЕГ ---
     const sCanvas = document.getElementById('snow-layer');
     const sCtx = sCanvas.getContext('2d');
-    let flakes = [];
-    let snowAnimation;
+    let flakes = [], snowAnimation;
 
     function setupSnow() {
         sCanvas.width = sCanvas.parentElement.clientWidth;
         sCanvas.height = sCanvas.parentElement.clientHeight;
-        flakes = Array.from({length: 60}, () => ({
-            x: Math.random()*sCanvas.width, y: Math.random()*sCanvas.height, r: Math.random()*3+1, d: Math.random()*1+0.5, angle: Math.random()*360
+        flakes = Array.from({length:60},()=>({
+            x:Math.random()*sCanvas.width, y:Math.random()*sCanvas.height, r:Math.random()*3+1, d:Math.random()*1+0.5, angle:Math.random()*360
         }));
-        if (snowAnimation) cancelAnimationFrame(snowAnimation);
+        if(snowAnimation) cancelAnimationFrame(snowAnimation);
         drawSnow();
     }
 
     function drawSnow() {
-        if (!snowEnabled) {
-            sCtx.clearRect(0,0,sCanvas.width, sCanvas.height);
-            snowAnimation = requestAnimationFrame(drawSnow);
-            return;
-        }
-        sCtx.clearRect(0,0,sCanvas.width, sCanvas.height);
-        sCtx.fillStyle = "rgba(255,255,255,0.6)";
-        flakes.forEach(f => {
-            sCtx.save();
-            sCtx.translate(f.x, f.y);
-            sCtx.rotate(f.angle * Math.PI/180);
-            sCtx.beginPath(); sCtx.arc(0, 0, f.r, 0, Math.PI*2); sCtx.fill();
-            sCtx.restore();
-            f.y += f.d; f.x += Math.sin(f.angle) * 0.2;
-            if(f.y > sCanvas.height) { f.y = -5; f.x = Math.random()*sCanvas.width; }
-            if(f.x > sCanvas.width) f.x = 0; if(f.x < 0) f.x = sCanvas.width;
+        if(!snowEnabled) { sCtx.clearRect(0,0,sCanvas.width,sCanvas.height); snowAnimation=requestAnimationFrame(drawSnow); return; }
+        sCtx.clearRect(0,0,sCanvas.width,sCanvas.height);
+        sCtx.fillStyle="rgba(255,255,255,0.6)";
+        flakes.forEach(f=>{
+            sCtx.save(); sCtx.translate(f.x,f.y); sCtx.rotate(f.angle*Math.PI/180);
+            sCtx.beginPath(); sCtx.arc(0,0,f.r,0,Math.PI*2); sCtx.fill(); sCtx.restore();
+            f.y+=f.d; f.x+=Math.sin(f.angle)*0.2;
+            if(f.y>sCanvas.height) { f.y=-5; f.x=Math.random()*sCanvas.width; }
+            if(f.x>sCanvas.width) f.x=0; if(f.x<0) f.x=sCanvas.width;
         });
-        snowAnimation = requestAnimationFrame(drawSnow);
+        snowAnimation=requestAnimationFrame(drawSnow);
     }
 
     function toggleSnow() {
@@ -1286,7 +1270,6 @@
             p.name.toLowerCase().includes(filterLower) || 
             p.type.toLowerCase().includes(filterLower)
         );
-        
         pairsContainer.innerHTML = '';
         filtered.forEach(pair => {
             const div = document.createElement('div');
@@ -1309,7 +1292,6 @@
             });
             pairsContainer.appendChild(div);
         });
-
         if (filtered.length === 0) {
             const empty = document.createElement('div');
             empty.className = 'pair-option';
@@ -1518,7 +1500,7 @@
     }
     window.changePair = changePair;
 
-    // --- АНАЛИЗ (с проверкой регистрации и cooldown с таймером) ---
+    // --- АНАЛИЗ (с таймером) ---
     function startAnalysis(btn) {
         if (!registered) {
             registerOverlay.classList.add('visible');
@@ -1529,7 +1511,6 @@
         cooldownActive = true;
         btn.classList.add('cooldown');
 
-        // Создаём элементы для отображения таймера
         const timerOverlay = document.createElement('div');
         timerOverlay.className = 'timer-overlay';
         const circle = document.createElement('div');
@@ -1545,12 +1526,9 @@
         const interval = setInterval(() => {
             timeLeft--;
             number.innerText = timeLeft;
-            if (timeLeft <= 0) {
-                clearInterval(interval);
-            }
+            if (timeLeft <= 0) clearInterval(interval);
         }, 1000);
 
-        // Симуляция анализа (длится 1.5 сек)
         const res = document.getElementById('result');
         const stat = document.getElementById('status');
         res.classList.remove('visible');
@@ -1562,8 +1540,7 @@
             const isUp = Math.random() > 0.5;
             res.style.color = isUp ? '#00ff88' : '#ff4d4d';
             res.style.borderColor = isUp ? '#00ff88' : '#ff4d4d';
-            let signal = `${dict[curLang][isUp?'up':'down']} (${Math.floor(Math.random()*15+82)}%)`;
-            res.innerHTML = signal;
+            res.innerHTML = `${dict[curLang][isUp?'up':'down']} (${Math.floor(Math.random()*15+82)}%)`;
             res.style.animation = 'popIn 0.4s';
             setTimeout(() => res.style.animation = '', 400);
 
@@ -1577,7 +1554,6 @@
             }
         }, 1500);
 
-        // Через 5 секунд убираем блокировку
         setTimeout(() => {
             clearInterval(interval);
             cooldownActive = false;
@@ -1624,7 +1600,6 @@
     }
     window.selectTf = selectTf;
 
-    // --- ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ---
     if (window.Telegram?.WebApp) {
         window.Telegram.WebApp.expand();
     }
