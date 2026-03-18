@@ -193,6 +193,10 @@
             font-weight: bold;
             font-size: 1.2rem;
             margin: 10px 0;
+            text-decoration: none;
+        }
+        .register-glass .contact:hover {
+            text-decoration: underline;
         }
         .register-input {
             width: 100%;
@@ -603,41 +607,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        .tg-links {
-            display: flex;
-            justify-content: space-around;
-            gap: 6px;
-            margin: 5px 0 0;
-            flex-shrink: 0;
-        }
-        .tg-link-btn {
-            flex: 1;
-            background: var(--secondary-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 8px 4px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-color);
-            text-decoration: none;
-            transition: all 0.3s;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .tg-link-btn:hover {
-            background: var(--hover-color);
-            transform: translateY(-2px);
-            border-color: var(--accent);
-            box-shadow: 0 5px 15px var(--accent-glow);
-        }
-        .tg-link-btn .tg-icon {
-            font-size: 18px;
-            filter: drop-shadow(0 0 5px var(--accent));
-        }
-
         .status-area { 
             display: flex; 
             justify-content: center; 
@@ -758,7 +727,7 @@
 <div id="register-overlay" class="register-overlay">
     <div class="register-glass">
         <h3 id="register-title">🔐 Access</h3>
-        <p id="register-text">To register, contact <span id="dynamic-contact" class="contact">@accardo_1</span> and get an activation code.</p>
+        <p id="register-text">To register, contact <a id="dynamic-contact" class="contact" href="https://t.me/ZentixTrade" target="_blank">@ZentixTrade</a> and get an activation code.</p>
         <input type="text" id="code-input" class="register-input" placeholder="Enter code">
         <button id="activate-btn" class="register-btn">Activate</button>
         <div id="register-message" class="register-message"></div>
@@ -817,21 +786,6 @@
         <span class="btn-text">Analyze</span>
     </button>
 
-    <div class="tg-links">
-        <a id="tg-channel" class="tg-link-btn" href="https://t.me/optibotx_channel" target="_blank">
-            <span class="tg-icon">📢</span>
-            <span id="tg-channel-text">Channel</span>
-        </a>
-        <a id="tg-reviews" class="tg-link-btn" href="https://t.me/optibotx_reviews" target="_blank">
-            <span class="tg-icon">⭐</span>
-            <span id="tg-reviews-text">Reviews</span>
-        </a>
-        <a id="tg-support" class="tg-link-btn" href="https://t.me/accardo_1" target="_blank">
-            <span class="tg-icon">🆘</span>
-            <span id="tg-support-text">Support</span>
-        </a>
-    </div>
-
     <div id="status" class="status-area">
         <div class="dot"></div> <span id="wait-msg">Waiting...</span>
     </div>
@@ -853,8 +807,37 @@
     let registered = localStorage.getItem('optibotx_registered') === 'true';
     let cooldownActive = false;
 
-    const adminUsername = '@accardo_1';
+    const adminUsername = '@ZentixTrade';
     document.getElementById('watermark').innerText = 'OptiBotX PRO';
+
+    // ==================== СИСТЕМА ОДНОРАЗОВЫХ КОДОВ ====================
+    // Список валидных кодов (50 штук, минимум 7 цифр)
+    const validCodes = [
+        '10341638', '20451927', '30561836', '40771345', '50881454',
+        '60991563', '70101672', '80211781', '90321890', '10431909',
+        '11542018', '12652127', '13762236', '14872345', '15982454',
+        '16092563', '17102672', '18212781', '19322890', '20432909',
+        '21543018', '22653127', '23763236', '24873345', '25983454',
+        '26093563', '27103672', '28213781', '29323890', '30433909',
+        '31544018', '32654127', '33764236', '34874345', '35984454',
+        '36094563', '37104672', '38214781', '39324890', '40434909',
+        '41545018', '42655127', '43765236', '44875345', '45985454',
+        '46095563', '47105672', '48215781', '49325890', '50435909'
+    ];
+
+    // Загружаем использованные коды из localStorage или создаём пустой объект
+    let usedCodes = JSON.parse(localStorage.getItem('usedCodes')) || {};
+
+    // Функция для проверки кода
+    function isCodeValid(code) {
+        return validCodes.includes(code) && !usedCodes[code];
+    }
+
+    // Функция для пометки кода как использованного
+    function markCodeAsUsed(code) {
+        usedCodes[code] = true;
+        localStorage.setItem('usedCodes', JSON.stringify(usedCodes));
+    }
 
     const dict = {
         en: { 
@@ -870,8 +853,9 @@
             registerText: "To register, contact {contact} and get an activation code.",
             codePlaceholder: "Enter code",
             submit: "Activate",
-            wrongCode: "❌ Invalid code",
+            wrongCode: "❌ Invalid or used code",
             success: "✅ Access granted!",
+            // оставлено для совместимости, но не используется
             channel: "Channel",
             reviews: "Reviews",
             support: "Support"
@@ -889,7 +873,7 @@
             registerText: "Para registrarse, contacte con {contact} y obtenga un código de activación.",
             codePlaceholder: "Ingrese el código",
             submit: "Activar",
-            wrongCode: "❌ Código inválido",
+            wrongCode: "❌ Código inválido o usado",
             success: "✅ Acceso concedido!",
             channel: "Canal",
             reviews: "Reseñas",
@@ -908,7 +892,7 @@
             registerText: "Для регистрации напишите {contact} и получите код доступа.",
             codePlaceholder: "Введите код",
             submit: "Активировать",
-            wrongCode: "❌ Неверный код",
+            wrongCode: "❌ Неверный или использованный код",
             success: "✅ Доступ открыт!",
             channel: "Канал",
             reviews: "Отзывы",
@@ -927,7 +911,7 @@
             registerText: "Aby się zarejestrować, skontaktuj się z {contact} i uzyskaj kod aktywacyjny.",
             codePlaceholder: "Wprowadź kod",
             submit: "Aktywuj",
-            wrongCode: "❌ Błędny kod",
+            wrongCode: "❌ Błędny lub użyty kod",
             success: "✅ Dostęp przyznany!",
             channel: "Kanał",
             reviews: "Opinie",
@@ -946,7 +930,7 @@
             registerText: "Um sich zu registrieren, kontaktieren Sie {contact} und erhalten Sie einen Aktivierungscode.",
             codePlaceholder: "Code eingeben",
             submit: "Aktivieren",
-            wrongCode: "❌ Falscher Code",
+            wrongCode: "❌ Ungültiger oder bereits verwendeter Code",
             success: "✅ Zugang gewährt!",
             channel: "Kanal",
             reviews: "Bewertungen",
@@ -965,7 +949,7 @@
             registerText: "Pour vous inscrire, contactez {contact} et obtenez un code d'activation.",
             codePlaceholder: "Entrez le code",
             submit: "Activer",
-            wrongCode: "❌ Code invalide",
+            wrongCode: "❌ Code invalide ou déjà utilisé",
             success: "✅ Accès accordé!",
             channel: "Chaîne",
             reviews: "Avis",
@@ -995,13 +979,11 @@
     const activateBtn = document.getElementById('activate-btn');
     const registerMessage = document.getElementById('register-message');
     const dynamicContact = document.getElementById('dynamic-contact');
-    dynamicContact.innerText = adminUsername;
 
-    const tgChannelText = document.getElementById('tg-channel-text');
-    const tgReviewsText = document.getElementById('tg-reviews-text');
-    const tgSupportText = document.getElementById('tg-support-text');
+    dynamicContact.href = 'https://t.me/ZentixTrade';
+    dynamicContact.innerText = '@ZentixTrade';
 
-    // --- НОВЫЙ ПОЛНЫЙ СПИСОК ВАЛЮТНЫХ ПАР (по запросу) ---
+    // --- ПОЛНЫЙ СПИСОК ВАЛЮТНЫХ ПАР (без изменений) ---
     const allPairs = [
         // Основные и кроссы
         { name: "EUR/USD", flag: "🇪🇺🇺🇸", type: "Major" },
@@ -1119,10 +1101,6 @@
         registerText.innerText = dict[curLang].registerText.replace('{contact}', adminUsername);
         codeInput.placeholder = dict[curLang].codePlaceholder;
         activateBtn.innerText = dict[curLang].submit;
-
-        tgChannelText.innerText = dict[curLang].channel;
-        tgReviewsText.innerText = dict[curLang].reviews;
-        tgSupportText.innerText = dict[curLang].support;
     }
 
     langBtn.onclick = function() {
@@ -1227,7 +1205,7 @@
         }
     });
 
-    // --- ГРАФИК ---
+    // --- ГРАФИК (без изменений) ---
     function setupCanvas() {
         const rect = canvas.parentElement.getBoundingClientRect();
         canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
@@ -1474,10 +1452,13 @@
     }
     window.startAnalysis = startAnalysis;
 
-    // --- АКТИВАЦИЯ ПО КОДУ ---
+    // --- АКТИВАЦИЯ ПО КОДУ (новая логика с одноразовыми кодами) ---
     activateBtn.addEventListener('click', () => {
         const code = codeInput.value.trim();
-        if (code === '1034163834') {
+        
+        if (isCodeValid(code)) {
+            // Помечаем код как использованный
+            markCodeAsUsed(code);
             registered = true;
             localStorage.setItem('optibotx_registered', 'true');
             registerMessage.innerText = dict[curLang].success;
@@ -1514,7 +1495,5 @@
         window.Telegram.WebApp.expand();
     }
 </script>
-</body>
-</html>
 </body>
 </html>
