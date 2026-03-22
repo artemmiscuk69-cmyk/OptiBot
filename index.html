@@ -248,7 +248,7 @@
             color: #00ff88;
         }
 
-        /* Instruction overlay styles */
+        /* Instruction overlay styles - увеличенное окно */
         .instruction-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -273,7 +273,7 @@
             border-radius: 40px;
             padding: 24px 20px;
             width: 85%;
-            max-width: 380px;
+            max-width: 460px; /* увеличено */
             text-align: left;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
             animation: glassAppear 0.4s forwards;
@@ -325,6 +325,22 @@
             font-size: 0.75rem;
             margin-top: 5px;
             word-break: break-all;
+        }
+        .step-img {
+            margin-top: 8px;
+            text-align: center;
+        }
+        .step-img img {
+            max-width: 90%;
+            height: auto;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .step-img-caption {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 4px;
         }
         .close-instr-btn {
             background: rgba(255,255,255,0.1);
@@ -960,7 +976,7 @@
             success: "✅ Access granted!",
             instrTitle: "📋 How to get your code",
             step1: "Register on PocketOption using our partner link:",
-            step2: "After registration, go to your Profile in PocketOption and copy your User ID.",
+            step2: "After registration, go to your Profile in PocketOption and copy your User ID (see example below):",
             step3: "Send your PocketOption ID to our Telegram:",
             step4: "After verification, you'll receive a unique activation code. Enter it above and click Activate.",
             backBtn: "← Back to activation"
@@ -982,7 +998,7 @@
             success: "✅ Acceso concedido!",
             instrTitle: "📋 Cómo obtener su código",
             step1: "Regístrese en PocketOption usando nuestro enlace de socio:",
-            step2: "Después del registro, vaya a su Perfil en PocketOption y copie su ID de usuario.",
+            step2: "Después del registro, vaya a su Perfil en PocketOption y copie su ID de usuario (vea el ejemplo abajo):",
             step3: "Envíe su ID de PocketOption a nuestro Telegram:",
             step4: "Después de la verificación, recibirá un código de activación único. Introdúzcalo arriba y haga clic en Activar.",
             backBtn: "← Volver a la activación"
@@ -1004,7 +1020,7 @@
             success: "✅ Доступ открыт!",
             instrTitle: "📋 Как получить код",
             step1: "Зарегистрируйтесь в PocketOption по нашей партнерской ссылке:",
-            step2: "После регистрации перейдите в Профиль в PocketOption и скопируйте свой ID пользователя.",
+            step2: "После регистрации перейдите в Профиль в PocketOption и скопируйте свой ID пользователя (см. пример ниже):",
             step3: "Отправьте свой ID PocketOption в наш Telegram:",
             step4: "После проверки вы получите уникальный код активации. Введите его выше и нажмите Активировать.",
             backBtn: "← Вернуться к активации"
@@ -1026,7 +1042,7 @@
             success: "✅ Dostęp przyznany!",
             instrTitle: "📋 Jak uzyskać kod",
             step1: "Zarejestruj się na PocketOption, korzystając z naszego linku partnerskiego:",
-            step2: "Po rejestracji przejdź do Profilu w PocketOption i skopiuj swój identyfikator użytkownika.",
+            step2: "Po rejestracji przejdź do Profilu w PocketOption i skopiuj swój identyfikator użytkownika (patrz przykład poniżej):",
             step3: "Wyślij swój identyfikator PocketOption do naszego Telegramu:",
             step4: "Po weryfikacji otrzymasz unikalny kod aktywacyjny. Wprowadź go powyżej i kliknij Aktywuj.",
             backBtn: "← Powrót do aktywacji"
@@ -1048,7 +1064,7 @@
             success: "✅ Zugang gewährt!",
             instrTitle: "📋 So erhalten Sie Ihren Code",
             step1: "Registrieren Sie sich bei PocketOption über unseren Partnerlink:",
-            step2: "Gehen Sie nach der Registrierung zu Ihrem Profil in PocketOption und kopieren Sie Ihre Benutzer-ID.",
+            step2: "Gehen Sie nach der Registrierung zu Ihrem Profil in PocketOption und kopieren Sie Ihre Benutzer-ID (siehe Beispiel unten):",
             step3: "Senden Sie Ihre PocketOption-ID an unser Telegram:",
             step4: "Nach der Überprüfung erhalten Sie einen eindeutigen Aktivierungscode. Geben Sie ihn oben ein und klicken Sie auf Aktivieren.",
             backBtn: "← Zurück zur Aktivierung"
@@ -1070,7 +1086,7 @@
             success: "✅ Accès accordé!",
             instrTitle: "📋 Comment obtenir votre code",
             step1: "Inscrivez-vous sur PocketOption en utilisant notre lien partenaire :",
-            step2: "Après inscription, allez dans votre Profil sur PocketOption et copiez votre ID utilisateur.",
+            step2: "Après inscription, allez dans votre Profil sur PocketOption et copiez votre ID utilisateur (voir exemple ci-dessous) :",
             step3: "Envoyez votre ID PocketOption à notre Telegram :",
             step4: "Après vérification, vous recevrez un code d'activation unique. Entrez-le ci-dessus et cliquez sur Activer.",
             backBtn: "← Retour à l'activation"
@@ -1208,7 +1224,7 @@
         // НЕ показываем регистрацию автоматически
     });
 
-    // Функция обновления текста инструкции на текущем языке
+    // Функция обновления текста инструкции на текущем языке + добавление картинки
     function updateInstructionText() {
         instrTitle.innerText = dict[curLang].instrTitle;
         const steps = [
@@ -1231,6 +1247,17 @@
                 stepTextDiv.innerHTML = stepText + ' <a href="https://t.me/ZentixTrade" target="_blank">@ZentixTrade</a>';
             } else if (idx === 0) {
                 stepTextDiv.innerHTML = stepText + ' <a href="https://u3.shortink.io/register?utm_campaign=822097&utm_source=affiliate&utm_medium=sr&a=TNOv4heF82mMb6&ac=osnova&code=EDS965" target="_blank" class="ref-link">🔗 Click to register →</a>';
+            } else if (idx === 1) {
+                // Второй шаг — добавляем картинку с примером ID
+                stepTextDiv.innerHTML = stepText;
+                const imgDiv = document.createElement('div');
+                imgDiv.className = 'step-img';
+                // используем имя файла, которое прислал пользователь
+                imgDiv.innerHTML = `
+                    <img src="photo_2026-03-22_23-12-35 (2).jpg" alt="Example User ID" onerror="this.style.display='none'">
+                    <div class="step-img-caption">Example: id126787492</div>
+                `;
+                stepTextDiv.appendChild(imgDiv);
             } else {
                 stepTextDiv.innerText = stepText;
             }
