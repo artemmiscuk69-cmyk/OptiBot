@@ -248,6 +248,100 @@
             color: #00ff88;
         }
 
+        /* Instruction overlay styles */
+        .instruction-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 21000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .instruction-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .instruction-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 24px 20px;
+            width: 85%;
+            max-width: 380px;
+            text-align: left;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            animation: glassAppear 0.4s forwards;
+        }
+        .instruction-card h3 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, #fff, #aaccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .step-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
+        .step-num {
+            background: var(--accent);
+            width: 26px;
+            height: 26px;
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            color: white;
+            font-size: 0.8rem;
+        }
+        .step-text {
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        .step-text a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .step-text a:hover {
+            text-decoration: underline;
+        }
+        .ref-link {
+            display: inline-block;
+            background: rgba(91,77,255,0.2);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-top: 5px;
+            word-break: break-all;
+        }
+        .close-instr-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--glass-border);
+            color: var(--text-color);
+            padding: 10px;
+            border-radius: 40px;
+            width: 100%;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+        .close-instr-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
         .app-container {
             width: 100%;
             max-width: 400px;
@@ -730,7 +824,42 @@
         <p id="register-text">To register, contact <a id="dynamic-contact" class="contact" href="https://t.me/ZentixTrade" target="_blank">@ZentixTrade</a> and get an activation code.</p>
         <input type="text" id="code-input" class="register-input" placeholder="Enter code">
         <button id="activate-btn" class="register-btn">Activate</button>
+        <button id="get-code-btn" class="register-btn" style="background: rgba(255,255,255,0.1); box-shadow: none; margin-top: 0;">✨ Get activation code</button>
         <div id="register-message" class="register-message"></div>
+    </div>
+</div>
+
+<!-- Instruction overlay -->
+<div id="instruction-overlay" class="instruction-overlay">
+    <div class="instruction-card">
+        <h3>📋 How to get your code</h3>
+        <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-text">
+                <strong>Register on PocketOption</strong> using our partner link:<br>
+                <a href="https://u3.shortink.io/register?utm_campaign=822097&utm_source=affiliate&utm_medium=sr&a=TNOv4heF82mMb6&ac=osnova&code=EDS965" target="_blank" class="ref-link">🔗 Click to register →</a>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-text">
+                After registration, go to your <strong>Profile</strong> in PocketOption and copy your <strong>User ID</strong>.
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-text">
+                Send your <strong>PocketOption ID</strong> to our Telegram:<br>
+                <a href="https://t.me/ZentixTrade" target="_blank" style="color: var(--accent); font-weight: bold;">@ZentixTrade</a> (click to chat)
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-text">
+                After verification, you'll receive a unique activation code. Enter it above and click Activate.
+            </div>
+        </div>
+        <button id="close-instr-btn" class="close-instr-btn">← Back to activation</button>
     </div>
 </div>
 
@@ -794,7 +923,7 @@
 </div>
 
 <script>
-    // --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
+    // --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ (полностью сохранены из оригинала) ---
     const canvas = document.getElementById('mainChart');
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
@@ -810,8 +939,7 @@
     const adminUsername = '@ZentixTrade';
     document.getElementById('watermark').innerText = 'OptiBotX PRO';
 
-    // ==================== СИСТЕМА ОДНОРАЗОВЫХ КОДОВ ====================
-    // Список валидных кодов (50 штук, минимум 7 цифр)
+    // ==================== СИСТЕМА ОДНОРАЗОВЫХ КОДОВ (ваша оригинальная) ====================
     const validCodes = [
         '10341638', '20451927', '30561836', '40771345', '50881454',
         '60991563', '70101672', '80211781', '90321890', '10431909',
@@ -825,15 +953,12 @@
         '46095563', '47105672', '48215781', '49325890', '50435909'
     ];
 
-    // Загружаем использованные коды из localStorage или создаём пустой объект
     let usedCodes = JSON.parse(localStorage.getItem('usedCodes')) || {};
 
-    // Функция для проверки кода
     function isCodeValid(code) {
         return validCodes.includes(code) && !usedCodes[code];
     }
 
-    // Функция для пометки кода как использованного
     function markCodeAsUsed(code) {
         usedCodes[code] = true;
         localStorage.setItem('usedCodes', JSON.stringify(usedCodes));
@@ -855,10 +980,6 @@
             submit: "Activate",
             wrongCode: "❌ Invalid or used code",
             success: "✅ Access granted!",
-            // оставлено для совместимости, но не используется
-            channel: "Channel",
-            reviews: "Reviews",
-            support: "Support"
         },
         es: { 
             sub: "Seleccione un par de divisas", 
@@ -875,9 +996,6 @@
             submit: "Activar",
             wrongCode: "❌ Código inválido o usado",
             success: "✅ Acceso concedido!",
-            channel: "Canal",
-            reviews: "Reseñas",
-            support: "Soporte"
         },
         ru: { 
             sub: "Выбери валютную пару", 
@@ -894,9 +1012,6 @@
             submit: "Активировать",
             wrongCode: "❌ Неверный или использованный код",
             success: "✅ Доступ открыт!",
-            channel: "Канал",
-            reviews: "Отзывы",
-            support: "Поддержка"
         },
         pl: {
             sub: "Wybierz parę walutową",
@@ -913,9 +1028,6 @@
             submit: "Aktywuj",
             wrongCode: "❌ Błędny lub użyty kod",
             success: "✅ Dostęp przyznany!",
-            channel: "Kanał",
-            reviews: "Opinie",
-            support: "Wsparcie"
         },
         de: {
             sub: "Währungspaar auswählen",
@@ -932,9 +1044,6 @@
             submit: "Aktivieren",
             wrongCode: "❌ Ungültiger oder bereits verwendeter Code",
             success: "✅ Zugang gewährt!",
-            channel: "Kanal",
-            reviews: "Bewertungen",
-            support: "Support"
         },
         fr: {
             sub: "Choisissez une paire de devises",
@@ -951,9 +1060,6 @@
             submit: "Activer",
             wrongCode: "❌ Code invalide ou déjà utilisé",
             success: "✅ Accès accordé!",
-            channel: "Chaîne",
-            reviews: "Avis",
-            support: "Support"
         }
     };
 
@@ -980,10 +1086,14 @@
     const registerMessage = document.getElementById('register-message');
     const dynamicContact = document.getElementById('dynamic-contact');
 
+    const instructionOverlay = document.getElementById('instruction-overlay');
+    const getCodeBtn = document.getElementById('get-code-btn');
+    const closeInstrBtn = document.getElementById('close-instr-btn');
+
     dynamicContact.href = 'https://t.me/ZentixTrade';
     dynamicContact.innerText = '@ZentixTrade';
 
-    // --- ПОЛНЫЙ СПИСОК ВАЛЮТНЫХ ПАР (без изменений) ---
+    // --- ПОЛНЫЙ СПИСОК ВАЛЮТНЫХ ПАР (оригинал) ---
     const allPairs = [
         // Основные и кроссы
         { name: "EUR/USD", flag: "🇪🇺🇺🇸", type: "Major" },
@@ -1023,7 +1133,7 @@
         { name: "USD/THB", flag: "🇺🇸🇹🇭", type: "Exotic" },
         { name: "USD/VND", flag: "🇺🇸🇻🇳", type: "Exotic" },
 
-        // OTC (внебиржевые) — все те же, но с пометкой OTC
+        // OTC (внебиржевые)
         { name: "EUR/USD OTC", flag: "🇪🇺🇺🇸", type: "OTC" },
         { name: "GBP/USD OTC", flag: "🇬🇧🇺🇸", type: "OTC" },
         { name: "USD/JPY OTC", flag: "🇺🇸🇯🇵", type: "OTC" },
@@ -1079,6 +1189,10 @@
         initChart();
         setupSnow();
         updateUILang();
+        // Show register overlay if not registered
+        if (!registered) {
+            registerOverlay.classList.add('visible');
+        }
     });
 
     // --- ОБНОВЛЕНИЕ ЯЗЫКА ---
@@ -1205,7 +1319,7 @@
         }
     });
 
-    // --- ГРАФИК (без изменений) ---
+    // --- ГРАФИК (полностью оригинальный) ---
     function setupCanvas() {
         const rect = canvas.parentElement.getBoundingClientRect();
         canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
@@ -1452,12 +1566,11 @@
     }
     window.startAnalysis = startAnalysis;
 
-    // --- АКТИВАЦИЯ ПО КОДУ (новая логика с одноразовыми кодами) ---
+    // --- АКТИВАЦИЯ ПО КОДУ (новая логика с инструкцией) ---
     activateBtn.addEventListener('click', () => {
         const code = codeInput.value.trim();
         
         if (isCodeValid(code)) {
-            // Помечаем код как использованный
             markCodeAsUsed(code);
             registered = true;
             localStorage.setItem('optibotx_registered', 'true');
@@ -1475,9 +1588,28 @@
         }
     });
 
+    // Открыть инструкцию
+    getCodeBtn.addEventListener('click', () => {
+        registerOverlay.classList.remove('visible');
+        instructionOverlay.classList.add('visible');
+    });
+
+    // Закрыть инструкцию и вернуться к активации
+    closeInstrBtn.addEventListener('click', () => {
+        instructionOverlay.classList.remove('visible');
+        registerOverlay.classList.add('visible');
+    });
+
     registerOverlay.addEventListener('click', (e) => {
         if (e.target === registerOverlay) {
             registerOverlay.classList.remove('visible');
+        }
+    });
+
+    instructionOverlay.addEventListener('click', (e) => {
+        if (e.target === instructionOverlay) {
+            instructionOverlay.classList.remove('visible');
+            registerOverlay.classList.add('visible');
         }
     });
 
@@ -1495,5 +1627,7 @@
         window.Telegram.WebApp.expand();
     }
 </script>
+</body>
+</html>
 </body>
 </html>
