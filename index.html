@@ -832,32 +832,9 @@
 <!-- Instruction overlay -->
 <div id="instruction-overlay" class="instruction-overlay">
     <div class="instruction-card">
-        <h3>📋 How to get your code</h3>
-        <div class="step-item">
-            <div class="step-num">1</div>
-            <div class="step-text">
-                <strong>Register on PocketOption</strong> using our partner link:<br>
-                <a href="https://u3.shortink.io/register?utm_campaign=822097&utm_source=affiliate&utm_medium=sr&a=TNOv4heF82mMb6&ac=osnova&code=EDS965" target="_blank" class="ref-link">🔗 Click to register →</a>
-            </div>
-        </div>
-        <div class="step-item">
-            <div class="step-num">2</div>
-            <div class="step-text">
-                After registration, go to your <strong>Profile</strong> in PocketOption and copy your <strong>User ID</strong>.
-            </div>
-        </div>
-        <div class="step-item">
-            <div class="step-num">3</div>
-            <div class="step-text">
-                Send your <strong>PocketOption ID</strong> to our Telegram:<br>
-                <a href="https://t.me/ZentixTrade" target="_blank" style="color: var(--accent); font-weight: bold;">@ZentixTrade</a> (click to chat)
-            </div>
-        </div>
-        <div class="step-item">
-            <div class="step-num">4</div>
-            <div class="step-text">
-                After verification, you'll receive a unique activation code. Enter it above and click Activate.
-            </div>
+        <h3 id="instr-title">📋 How to get your code</h3>
+        <div class="steps-container" id="steps-container">
+            <!-- steps will be injected by JS -->
         </div>
         <button id="close-instr-btn" class="close-instr-btn">← Back to activation</button>
     </div>
@@ -964,6 +941,7 @@
         localStorage.setItem('usedCodes', JSON.stringify(usedCodes));
     }
 
+    // Мультиязычный словарь с добавленными шагами инструкции
     const dict = {
         en: { 
             sub: "Select currency pair", 
@@ -980,6 +958,12 @@
             submit: "Activate",
             wrongCode: "❌ Invalid or used code",
             success: "✅ Access granted!",
+            instrTitle: "📋 How to get your code",
+            step1: "Register on PocketOption using our partner link:",
+            step2: "After registration, go to your Profile in PocketOption and copy your User ID.",
+            step3: "Send your PocketOption ID to our Telegram:",
+            step4: "After verification, you'll receive a unique activation code. Enter it above and click Activate.",
+            backBtn: "← Back to activation"
         },
         es: { 
             sub: "Seleccione un par de divisas", 
@@ -996,6 +980,12 @@
             submit: "Activar",
             wrongCode: "❌ Código inválido o usado",
             success: "✅ Acceso concedido!",
+            instrTitle: "📋 Cómo obtener su código",
+            step1: "Regístrese en PocketOption usando nuestro enlace de socio:",
+            step2: "Después del registro, vaya a su Perfil en PocketOption y copie su ID de usuario.",
+            step3: "Envíe su ID de PocketOption a nuestro Telegram:",
+            step4: "Después de la verificación, recibirá un código de activación único. Introdúzcalo arriba y haga clic en Activar.",
+            backBtn: "← Volver a la activación"
         },
         ru: { 
             sub: "Выбери валютную пару", 
@@ -1012,6 +1002,12 @@
             submit: "Активировать",
             wrongCode: "❌ Неверный или использованный код",
             success: "✅ Доступ открыт!",
+            instrTitle: "📋 Как получить код",
+            step1: "Зарегистрируйтесь в PocketOption по нашей партнерской ссылке:",
+            step2: "После регистрации перейдите в Профиль в PocketOption и скопируйте свой ID пользователя.",
+            step3: "Отправьте свой ID PocketOption в наш Telegram:",
+            step4: "После проверки вы получите уникальный код активации. Введите его выше и нажмите Активировать.",
+            backBtn: "← Вернуться к активации"
         },
         pl: {
             sub: "Wybierz parę walutową",
@@ -1028,6 +1024,12 @@
             submit: "Aktywuj",
             wrongCode: "❌ Błędny lub użyty kod",
             success: "✅ Dostęp przyznany!",
+            instrTitle: "📋 Jak uzyskać kod",
+            step1: "Zarejestruj się na PocketOption, korzystając z naszego linku partnerskiego:",
+            step2: "Po rejestracji przejdź do Profilu w PocketOption i skopiuj swój identyfikator użytkownika.",
+            step3: "Wyślij swój identyfikator PocketOption do naszego Telegramu:",
+            step4: "Po weryfikacji otrzymasz unikalny kod aktywacyjny. Wprowadź go powyżej i kliknij Aktywuj.",
+            backBtn: "← Powrót do aktywacji"
         },
         de: {
             sub: "Währungspaar auswählen",
@@ -1044,6 +1046,12 @@
             submit: "Aktivieren",
             wrongCode: "❌ Ungültiger oder bereits verwendeter Code",
             success: "✅ Zugang gewährt!",
+            instrTitle: "📋 So erhalten Sie Ihren Code",
+            step1: "Registrieren Sie sich bei PocketOption über unseren Partnerlink:",
+            step2: "Gehen Sie nach der Registrierung zu Ihrem Profil in PocketOption und kopieren Sie Ihre Benutzer-ID.",
+            step3: "Senden Sie Ihre PocketOption-ID an unser Telegram:",
+            step4: "Nach der Überprüfung erhalten Sie einen eindeutigen Aktivierungscode. Geben Sie ihn oben ein und klicken Sie auf Aktivieren.",
+            backBtn: "← Zurück zur Aktivierung"
         },
         fr: {
             sub: "Choisissez une paire de devises",
@@ -1060,6 +1068,12 @@
             submit: "Activer",
             wrongCode: "❌ Code invalide ou déjà utilisé",
             success: "✅ Accès accordé!",
+            instrTitle: "📋 Comment obtenir votre code",
+            step1: "Inscrivez-vous sur PocketOption en utilisant notre lien partenaire :",
+            step2: "Après inscription, allez dans votre Profil sur PocketOption et copiez votre ID utilisateur.",
+            step3: "Envoyez votre ID PocketOption à notre Telegram :",
+            step4: "Après vérification, vous recevrez un code d'activation unique. Entrez-le ci-dessus et cliquez sur Activer.",
+            backBtn: "← Retour à l'activation"
         }
     };
 
@@ -1089,6 +1103,8 @@
     const instructionOverlay = document.getElementById('instruction-overlay');
     const getCodeBtn = document.getElementById('get-code-btn');
     const closeInstrBtn = document.getElementById('close-instr-btn');
+    const stepsContainer = document.getElementById('steps-container');
+    const instrTitle = document.getElementById('instr-title');
 
     dynamicContact.href = 'https://t.me/ZentixTrade';
     dynamicContact.innerText = '@ZentixTrade';
@@ -1171,7 +1187,7 @@
         });
     });
 
-    // --- СТАРТ ---
+    // --- СТАРТ (без автоматического показа регистрации) ---
     startBtn.addEventListener('click', () => {
         welcomeOverlay.classList.remove('visible');
         document.getElementById('main-app').style.display = 'flex';
@@ -1189,11 +1205,41 @@
         initChart();
         setupSnow();
         updateUILang();
-        // Show register overlay if not registered
-        if (!registered) {
-            registerOverlay.classList.add('visible');
-        }
+        // НЕ показываем регистрацию автоматически
     });
+
+    // Функция обновления текста инструкции на текущем языке
+    function updateInstructionText() {
+        instrTitle.innerText = dict[curLang].instrTitle;
+        const steps = [
+            dict[curLang].step1,
+            dict[curLang].step2,
+            dict[curLang].step3,
+            dict[curLang].step4
+        ];
+        stepsContainer.innerHTML = '';
+        steps.forEach((stepText, idx) => {
+            const stepDiv = document.createElement('div');
+            stepDiv.className = 'step-item';
+            const stepNum = document.createElement('div');
+            stepNum.className = 'step-num';
+            stepNum.innerText = (idx+1).toString();
+            const stepTextDiv = document.createElement('div');
+            stepTextDiv.className = 'step-text';
+            if (idx === 2) {
+                // Специальная обработка для шага с Telegram ссылкой
+                stepTextDiv.innerHTML = stepText + ' <a href="https://t.me/ZentixTrade" target="_blank">@ZentixTrade</a>';
+            } else if (idx === 0) {
+                stepTextDiv.innerHTML = stepText + ' <a href="https://u3.shortink.io/register?utm_campaign=822097&utm_source=affiliate&utm_medium=sr&a=TNOv4heF82mMb6&ac=osnova&code=EDS965" target="_blank" class="ref-link">🔗 Click to register →</a>';
+            } else {
+                stepTextDiv.innerText = stepText;
+            }
+            stepDiv.appendChild(stepNum);
+            stepDiv.appendChild(stepTextDiv);
+            stepsContainer.appendChild(stepDiv);
+        });
+        closeInstrBtn.innerText = dict[curLang].backBtn;
+    }
 
     // --- ОБНОВЛЕНИЕ ЯЗЫКА ---
     function updateUILang() {
@@ -1215,6 +1261,9 @@
         registerText.innerText = dict[curLang].registerText.replace('{contact}', adminUsername);
         codeInput.placeholder = dict[curLang].codePlaceholder;
         activateBtn.innerText = dict[curLang].submit;
+        
+        // Обновляем текст инструкции при смене языка
+        updateInstructionText();
     }
 
     langBtn.onclick = function() {
@@ -1502,7 +1551,7 @@
     }
     window.changePair = changePair;
 
-    // --- АНАЛИЗ (с таймером) ---
+    // --- АНАЛИЗ (с проверкой регистрации и показом окна только здесь) ---
     function startAnalysis(btn) {
         if (!registered) {
             registerOverlay.classList.add('visible');
@@ -1566,7 +1615,7 @@
     }
     window.startAnalysis = startAnalysis;
 
-    // --- АКТИВАЦИЯ ПО КОДУ (новая логика с инструкцией) ---
+    // --- АКТИВАЦИЯ ПО КОДУ ---
     activateBtn.addEventListener('click', () => {
         const code = codeInput.value.trim();
         
@@ -1588,8 +1637,9 @@
         }
     });
 
-    // Открыть инструкцию
+    // Открыть инструкцию с обновлением текста на текущем языке
     getCodeBtn.addEventListener('click', () => {
+        updateInstructionText();  // обновляем текст перед показом
         registerOverlay.classList.remove('visible');
         instructionOverlay.classList.add('visible');
     });
@@ -1627,7 +1677,5 @@
         window.Telegram.WebApp.expand();
     }
 </script>
-</body>
-</html>
 </body>
 </html>
