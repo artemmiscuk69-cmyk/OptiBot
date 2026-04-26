@@ -4,12 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>OptiBotX PRO | Premium Terminal</title>
-    
+    <!-- TradingView Library -->
     <script src="https://s3.tradingview.com/tv.js"></script>
+    <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background: #0a0a1a;
@@ -17,6 +25,8 @@
             overflow: hidden;
             transition: background 0.3s, color 0.3s;
         }
+
+        /* Light Theme */
         body.light {
             background: #f0f2f8;
             color: #1a1a2e;
@@ -37,6 +47,14 @@
             background: rgba(0,0,0,0.03);
             border-color: rgba(0,0,0,0.1);
         }
+        body.light .user-name {
+            background: linear-gradient(135deg, #1a1a2e, #3a3a6e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Glassmorphism Base */
         .glass-card, .menu-card, .access-card, .bottom-menu, .top-bar, .analysis-widget {
             background: rgba(20, 20, 40, 0.6);
             backdrop-filter: blur(20px);
@@ -45,9 +63,15 @@
             border-radius: 28px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         }
+
+        /* Overlays */
         .overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
             backdrop-filter: blur(12px);
             z-index: 10000;
             display: flex;
@@ -57,204 +81,416 @@
             visibility: hidden;
             transition: opacity 0.4s, visibility 0.4s;
         }
-        .overlay.visible { opacity: 1; visibility: visible; }
+        .overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Welcome Screen (only ru/en) */
         .welcome-content {
             text-align: center;
-            max-width: 340px; width: 85%;
+            max-width: 340px;
+            width: 85%;
             animation: fadeUp 0.6s ease;
         }
         .logo-glow {
-            width: 100px; height: 100px; margin: 0 auto 25px;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 25px;
             background: linear-gradient(135deg, #5b4dff, #ff3366);
             border-radius: 30px;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             box-shadow: 0 0 40px rgba(91,77,255,0.5);
             animation: float 3s infinite;
         }
         .logo-glow i { font-size: 48px; color: white; }
         .welcome-title {
-            font-size: 32px; font-weight: 800;
+            font-size: 32px;
+            font-weight: 800;
             background: linear-gradient(135deg, #fff, #aaccff);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .lang-grid {
-            display: flex; gap: 20px; justify-content: center; margin: 35px 0;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 35px 0;
         }
         .lang-card {
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 20px; padding: 12px 20px;
-            cursor: pointer; transition: 0.3s; text-align: center; min-width: 100px;
+            border-radius: 20px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+            min-width: 100px;
         }
         .lang-card img { width: 40px; height: 40px; border-radius: 50%; margin-bottom: 8px; }
         .lang-card span { font-size: 14px; font-weight: 500; display: block; }
         .lang-card.selected {
             background: linear-gradient(135deg, #5b4dff, #ff3366);
-            border-color: transparent; transform: translateY(-3px);
+            border-color: transparent;
+            transform: translateY(-3px);
             box-shadow: 0 10px 25px rgba(91,77,255,0.4);
         }
         .start-btn {
             background: linear-gradient(135deg, #5b4dff, #ff3366);
-            border: none; padding: 16px; width: 100%; border-radius: 40px;
-            color: white; font-size: 18px; font-weight: 700;
-            cursor: pointer; opacity: 0; transform: translateY(20px);
-            transition: 0.3s; pointer-events: none;
+            border: none;
+            padding: 16px;
+            width: 100%;
+            border-radius: 40px;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: 0.3s;
+            pointer-events: none;
         }
-        .start-btn.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .start-btn.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* Menu Screen */
         .menu-card {
-            width: 85%; max-width: 340px; padding: 30px 25px; text-align: center;
+            width: 85%;
+            max-width: 340px;
+            padding: 30px 25px;
+            text-align: center;
         }
         .menu-buttons {
-            display: flex; flex-direction: column; gap: 16px; margin: 30px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 30px 0;
         }
         .menu-action {
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 60px; padding: 14px; font-weight: 600;
-            cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center; gap: 12px;
+            border-radius: 60px;
+            padding: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
-        .menu-action:hover { background: rgba(91,77,255,0.3); transform: scale(1.02); }
+        .menu-action:hover {
+            background: rgba(91,77,255,0.3);
+            transform: scale(1.02);
+        }
+
+        /* Access Card (exact match screenshot, premium) */
         .access-card {
-            width: 90%; max-width: 360px; padding: 24px 20px; text-align: center;
+            width: 90%;
+            max-width: 360px;
+            padding: 24px 20px;
+            text-align: center;
         }
         .access-card h3 { font-size: 26px; margin-bottom: 8px; }
         .access-steps {
-            background: rgba(0,0,0,0.3); border-radius: 20px; padding: 12px;
-            margin: 15px 0; text-align: left; font-size: 13px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 12px;
+            margin: 15px 0;
+            text-align: left;
+            font-size: 13px;
+        }
+        .tg-contact-row {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            margin: 12px 0;
         }
         .code-input {
-            width: 100%; padding: 14px; background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 40px;
-            color: white; text-align: center; margin: 15px 0; font-size: 16px;
+            width: 100%;
+            padding: 14px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 40px;
+            color: white;
+            text-align: center;
+            margin: 15px 0;
         }
         .activate-premium {
             background: linear-gradient(135deg, #5b4dff, #ff3366);
-            width: 100%; padding: 14px; border: none; border-radius: 40px;
-            font-weight: bold; color: white; cursor: pointer;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 40px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
         }
         .action-double {
-            display: flex; gap: 12px; margin: 15px 0 10px;
+            display: flex;
+            gap: 12px;
+            margin: 15px 0 10px;
         }
         .action-double button {
-            flex: 1; padding: 10px; border-radius: 40px;
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2);
-            color: white; cursor: pointer;
+            flex: 1;
+            padding: 10px;
+            border-radius: 40px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
         }
         .contact-footer {
-            display: flex; justify-content: space-between; font-size: 12px; color: #aaa;
-            border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #aaa;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 12px;
+            margin-top: 10px;
         }
+
+        /* Main App */
         .app-main {
-            display: none; flex-direction: column; height: 100vh;
+            display: none;
+            flex-direction: column;
+            height: 100vh;
             background: radial-gradient(circle at 20% 30%, rgba(91,77,255,0.1), transparent);
             overflow-y: auto;
         }
         .top-bar-premium {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 20px; margin: max(15px, env(safe-area-inset-top)) 12px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            margin: 12px;
             border-radius: 28px;
         }
         .user-premium {
-            display: flex; align-items: center; gap: 14px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
         }
         .avatar-premium {
-            width: 50px; height: 50px; background: linear-gradient(135deg, #5b4dff, #ff3366);
-            border-radius: 25px; display: flex; align-items: center; justify-content: center; font-size: 24px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #5b4dff, #ff3366);
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .user-text {
+            display: flex;
+            flex-direction: column;
         }
         .user-name-premium {
-            font-size: 20px; font-weight: 800;
+            font-size: 20px;
+            font-weight: 800;
             background: linear-gradient(135deg, #fff, #c0b5ff);
-            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
+        .user-id-premium { font-size: 12px; opacity: 0.7; }
         .icon-glass {
-            width: 44px; height: 44px; background: rgba(255,255,255,0.1);
-            border-radius: 22px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.2s; backdrop-filter: blur(5px);
+            width: 44px;
+            height: 44px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            backdrop-filter: blur(5px);
         }
+
+        /* Chart Container */
         .chart-premium {
-            margin: 0 12px 12px; border-radius: 28px; overflow: hidden;
-            height: 38vh; min-height: 260px; background: #0b0b1a; border: 1px solid rgba(255,255,255,0.1);
+            margin: 0 12px 12px;
+            border-radius: 28px;
+            overflow: hidden;
+            height: 38vh;
+            min-height: 260px;
+            background: #0b0b1a;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         #tv_chart_container { width: 100%; height: 100%; }
         .otc-stub {
-            width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
-            font-weight: bold; gap: 12px; flex-direction: column; text-align: center;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            font-weight: bold;
+            gap: 12px;
+            flex-direction: column;
         }
+
+        /* Controls Panel */
         .controls-premium {
-            margin: 0 12px 12px; padding: 16px; border-radius: 28px;
+            margin: 0 12px 12px;
+            padding: 16px;
+            border-radius: 28px;
         }
         .double-selector {
-            display: flex; gap: 12px; margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
         }
         .premium-select {
-            flex: 1; background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.15); border-radius: 20px;
-            padding: 12px; cursor: pointer; position: relative;
+            flex: 1;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px;
+            padding: 12px;
+            cursor: pointer;
+            position: relative;
         }
         .premium-select .label { font-size: 12px; opacity: 0.7; }
         .premium-select .value { font-weight: 700; display: flex; justify-content: space-between; margin-top: 4px; }
         .dropdown-premium {
-            position: absolute; bottom: 100%; left: 0; width: 100%;
-            background: rgba(20,20,40,0.95); backdrop-filter: blur(20px);
-            border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);
-            max-height: 200px; overflow-y: auto; display: none; z-index: 200; margin-bottom: 8px;
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            width: 100%;
+            background: rgba(20,20,40,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 200;
+            margin-bottom: 8px;
         }
         .dropdown-premium div {
-            padding: 12px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .btn-signal {
-            background: linear-gradient(135deg, #5b4dff, #ff3366); border: none;
-            width: 100%; padding: 16px; border-radius: 40px; font-weight: 800; font-size: 18px;
-            color: white; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            gap: 10px; margin-bottom: 12px;
+            background: linear-gradient(135deg, #5b4dff, #ff3366);
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 40px;
+            font-weight: 800;
+            font-size: 18px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            transition: 0.2s;
         }
         .btn-back {
-            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-            width: 100%; padding: 12px; border-radius: 40px; font-weight: 600;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            width: 100%;
+            padding: 12px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
+
+        /* Result Widget Premium */
         .result-widget {
-            margin: 40px 12px 12px; padding: 20px; border-radius: 28px;
-            display: none; text-align: center; backdrop-filter: blur(20px);
+            margin: 0 12px 12px;
+            padding: 20px;
+            border-radius: 28px;
+            display: none;
+            text-align: center;
+            backdrop-filter: blur(20px);
         }
         .result-widget.active { display: block; animation: fadeUp 0.4s; }
         .signal-big {
-            font-size: 56px; font-weight: 800; letter-spacing: 4px; margin: 10px 0;
+            font-size: 56px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            margin: 10px 0;
         }
         .signal-buy { color: #00ff88; text-shadow: 0 0 20px #00ff88; }
         .signal-sell { color: #ff3366; text-shadow: 0 0 20px #ff3366; }
         .result-buttons {
-            display: flex; gap: 12px; margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
         }
         .result-buttons button {
-            flex: 1; padding: 12px; border-radius: 40px; font-weight: bold; cursor: pointer; border: none;
+            flex: 1;
+            padding: 12px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
         }
         .win-premium { background: rgba(0,255,136,0.2); color: #00ff88; border: 1px solid #00ff88; }
         .loss-premium { background: rgba(255,51,102,0.2); color: #ff3366; border: 1px solid #ff3366; }
         .close-premium { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+
+        /* Progress Modal */
         .progress-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); z-index: 10050;
-            display: none; align-items: center; justify-content: center;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(12px);
+            z-index: 10050;
+            display: none;
+            align-items: center;
+            justify-content: center;
         }
         .progress-card {
-            background: rgba(20,20,40,0.9); backdrop-filter: blur(20px); border-radius: 40px;
-            padding: 30px; width: 80%; max-width: 300px; text-align: center;
+            background: rgba(20,20,40,0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 40px;
+            padding: 30px;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
         }
         .spinner {
-            width: 60px; height: 60px; border: 3px solid rgba(255,255,255,0.2);
-            border-top-color: #5b4dff; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-top-color: #5b4dff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
         }
         .bar {
-            height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: 15px 0 5px; overflow: hidden;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            margin: 15px 0 5px;
+            overflow: hidden;
         }
         .fill {
-            width: 0%; height: 100%; background: linear-gradient(90deg, #5b4dff, #ff3366); transition: width 0.1s;
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #5b4dff, #ff3366);
+            transition: width 0.1s;
         }
+
         @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -269,8 +505,14 @@
         <h1 class="welcome-title">OptiBotX PRO</h1>
         <p style="margin: 8px 0 20px; opacity:0.7;">Premium Intelligence</p>
         <div class="lang-grid">
-            <div class="lang-card" data-lang="ru"><img src="https://flagcdn.com/w80/ru.png" alt="RU"><span>Русский</span></div>
-            <div class="lang-card" data-lang="en"><img src="https://flagcdn.com/w80/gb.png" alt="EN"><span>English</span></div>
+            <div class="lang-card" data-lang="ru">
+                <img src="https://flagcdn.com/w80/ru.png" alt="RU">
+                <span>Русский</span>
+            </div>
+            <div class="lang-card" data-lang="en">
+                <img src="https://flagcdn.com/w80/gb.png" alt="EN">
+                <span>English</span>
+            </div>
         </div>
         <button id="welcomeNext" class="start-btn">Далее →</button>
     </div>
@@ -282,23 +524,23 @@
         <i class="fas fa-crown" style="font-size: 40px; color: #ffcc00; margin-bottom: 15px;"></i>
         <h3 id="menuTitle">Выберите действие</h3>
         <div class="menu-buttons">
-            <div class="menu-action" data-action="reviews" id="reviewsBtn"><i class="fas fa-star"></i> <span>Отзывы приложения</span></div>
-            <div class="menu-action" data-action="tutorial" id="tutorialBtn"><i class="fas fa-graduation-cap"></i> <span>Обучение</span></div>
-            <div class="menu-action" data-action="start" id="startWorkBtn"><i class="fas fa-play"></i> <span>Начать работать</span></div>
+            <div class="menu-action" data-action="reviews" id="reviewsBtn"><i class="fas fa-star"></i> <span id="reviewsText">Отзывы приложения</span></div>
+            <div class="menu-action" data-action="tutorial" id="tutorialBtn"><i class="fas fa-graduation-cap"></i> <span id="tutorialText">Обучение</span></div>
+            <div class="menu-action" data-action="start" id="startWorkBtn"><i class="fas fa-play"></i> <span id="startWorkText">Начать работать</span></div>
         </div>
     </div>
 </div>
 
-<!-- ACCESS CARD (инструкция, ручной ввод кода, без сохранения) -->
+<!-- ACCESS CARD (exact as screenshot, premium) -->
 <div id="accessOverlay" class="overlay">
     <div class="access-card">
         <h3>🔐 Активация доступа</h3>
         <p>Для входа в платформу OptiBotX PRO необходим лицензионный код</p>
         <div class="access-steps">
             <strong>Как получить код?</strong><br>
-            <span>1. Нажмите кнопку «Написать мне» ниже</span><br>
-            <span>2. Напишите слово «КОД» в Telegram</span><br>
-            <span>3. Менеджер выдаст вам персональный код активации ✅</span>
+            1. Нажмите кнопку «Написать мне» ниже<br>
+            2. Напишите слово «КОД» в Telegram<br>
+            3. Менеджер выдаст вам персональный код активации ✅
         </div>
         <input type="text" id="activationCode" class="code-input" placeholder="Введите полученный код">
         <button id="activateAccess" class="activate-premium">Активировать</button>
@@ -310,22 +552,27 @@
             <span>Мой TG: @AuraVey</span>
             <span>Ник: AuraVey</span>
         </div>
-        <div id="accessMsg" style="margin-top: 12px; font-size: 13px; font-weight: bold;"></div>
+        <div id="accessMsg" style="margin-top: 12px; font-size: 13px;"></div>
     </div>
 </div>
 
-<!-- MAIN APP -->
+<!-- MAIN APP PREMIUM -->
 <div id="mainApp" class="app-main">
-    <div class="top-bar-premium glass-card">
+    <div class="top-bar-premium glass-card" style="margin: 12px;">
         <div class="user-premium">
             <div class="avatar-premium"><i class="fas fa-chart-line"></i></div>
-            <div class="user-text"><div class="user-name-premium">OptiBotX PRO</div></div>
+            <div class="user-text">
+                <div class="user-name-premium">OptiBotX PRO</div>
+                <div class="user-id-premium">ID: 8493021</div>
+            </div>
         </div>
         <div class="icon-glass" id="themePremium"><i class="fas fa-moon"></i></div>
     </div>
+
     <div class="chart-premium glass-card" id="chartPremium">
         <div id="tv_chart_container"></div>
     </div>
+
     <div class="controls-premium glass-card">
         <div class="double-selector">
             <div class="premium-select" id="pairSelectorPremium">
@@ -345,6 +592,7 @@
         <button id="getSignalPremium" class="btn-signal"><i class="fas fa-radar"></i> Получить сигнал</button>
         <button id="backToMenuPremium" class="btn-back"><i class="fas fa-arrow-left"></i> Назад в меню</button>
     </div>
+
     <div id="resultPremium" class="result-widget glass-card">
         <div class="signal-big" id="signalTextPremium">BUY</div>
         <div>Точность: <span id="confidencePremium">94%</span></div>
@@ -356,38 +604,31 @@
     </div>
 </div>
 
+<!-- PROGRESS MODAL -->
 <div id="progressModal" class="progress-modal">
     <div class="progress-card">
         <div class="spinner"></div>
-        <h3>Анализ рынка...</h3>
+        <h3 id="progressTitle">Анализ рынка...</h3>
         <div class="bar"><div class="fill" id="progressFill"></div></div>
         <div id="progressPercent">0%</div>
     </div>
 </div>
 
 <script>
-    // ======================== 50 ЧЕТЫРЁХЗНАЧНЫХ КОДОВ ========================
-    // Ты можешь менять этот список как хочешь. Загрузил новую версию — старые коды перестают работать.
-    const validCodes = [
-        "2536","3648","465564","732456","347509","74356","437656","239045","0395487","5671243"    
-    ];
-    
-    // Никакого сохранения — каждый раз при перезагрузке приложение не помнит активацию.
-    // Переменная isActivated живет только до перезагрузки страницы.
-    let isActivated = false;
-    
-    // ---------- ПЕРЕВОДЫ (только ru/en) ----------
+    // ======================== TRANSLATIONS (only ru/en) ========================
     const trans = {
-        ru: { start: "Далее →", asset: "Актив", tf: "Таймфрейм", getSignal: "Получить сигнал", analyzing: "Анализ рынка...", confidence: "Точность", search: "Поиск...", menuTitle: "Выберите действие", reviews: "Отзывы приложения", tutorial: "Обучение", startWork: "Начать работать", backBtn: "Назад в меню", accessSuccess: "✅ Доступ открыт!", accessError: "❌ Неверный код", otcStub: "OTC график в разработке<br>Сигналы доступны" },
-        en: { start: "Next →", asset: "Asset", tf: "Timeframe", getSignal: "Get Signal", analyzing: "Analyzing market...", confidence: "Accuracy", search: "Search...", menuTitle: "Choose action", reviews: "App Reviews", tutorial: "Tutorial", startWork: "Start Trading", backBtn: "Back to Menu", accessSuccess: "✅ Access granted!", accessError: "❌ Invalid code", otcStub: "OTC chart in development<br>Signals are available" }
+        ru: { start: "Далее →", asset: "Актив", tf: "Таймфрейм", getSignal: "Получить сигнал", analyzing: "Анализ рынка...", result: "Результат анализа", confidence: "Точность", search: "Поиск...", menuTitle: "Выберите действие", reviews: "Отзывы приложения", tutorial: "Обучение", startWork: "Начать работать" },
+        en: { start: "Next →", asset: "Asset", tf: "Timeframe", getSignal: "Get Signal", analyzing: "Analyzing market...", result: "Analysis Result", confidence: "Confidence", search: "Search...", menuTitle: "Choose action", reviews: "App Reviews", tutorial: "Tutorial", startWork: "Start Trading" }
     };
-    
     let curLang = 'ru';
+    let isActivated = localStorage.getItem('optibotx_activated') === 'true';
     let tvWidget = null;
     let currentPair = "EUR/USD";
     let currentTF = "1m";
     let isOTC = false;
-    
+    let usedCodes = JSON.parse(localStorage.getItem('usedCodes')) || {};
+    const validCodes = ['10341638','20451927','30561836','40771345','50881454','60991563','70101672','80211781','90321890','10431909','11542018','12652127','13762236','14872345','15982454','16092563','17102672','18212781','19322890','20432909','21543018','22653127','23763236','24873345','25983454','26093563','27103672','28213781','29323890','30433909','31544018','32654127','33764236','34874345','35984454','36094563','37104672','38214781','39324890','40434909','41545018','42655127','43765236','44875345','45985454','46095563','47105672','48215781','49325890','50435909'];
+
     const allPairs = [
         "EUR/USD","GBP/USD","USD/JPY","AUD/USD","USD/CAD","USD/CHF","NZD/USD",
         "EUR/GBP","EUR/JPY","GBP/JPY","AUD/JPY","EUR/CAD","AUD/CAD","AUD/NZD",
@@ -400,10 +641,10 @@
         "CAD/JPY OTC","CHF/JPY OTC","EUR/AUD OTC","GBP/AUD OTC","EUR/CHF OTC",
         "GBP/CHF OTC","EUR/NZD OTC","GBP/NZD OTC"
     ];
-    const tfNormal = ["15s","30s","1m","2","3","5m","15m"];
-    const tfOTC = ["5s","10s","15s","30s","1m","2m","3m"];
-    
-    // DOM элементы
+    const tfNormal = ["1m","5m","15m","1h"];
+    const tfOTC = ["5s","10s","15s","30s","1m","2m"];
+
+    // DOM
     const welcomeDiv = document.getElementById('welcomeOverlay');
     const menuDiv = document.getElementById('menuOverlay');
     const accessDiv = document.getElementById('accessOverlay');
@@ -416,66 +657,49 @@
     const tfDropdownDiv = document.getElementById('tfDropdownPremium');
     const getSignalBtn = document.getElementById('getSignalPremium');
     const backBtn = document.getElementById('backToMenuPremium');
-    
-    // ---------- ФУНКЦИЯ АКТИВАЦИИ (без сохранения, только на сессию) ----------
-    function activateCode() {
-        const codeInput = document.getElementById('activationCode');
-        const code = codeInput.value.trim();
-        const msgDiv = document.getElementById('accessMsg');
-        
-        if (validCodes.includes(code)) {
-            isActivated = true;
-            msgDiv.innerHTML = trans[curLang].accessSuccess;
-            msgDiv.style.color = '#00ff88';
-            setTimeout(() => {
-                accessDiv.classList.remove('visible');
-                msgDiv.innerHTML = '';
-                codeInput.value = '';
-            }, 1000);
-        } else {
-            msgDiv.innerHTML = trans[curLang].accessError;
-            msgDiv.style.color = '#ff4d4d';
-            setTimeout(() => {
-                msgDiv.innerHTML = '';
-            }, 2000);
-        }
-    }
-    
-    // ---------- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (ГРАФИК, ПАРЫ, ТЕМА и т.д.) ----------
+
     function updateLangUI() {
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if(trans[curLang][key]) el.innerHTML = trans[curLang][key];
-        });
-        document.getElementById('welcomeNext').innerHTML = trans[curLang].start;
+        document.querySelectorAll('[data-i18n]').forEach(el => {});
+        document.getElementById('pairSearchPremium').placeholder = trans[curLang].search;
+        document.getElementById('menuTitle').innerText = trans[curLang].menuTitle;
+        document.getElementById('reviewsText').innerText = trans[curLang].reviews;
+        document.getElementById('tutorialText').innerText = trans[curLang].tutorial;
+        document.getElementById('startWorkText').innerText = trans[curLang].startWork;
+        document.getElementById('getSignalPremium').innerHTML = `<i class="fas fa-radar"></i> ${trans[curLang].getSignal}`;
+        document.getElementById('progressTitle').innerText = trans[curLang].analyzing;
     }
-    
+
     function initChart(symbol, interval) {
         if (isOTC) return;
         const formatted = symbol.replace('/', '');
         const tvSym = "FX_IDC:" + formatted;
-        const tfMap = { "1m": "1", "5m": "5", "15m": "15", "1h": "60" };
-        const intv = tfMap[interval] || "1";
+        const intv = interval.replace('s','').replace('m','');
         const isLight = document.body.classList.contains('light');
-        if (tvWidget) { try { tvWidget.remove(); } catch(e) {} tvWidget = null; }
-        const container = document.getElementById('tv_chart_container');
-        if (container) container.innerHTML = '';
+        if (tvWidget) tvWidget.remove();
         tvWidget = new TradingView.widget({
-            autosize: true, symbol: tvSym, interval: intv, timezone: "Etc/UTC",
-            theme: isLight ? "light" : "dark", style: "1",
+            autosize: true,
+            symbol: tvSym,
+            interval: intv,
+            timezone: "Etc/UTC",
+            theme: isLight ? "light" : "dark",
+            style: "1",
             locale: curLang === 'ru' ? 'ru' : 'en',
-            enable_publishing: false, hide_top_toolbar: true, save_image: false,
+            enable_publishing: false,
+            hide_top_toolbar: true,
+            save_image: false,
             container_id: "tv_chart_container"
         });
     }
-    
+
     function renderPairs(filter='') {
         const filtered = allPairs.filter(p => p.toLowerCase().includes(filter.toLowerCase()));
         pairsListDiv.innerHTML = '';
         filtered.forEach(pair => {
             const div = document.createElement('div');
             div.textContent = pair;
-            div.style.padding = '12px'; div.style.cursor = 'pointer'; div.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+            div.style.padding = '12px';
+            div.style.cursor = 'pointer';
+            div.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
             div.onclick = () => {
                 currentPair = pair;
                 selectedPairSpan.innerText = pair;
@@ -487,23 +711,25 @@
                 selectedTFSpan.innerText = currentTF;
                 const container = document.getElementById('tv_chart_container');
                 if (isOTC) {
-                    if (tvWidget) { try { tvWidget.remove(); } catch(e) {} tvWidget = null; }
-                    container.innerHTML = `<div class="otc-stub"><i class="fas fa-chart-simple"></i> ${trans[curLang].otcStub}</div>`;
+                    if (tvWidget) tvWidget.remove();
+                    container.innerHTML = '<div class="otc-stub"><i class="fas fa-chart-simple"></i> OTC график в разработке<br>Сигналы доступны</div>';
                 } else {
+                    container.innerHTML = '';
                     initChart(currentPair, currentTF);
                 }
             };
             pairsListDiv.appendChild(div);
         });
     }
-    
+
     function updateTFList() {
         const tfs = isOTC ? tfOTC : tfNormal;
         tfDropdownDiv.innerHTML = '';
         tfs.forEach(tf => {
             const div = document.createElement('div');
             div.textContent = tf;
-            div.style.padding = '12px'; div.style.cursor = 'pointer';
+            div.style.padding = '12px';
+            div.style.cursor = 'pointer';
             div.onclick = (e) => {
                 e.stopPropagation();
                 currentTF = tf;
@@ -514,7 +740,7 @@
             tfDropdownDiv.appendChild(div);
         });
     }
-    
+
     function showProgress(callback) {
         const fill = document.getElementById('progressFill');
         const percentSpan = document.getElementById('progressPercent');
@@ -529,30 +755,48 @@
             percentSpan.innerText = p + '%';
         }, 200);
     }
-    
+
     function showSignal() {
         const isBuy = Math.random() > 0.5;
         const sigEl = document.getElementById('signalTextPremium');
         const confEl = document.getElementById('confidencePremium');
         sigEl.textContent = isBuy ? 'BUY' : 'SELL';
         sigEl.className = 'signal-big ' + (isBuy ? 'signal-buy' : 'signal-sell');
-        confEl.textContent = Math.floor(Math.random() * 21) + 78 + '%';
+        const conf = Math.floor(Math.random() * 21) + 78;
+        confEl.textContent = conf + '%';
         resultWidget.classList.add('active');
         if (window.innerWidth < 768) document.querySelector('.controls-premium').style.display = 'none';
     }
-    
+
     function closeResult() {
         resultWidget.classList.remove('active');
         if (window.innerWidth < 768) document.querySelector('.controls-premium').style.display = 'block';
     }
-    
+
+    function activateCode() {
+        const code = document.getElementById('activationCode').value.trim();
+        const msg = document.getElementById('accessMsg');
+        if (validCodes.includes(code) && !usedCodes[code]) {
+            usedCodes[code] = true;
+            localStorage.setItem('usedCodes', JSON.stringify(usedCodes));
+            isActivated = true;
+            localStorage.setItem('optibotx_activated', 'true');
+            msg.innerHTML = '✅ Доступ открыт!';
+            msg.style.color = '#00ff88';
+            setTimeout(() => { accessDiv.classList.remove('visible'); msg.innerHTML = ''; }, 1500);
+        } else {
+            msg.innerHTML = '❌ Неверный или использованный код';
+            msg.style.color = '#ff4d4d';
+        }
+    }
+
     function backToMenu() {
-        if (tvWidget) { try { tvWidget.remove(); } catch(e) {} tvWidget = null; }
+        if (tvWidget) tvWidget.remove();
         mainApp.style.display = 'none';
         menuDiv.classList.add('visible');
     }
-    
-    // ---------- ОБРАБОТЧИКИ ИНТЕРФЕЙСА ----------
+
+    // ----- EVENT LISTENERS -----
     document.querySelectorAll('.lang-card').forEach(card => {
         card.addEventListener('click', () => {
             document.querySelectorAll('.lang-card').forEach(c => c.classList.remove('selected'));
@@ -580,6 +824,7 @@
         selectedTFSpan.innerText = currentTF;
         initChart(currentPair, currentTF);
         renderPairs('');
+        // handlers
         if (!window._premiumHandlers) {
             window._premiumHandlers = true;
             document.getElementById('themePremium').onclick = () => {
@@ -606,10 +851,7 @@
                 if (!e.target.closest('#tfSelectorPremium')) document.getElementById('tfDropdownPremium').style.display = 'none';
             });
             getSignalBtn.onclick = () => {
-                if (!isActivated) { 
-                    accessDiv.classList.add('visible');
-                    return; 
-                }
+                if (!isActivated) { accessDiv.classList.add('visible'); return; }
                 showProgress(() => showSignal());
             };
             document.getElementById('winPremium').onclick = closeResult;
@@ -622,9 +864,6 @@
         }
         if (window.Telegram?.WebApp) window.Telegram.WebApp.expand();
     };
-    
-    // При загрузке страницы isActivated = false, так что окно активации появится, когда нужно.
-    // При перезагрузке всё сбрасывается.
 </script>
 </body>
 </html>
