@@ -28,8 +28,7 @@
 
         /* Light Theme */
         body.light {
-            background: #f0f2f8;
-            color: #1a1a2e;
+            background: #f0f2f8; color: #1a1a2e;
         }
         body.light .glass-card,
         body.light .menu-card,
@@ -37,15 +36,13 @@
         body.light .bottom-menu,
         body.light .top-bar,
         body.light .analysis-widget {
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(12px);
+            background: rgba(255,255,255,0.7); backdrop-filter: blur(12px);
             border-color: rgba(0,0,0,0.1);
         }
         body.light .selector,
         body.light .pair-item,
         body.light .time-item {
-            background: rgba(0,0,0,0.03);
-            border-color: rgba(0,0,0,0.1);
+            background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.1);
         }
         body.light .user-name {
             background: linear-gradient(135deg, #1a1a2e, #3a3a6e);
@@ -56,8 +53,7 @@
 
         /* Glassmorphism Base */
         .glass-card, .menu-card, .access-card, .bottom-menu, .top-bar, .analysis-widget {
-            background: rgba(20, 20, 40, 0.6);
-            backdrop-filter: blur(20px);
+            background: rgba(20, 20, 40, 0.6); backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.15);
             border-radius: 28px;
@@ -66,35 +62,30 @@
 
         /* Overlays */
         .overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8);
             backdrop-filter: blur(12px);
             z-index: 10000;
             display: flex;
             align-items: center;
-            justify-content: center;
-            opacity: 0;
+            justify-content: center; opacity: 0;
             visibility: hidden;
             transition: opacity 0.4s, visibility 0.4s;
         }
         .overlay.visible {
-            opacity: 1;
-            visibility: visible;
+            opacity: 1; visibility: visible;
         }
 
         /* Welcome Screen */
         .welcome-content {
-            text-align: center;
-            max-width: 340px; width: 85%;
+            text-align: center; max-width: 340px; width: 85%;
             animation: fadeUp 0.6s ease;
         }
         .logo-glow {
             width: 100px; height: 100px; margin: 0 auto 25px;
             background: linear-gradient(135deg, #5b4dff, #ff3366);
             border-radius: 30px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 40px rgba(91,77,255,0.5);
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 0 40px rgba(91,77,255,0.5);
             animation: float 3s infinite;
         }
         .logo-glow i { font-size: 48px; color: white; }
@@ -109,24 +100,20 @@
             display: flex; gap: 20px; justify-content: center; margin: 35px 0;
         }
         .lang-card {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2);
             border-radius: 20px; padding: 12px 20px;
             cursor: pointer; transition: 0.3s; text-align: center; min-width: 100px;
         }
         .lang-card img { width: 40px; height: 40px; border-radius: 50%; margin-bottom: 8px; }
         .lang-card span { font-size: 14px; font-weight: 500; display: block; }
         .lang-card.selected {
-            background: linear-gradient(135deg, #5b4dff, #ff3366);
-            border-color: transparent; transform: translateY(-3px);
+            background: linear-gradient(135deg, #5b4dff, #ff3366); border-color: transparent; transform: translateY(-3px);
             box-shadow: 0 10px 25px rgba(91,77,255,0.4);
         }
         .start-btn {
-            background: linear-gradient(135deg, #5b4dff, #ff3366);
-            border: none; padding: 16px; width: 100%; border-radius: 40px;
+            background: linear-gradient(135deg, #5b4dff, #ff3366); border: none; padding: 16px; width: 100%; border-radius: 40px;
             color: white; font-size: 18px; font-weight: 700;
-            cursor: pointer; opacity: 0; transform: translateY(20px);
-            transition: 0.3s; pointer-events: none;
+            cursor: pointer; opacity: 0; transform: translateY(20px); transition: 0.3s; pointer-events: none;
         }
         .start-btn.visible {
             opacity: 1; transform: translateY(0); pointer-events: auto;
@@ -140,8 +127,7 @@
             display: flex; flex-direction: column; gap: 16px; margin: 30px 0;
         }
         .menu-action {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);
             border-radius: 60px; padding: 14px; font-weight: 600;
             cursor: pointer; transition: 0.2s;
             display: flex; align-items: center; justify-content: center; gap: 12px;
@@ -165,8 +151,7 @@
             color: white; text-align: center; margin: 15px 0; font-size: 16px;
         }
         .activate-premium {
-            background: linear-gradient(135deg, #5b4dff, #ff3366);
-            width: 100%; padding: 14px; border: none; border-radius: 40px;
+            background: linear-gradient(135deg, #5b4dff, #ff3366); width: 100%; padding: 14px; border: none; border-radius: 40px;
             font-weight: bold; color: white; cursor: pointer;
         }
         .activate-premium:disabled {
@@ -425,7 +410,6 @@
 
 <script>
     // ======================== НАСТРОЙКИ FIREBASE ========================
-    // !!! ВСТАВЬ СЮДА СВОИ ДАННЫЕ ИЗ FIREBASE CONSOLE !!!
     const firebaseConfig = {
         apiKey: "AIzaSyDWlOVhoAJvadYvm2F__5cOwMHREj8eay8",
         authDomain: "optibotx-abdad.firebaseapp.com",
@@ -435,8 +419,6 @@
         messagingSenderId: "290304323879",
         appId: "1:290304323879:web:909268412c79a19a97b902"
     };
-    
-    // Инициализация базы данных
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
@@ -451,7 +433,7 @@
             accessStepTitle: "Как получить код?", accessStep1: "1. Нажмите кнопку «Написать мне» ниже",
             accessStep2: "2. Напишите слово «КОД» в Telegram", accessStep3: "3. Менеджер выдаст вам персональный код активации ✅",
             accessPlaceholder: "Введите полученный код", activateBtn: "Активировать", writeTg: "Написать мне", copyNickBtn: "Копировать ник",
-            alertCopy: "Ник скопирован: @AuraVey", accessSuccess: "✅ Доступ открыт!", accessError: "❌ Неверный или заблокированный код",
+            alertCopy: "Ник скопирован: @AuraVey", accessSuccess: "✅ Доступ открыт!", accessError: "❌ Неверный или использованный код",
             otcStub: "OTC график в разработке<br>Сигналы доступны", checkingCode: "Проверка кода..."
         },
         en: { 
@@ -463,7 +445,7 @@
             accessStepTitle: "How to get a code?", accessStep1: "1. Click 'Message Me' below",
             accessStep2: "2. Write the word 'CODE' in Telegram", accessStep3: "3. The manager will give you an activation code ✅",
             accessPlaceholder: "Enter received code", activateBtn: "Activate", writeTg: "Message Me", copyNickBtn: "Copy Nickname",
-            alertCopy: "Nickname copied: @AuraVey", accessSuccess: "✅ Access granted!", accessError: "❌ Invalid or blocked code",
+            alertCopy: "Nickname copied: @AuraVey", accessSuccess: "✅ Access granted!", accessError: "❌ Invalid or used code",
             otcStub: "OTC chart in development<br>Signals are available", checkingCode: "Checking code..."
         }
     };
@@ -493,7 +475,6 @@
     const tfNormal = ["15s","30s","1m","5m","15m"];
     const tfOTC = ["5s","10s","15s","30s","1m","2m","3m"];
 
-    // DOM
     const welcomeDiv = document.getElementById('welcomeOverlay');
     const menuDiv = document.getElementById('menuOverlay');
     const accessDiv = document.getElementById('accessOverlay');
@@ -508,18 +489,22 @@
     const backBtn = document.getElementById('backToMenuPremium');
 
     // ======================== ЛОГИКА FIREBASE И БЛОКИРОВКИ ========================
+    // 1. Генерируем или получаем уникальный ID устройства
+    let deviceId = localStorage.getItem('optibotx_device_id');
+    if (!deviceId) {
+        deviceId = 'device_' + Math.random().toString(36).substring(2, 15);
+        localStorage.setItem('optibotx_device_id', deviceId);
+    }
+
     function startRealtimeCheck(code) {
-        const codeRef = db.ref('codes/' + code + '/status');
-        
+        const codeRef = db.ref('codes/' + code);
         codeRef.on('value', (snapshot) => {
-            const status = snapshot.val();
-            // Если статус в базе изменился на что-то кроме 'active' или код удален
-            if (status !== 'active') {
+            const data = snapshot.val();
+            if (!data || (data.status !== 'active' && data.usedBy !== deviceId)) {
                 isActivated = false;
                 localStorage.removeItem('optibotx_saved_code');
-                codeRef.off(); // Отключаем прослушку этого кода
+                codeRef.off();
                 
-                // Моментально выкидываем на экран активации
                 mainApp.style.display = 'none';
                 menuDiv.classList.remove('visible');
                 accessDiv.classList.add('visible');
@@ -531,7 +516,6 @@
         });
     }
 
-    // При старте проверяем сохраненный код
     if (savedCode) {
         startRealtimeCheck(savedCode);
     }
@@ -546,13 +530,19 @@
 
         btn.disabled = true;
         msg.style.color = '#fff';
-        msg.innerHTML = trans[curLang].checkingCode || "Проверка...";
+        msg.innerHTML = trans[curLang].checkingCode;
 
         db.ref('codes/' + code).once('value').then((snapshot) => {
             const data = snapshot.val();
             
-            if (data && data.status === 'active') {
-                // Код валидный
+            if (data && (data.status === 'active' || (data.status === 'used' && data.usedBy === deviceId))) {
+                if (data.status === 'active') {
+                    db.ref('codes/' + code).update({
+                        status: 'used',
+                        usedBy: deviceId
+                    });
+                }
+
                 savedCode = code;
                 localStorage.setItem('optibotx_saved_code', code);
                 isActivated = true;
@@ -560,7 +550,6 @@
                 msg.innerHTML = trans[curLang].accessSuccess;
                 msg.style.color = '#00ff88';
                 
-                // Запускаем отслеживание этого кода в реальном времени
                 startRealtimeCheck(code);
                 
                 setTimeout(() => { 
@@ -570,7 +559,6 @@
                     btn.disabled = false;
                 }, 1500);
             } else {
-                // Код не найден или не активен
                 msg.innerHTML = trans[curLang].accessError;
                 msg.style.color = '#ff4d4d';
                 btn.disabled = false;
@@ -724,7 +712,6 @@
         menuDiv.classList.add('visible');
     }
 
-    // ----- EVENT LISTENERS -----
     document.querySelectorAll('.lang-card').forEach(card => {
         card.addEventListener('click', () => {
             document.querySelectorAll('.lang-card').forEach(c => c.classList.remove('selected'));
@@ -740,10 +727,8 @@
         updateLangUI();
         menuDiv.classList.add('visible');
     });
-
     document.getElementById('reviewsBtn').onclick = () => window.open('https://t.me/optibotxx', '_blank');
     document.getElementById('tutorialBtn').onclick = () => window.open('https://t.me/CieePXj_6AyYWEx', '_blank');
-
     document.getElementById('startWorkBtn').onclick = () => {
         menuDiv.classList.remove('visible');
         mainApp.style.display = 'flex';
@@ -755,7 +740,6 @@
         selectedTFSpan.innerText = currentTF;
         initChart(currentPair, currentTF);
         renderPairs('');
-
         if (!window._premiumHandlers) {
             window._premiumHandlers = true;
             document.getElementById('themePremium').onclick = () => {
@@ -791,10 +775,7 @@
             document.getElementById('winPremium').onclick = closeResult;
             document.getElementById('lossPremium').onclick = closeResult;
             document.getElementById('closeResultPremium').onclick = closeResult;
-            
-            // Кнопка активации теперь ссылается на новую функцию Firebase
             document.getElementById('activateAccess').onclick = activateCode;
-            
             document.getElementById('copyNick').onclick = () => { 
                 navigator.clipboard.writeText('@AuraVey');
                 alert(trans[curLang].alertCopy); 
