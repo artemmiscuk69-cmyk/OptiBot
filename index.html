@@ -326,18 +326,6 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
         #tv_chart_container { width: 100%; height: 100%; }
-        .otc-stub {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(8px);
-            font-weight: bold;
-            gap: 12px;
-            flex-direction: column;
-        }
 
         /* Controls Panel */
         .controls-premium {
@@ -534,9 +522,9 @@
 <!-- ACCESS CARD (exact as screenshot, premium) -->
 <div id="accessOverlay" class="overlay">
     <div class="access-card">
-        <h3>🔐 Активация доступа</h3>
-        <p>Для входа в платформу OptiBotX PRO необходим лицензионный код</p>
-        <div class="access-steps">
+        <h3 id="accessTitle">🔐 Активация доступа</h3>
+        <p id="accessDesc">Для входа в платформу OptiBotX PRO необходим лицензионный код</p>
+        <div class="access-steps" id="accessHowTo">
             <strong>Как получить код?</strong><br>
             1. Нажмите кнопку «Написать мне» ниже<br>
             2. Напишите слово «КОД» в Telegram<br>
@@ -545,12 +533,12 @@
         <input type="text" id="activationCode" class="code-input" placeholder="Введите полученный код">
         <button id="activateAccess" class="activate-premium">Активировать</button>
         <div class="action-double">
-            <button id="writeToTg"><i class="fab fa-telegram"></i> Написать мне</button>
-            <button id="copyNick"><i class="far fa-copy"></i> Копировать ник</button>
+            <button id="writeToTg"><i class="fab fa-telegram"></i> <span id="writeTgText">Написать мне</span></button>
+            <button id="copyNick"><i class="far fa-copy"></i> <span id="copyNickText">Копировать ник</span></button>
         </div>
         <div class="contact-footer">
-            <span>Мой TG: @AuraVey</span>
-            <span>Ник: AuraVey</span>
+            <span id="contactTg">Мой TG: @AuraVey</span>
+            <span id="contactNick">Ник: AuraVey</span>
         </div>
         <div id="accessMsg" style="margin-top: 12px; font-size: 13px;"></div>
     </div>
@@ -576,7 +564,7 @@
     <div class="controls-premium glass-card">
         <div class="double-selector">
             <div class="premium-select" id="pairSelectorPremium">
-                <div class="label">Актив</div>
+                <div class="label" id="assetLabel">Актив</div>
                 <div class="value"><span id="selectedPairPremium">EUR/USD</span> <i class="fas fa-chevron-down"></i></div>
                 <div class="dropdown-premium" id="pairDropdownPremium">
                     <input type="text" id="pairSearchPremium" placeholder="Поиск..." style="width:100%; padding:8px; background:transparent; border:none; color:white;">
@@ -584,18 +572,18 @@
                 </div>
             </div>
             <div class="premium-select" id="tfSelectorPremium">
-                <div class="label">Таймфрейм</div>
+                <div class="label" id="tfLabel">Таймфрейм</div>
                 <div class="value"><span id="selectedTFPremium">1m</span> <i class="fas fa-chevron-down"></i></div>
                 <div class="dropdown-premium" id="tfDropdownPremium"></div>
             </div>
         </div>
         <button id="getSignalPremium" class="btn-signal"><i class="fas fa-radar"></i> Получить сигнал</button>
-        <button id="backToMenuPremium" class="btn-back"><i class="fas fa-arrow-left"></i> Назад в меню</button>
+        <button id="backToMenuPremium" class="btn-back"><i class="fas fa-arrow-left"></i> <span id="backMenuText">Назад в меню</span></button>
     </div>
 
     <div id="resultPremium" class="result-widget glass-card">
         <div class="signal-big" id="signalTextPremium">BUY</div>
-        <div>Точность: <span id="confidencePremium">94%</span></div>
+        <div><span id="confidenceLabelStr">Точность:</span> <span id="confidencePremium">94%</span></div>
         <div class="result-buttons">
             <button id="winPremium" class="win-premium"><i class="fas fa-check"></i> Win</button>
             <button id="lossPremium" class="loss-premium"><i class="fas fa-times"></i> Loss</button>
@@ -615,11 +603,62 @@
 </div>
 
 <script>
-    // ======================== TRANSLATIONS (only ru/en) ========================
+    // ======================== TRANSLATIONS (ru/en FULL) ========================
     const trans = {
-        ru: { start: "Далее →", asset: "Актив", tf: "Таймфрейм", getSignal: "Получить сигнал", analyzing: "Анализ рынка...", result: "Результат анализа", confidence: "Точность", search: "Поиск...", menuTitle: "Выберите действие", reviews: "Отзывы приложения", tutorial: "Обучение", startWork: "Начать работать" },
-        en: { start: "Next →", asset: "Asset", tf: "Timeframe", getSignal: "Get Signal", analyzing: "Analyzing market...", result: "Analysis Result", confidence: "Confidence", search: "Search...", menuTitle: "Choose action", reviews: "App Reviews", tutorial: "Tutorial", startWork: "Start Trading" }
+        ru: {
+            start: "Далее →",
+            menuTitle: "Выберите действие",
+            reviews: "Отзывы приложения",
+            tutorial: "Обучение",
+            startWork: "Начать работать",
+            accessTitle: "🔐 Активация доступа",
+            accessDesc: "Для входа в платформу OptiBotX PRO необходим лицензионный код",
+            accessHowTo: "<strong>Как получить код?</strong><br>1. Нажмите кнопку «Написать мне» ниже<br>2. Напишите слово «КОД» в Telegram<br>3. Менеджер выдаст вам персональный код активации ✅",
+            accessInput: "Введите полученный код",
+            activateBtn: "Активировать",
+            writeTg: "Написать мне",
+            copyNick: "Копировать ник",
+            contactTg: "Мой TG: @AuraVey",
+            contactNick: "Ник: AuraVey",
+            asset: "Актив",
+            tf: "Таймфрейм",
+            search: "Поиск...",
+            getSignal: "Получить сигнал",
+            backMenu: "Назад в меню",
+            analyzing: "Анализ рынка...",
+            confidence: "Точность:",
+            accessGranted: "✅ Доступ открыт!",
+            accessDenied: "❌ Неверный или использованный код",
+            copied: "Ник скопирован: @AuraVey"
+        },
+        en: {
+            start: "Next →",
+            menuTitle: "Choose action",
+            reviews: "App Reviews",
+            tutorial: "Tutorial",
+            startWork: "Start Trading",
+            accessTitle: "🔐 Access Activation",
+            accessDesc: "To access the OptiBotX PRO platform, a license code is required",
+            accessHowTo: "<strong>How to get a code?</strong><br>1. Click the «Message me» button below<br>2. Send the word «CODE» on Telegram<br>3. The manager will give you a personal activation code ✅",
+            accessInput: "Enter your code",
+            activateBtn: "Activate",
+            writeTg: "Message me",
+            copyNick: "Copy Nickname",
+            contactTg: "My TG: @AuraVey",
+            contactNick: "Nick: AuraVey",
+            asset: "Asset",
+            tf: "Timeframe",
+            search: "Search...",
+            getSignal: "Get Signal",
+            backMenu: "Back to menu",
+            analyzing: "Analyzing market...",
+            confidence: "Confidence:",
+            accessGranted: "✅ Access granted!",
+            accessDenied: "❌ Invalid or used code",
+            copied: "Nickname copied: @AuraVey"
+        }
     };
+
     let curLang = 'ru';
     let isActivated = localStorage.getItem('optibotx_activated') === 'true';
     let tvWidget = null;
@@ -659,23 +698,59 @@
     const backBtn = document.getElementById('backToMenuPremium');
 
     function updateLangUI() {
-        document.querySelectorAll('[data-i18n]').forEach(el => {});
-        document.getElementById('pairSearchPremium').placeholder = trans[curLang].search;
-        document.getElementById('menuTitle').innerText = trans[curLang].menuTitle;
-        document.getElementById('reviewsText').innerText = trans[curLang].reviews;
-        document.getElementById('tutorialText').innerText = trans[curLang].tutorial;
-        document.getElementById('startWorkText').innerText = trans[curLang].startWork;
-        document.getElementById('getSignalPremium').innerHTML = `<i class="fas fa-radar"></i> ${trans[curLang].getSignal}`;
-        document.getElementById('progressTitle').innerText = trans[curLang].analyzing;
+        const t = trans[curLang];
+        
+        // Menu Elements
+        document.getElementById('menuTitle').innerText = t.menuTitle;
+        document.getElementById('reviewsText').innerText = t.reviews;
+        document.getElementById('tutorialText').innerText = t.tutorial;
+        document.getElementById('startWorkText').innerText = t.startWork;
+
+        // Access Elements
+        document.getElementById('accessTitle').innerText = t.accessTitle;
+        document.getElementById('accessDesc').innerText = t.accessDesc;
+        document.getElementById('accessHowTo').innerHTML = t.accessHowTo;
+        document.getElementById('activationCode').placeholder = t.accessInput;
+        document.getElementById('activateAccess').innerText = t.activateBtn;
+        document.getElementById('writeTgText').innerText = t.writeTg;
+        document.getElementById('copyNickText').innerText = t.copyNick;
+        document.getElementById('contactTg').innerText = t.contactTg;
+        document.getElementById('contactNick').innerText = t.contactNick;
+
+        // Main App Elements
+        document.getElementById('assetLabel').innerText = t.asset;
+        document.getElementById('tfLabel').innerText = t.tf;
+        document.getElementById('pairSearchPremium').placeholder = t.search;
+        document.getElementById('getSignalPremium').innerHTML = `<i class="fas fa-radar"></i> ${t.getSignal}`;
+        document.getElementById('backMenuText').innerText = t.backMenu;
+
+        // Progress & Results Elements
+        document.getElementById('progressTitle').innerText = t.analyzing;
+        document.getElementById('confidenceLabelStr').innerText = t.confidence;
     }
 
     function initChart(symbol, interval) {
-        if (isOTC) return;
-        const formatted = symbol.replace('/', '');
+        // Убираем приставку OTC, чтобы загружался обычный график
+        const baseSymbol = symbol.replace(' OTC', '');
+        const formatted = baseSymbol.replace('/', '');
         const tvSym = "FX_IDC:" + formatted;
-        const intv = interval.replace('s','').replace('m','');
+        
+        // TradingView не поддерживает s (секунды) в бесплатном виджете. 
+        // Ставим "1" (минуту) для секундных, а для минут и часов оставляем числа.
+        let intv = "1";
+        if (interval.includes('m')) {
+            intv = interval.replace('m', '');
+        } else if (interval.includes('h')) {
+            intv = (parseInt(interval.replace('h', '')) * 60).toString();
+        }
+
         const isLight = document.body.classList.contains('light');
         if (tvWidget) tvWidget.remove();
+        
+        // Очищаем контейнер от возможных старых заглушек
+        const container = document.getElementById('tv_chart_container');
+        container.innerHTML = '';
+
         tvWidget = new TradingView.widget({
             autosize: true,
             symbol: tvSym,
@@ -704,19 +779,16 @@
                 currentPair = pair;
                 selectedPairSpan.innerText = pair;
                 document.getElementById('pairDropdownPremium').style.display = 'none';
+                
                 isOTC = pair.toLowerCase().includes('otc');
                 updateTFList();
+                
                 const tfs = isOTC ? tfOTC : tfNormal;
                 currentTF = tfs[0];
                 selectedTFSpan.innerText = currentTF;
-                const container = document.getElementById('tv_chart_container');
-                if (isOTC) {
-                    if (tvWidget) tvWidget.remove();
-                    container.innerHTML = '<div class="otc-stub"><i class="fas fa-chart-simple"></i> OTC график в разработке<br>Сигналы доступны</div>';
-                } else {
-                    container.innerHTML = '';
-                    initChart(currentPair, currentTF);
-                }
+                
+                // Всегда загружаем график (даже для OTC)
+                initChart(currentPair, currentTF);
             };
             pairsListDiv.appendChild(div);
         });
@@ -735,7 +807,9 @@
                 currentTF = tf;
                 selectedTFSpan.innerText = tf;
                 tfDropdownDiv.style.display = 'none';
-                if (!isOTC) initChart(currentPair, currentTF);
+                
+                // Всегда обновляем график при смене таймфрейма
+                initChart(currentPair, currentTF);
             };
             tfDropdownDiv.appendChild(div);
         });
@@ -781,11 +855,11 @@
             localStorage.setItem('usedCodes', JSON.stringify(usedCodes));
             isActivated = true;
             localStorage.setItem('optibotx_activated', 'true');
-            msg.innerHTML = '✅ Доступ открыт!';
+            msg.innerHTML = trans[curLang].accessGranted;
             msg.style.color = '#00ff88';
             setTimeout(() => { accessDiv.classList.remove('visible'); msg.innerHTML = ''; }, 1500);
         } else {
-            msg.innerHTML = '❌ Неверный или использованный код';
+            msg.innerHTML = trans[curLang].accessDenied;
             msg.style.color = '#ff4d4d';
         }
     }
@@ -808,7 +882,7 @@
     });
     document.getElementById('welcomeNext').addEventListener('click', () => {
         welcomeDiv.classList.remove('visible');
-        updateLangUI();
+        updateLangUI(); // Применяем язык ко всему интерфейсу
         menuDiv.classList.add('visible');
     });
     document.getElementById('reviewsBtn').onclick = () => window.open('https://t.me/optibotxx', '_blank');
@@ -824,6 +898,7 @@
         selectedTFSpan.innerText = currentTF;
         initChart(currentPair, currentTF);
         renderPairs('');
+        
         // handlers
         if (!window._premiumHandlers) {
             window._premiumHandlers = true;
@@ -831,7 +906,8 @@
                 document.body.classList.toggle('light');
                 const isLight = document.body.classList.contains('light');
                 document.getElementById('themePremium').innerHTML = isLight ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-                if (!isOTC && tvWidget) initChart(currentPair, currentTF);
+                // График обновляется всегда, даже если выбран OTC
+                if (tvWidget) initChart(currentPair, currentTF);
             };
             document.getElementById('pairSelectorPremium').onclick = (e) => {
                 if (e.target.tagName !== 'INPUT') {
@@ -858,7 +934,10 @@
             document.getElementById('lossPremium').onclick = closeResult;
             document.getElementById('closeResultPremium').onclick = closeResult;
             document.getElementById('activateAccess').onclick = activateCode;
-            document.getElementById('copyNick').onclick = () => { navigator.clipboard.writeText('@AuraVey'); alert('Ник скопирован: @AuraVey'); };
+            document.getElementById('copyNick').onclick = () => { 
+                navigator.clipboard.writeText('@AuraVey'); 
+                alert(trans[curLang].copied); 
+            };
             document.getElementById('writeToTg').onclick = () => window.open('https://t.me/AuraVey', '_blank');
             backBtn.onclick = backToMenu;
         }
